@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Force light mode – disable system dark mode */
+html { background-color: #ffffff; }
+body { background-color: #ffffff; color: #111; }
+.dark, .dark * { background-color: #ffffff !important; color: #111 !important; }
+
+/* Custom colors inspired by KFC */
+:root {
+  --kfc-red: #E4002B;
+  --kfc-orange: #FF6B35;
+  --kfc-yellow: #FFC72C;
+  --kfc-dark: #2D2A26;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* White background for all main containers */
+.min-h-screen {
+  background-color: #ffffff;
+}
+
+.bg-gray-100 {
+  background-color: #ffffff;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+/* Override container backgrounds */
+.container {
+  background-color: #ffffff;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Hover effects */
+.hover-scale {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(228, 0, 43, 0.3);
+}
+
+/* Button pulse effect */
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(228, 0, 43, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(228, 0, 43, 0);
+  }
+}
+
+.pulse-button:hover {
+  animation: pulse-red 1.5s infinite;
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(90deg, #E4002B 0%, #FF6B35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--kfc-red);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c40024;
+}

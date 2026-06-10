@@ -1,0 +1,47 @@
+# === Dependencies ===
+node_modules/
+
+# === Environment ===
+.env
+
+# === Build output ===
+dist/
+build/
+
+# === Lock files ===
+package-lock.json
+
+# === Local docs & memory (not for GitHub) ===
+docs/
+memory/
+task-summary_*.md
+features-completion-*.md
+payment-completion-*.md
+
+# === Temp / Audit / Test Scripts ===
+test_*.js
+*_audit*.js
+full_audit*.js
+check_*.js
+fix_*.js
+describe_*.js
+gen-*.js
+create_report.py
+generate_report.py
+
+# === Generated Documents ===
+*.docx
+
+# === OS ===
+Thumbs.db
+.DS_Store
+
+# === Logs ===
+*.log
+npm-debug.log*
+
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo

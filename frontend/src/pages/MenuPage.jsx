@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { API_ENDPOINTS } from '../config/api';
 const FOOD_IMAGES = [
   'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop',
   'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop',
@@ -16,6 +16,27 @@ function MenuPage({ menuItems }) {
   const [added, setAdded]             = useState({});
   const [categories, setCategories]   = useState([]);
   const [cat, setCat]                  = useState('all');
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [favItems, setFavItems] = useState(new Set());
+  const [favLoading, setFavLoading] = useState({});
+
+  // Track behavior helper
+  const trackBehavior = async (actionType, itemId, extra = {}) => {
+    const userId = localStorage.getItem('fastfood_userId');
+    if (!userId) return;
+    try {
+      await fetch(API_ENDPOINTS.RECOMMENDATIONS_TRACK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          user_id: parseInt(userId), 
+          action_type: actionType, 
+          item_id: itemId, 
+          ...extra 
+        })
+      });
+    } catch (e) { console.log('Track error:', e); }
+  };
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
@@ -27,6 +48,11 @@ function MenuPage({ menuItems }) {
   const addToCart = (item) => {
     const existing = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
     const idx = existing.findIndex(i => i.item_id === item.item_id);
+    const quantity = idx >= 0 ? existing[idx].quantity + 1 : 1;
+    
+    // Track add_to_cart behavior
+    trackBehavior('add_to_cart', item.item_id, { metadata: { quantity } });
+    
     const updated = idx >= 0
       ? existing.map((i, j) => j === idx ? { ...i, quantity: i.quantity + 1 } : i)
       : [...existing, { ...item, quantity: 1 }];
@@ -42,6 +68,36 @@ function MenuPage({ menuItems }) {
     localStorage.setItem('fastfood_cart', JSON.stringify(updated));
     setCart(updated);
     window.dispatchEvent(new Event('cartUpdated'));
+  };
+
+  // Load favorites
+  useEffect(() => {
+    const uid = localStorage.getItem('fastfood_userId');
+    if (!uid) return;
+    fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_USER(uid))
+      .then(r => r.json())
+      .then(data => { if (data.success) setFavItems(new Set(data.data.map(f => f.item_id))); })
+      .catch(() => {});
+  }, []);
+
+  const toggleFavorite = async (itemId) => {
+    const uid = localStorage.getItem('fastfood_userId');
+    if (!uid) { alert('Vui lòng đăng nhập!'); return; }
+    setFavLoading(prev => ({ ...prev, [itemId]: true }));
+    try {
+      if (favItems.has(itemId)) {
+        await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_DELETE(uid, itemId), { method: 'DELETE' });
+        setFavItems(prev => { const next = new Set(prev); next.delete(itemId); return next; });
+      } else {
+        await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: parseInt(uid), item_id: itemId })
+        });
+        setFavItems(prev => new Set([...prev, itemId]));
+        trackBehavior('add_favorite', itemId);
+      }
+    } catch (e) { console.error('Fav error:', e); }
+    setFavLoading(prev => ({ ...prev, [itemId]: false }));
   };
 
   const getQty = (id) => cart.find(i => i.item_id === id)?.quantity || 0;
@@ -86,7 +142,10 @@ function MenuPage({ menuItems }) {
             const qty = getQty(item.item_id);
             return (
               <div key={item.item_id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
-                <div className="relative h-40 bg-gray-50 overflow-hidden">
+                <div className="relative h-40 bg-gray-50 overflow-hidden cursor-pointer" onClick={() => {
+                  setSelectedItem(item);
+                  trackBehavior('view_item', item.item_id);
+                }}>
                   <img
                     src={item.image_url || FOOD_IMAGES[i % FOOD_IMAGES.length]}
                     alt={item.item_name}
@@ -98,7 +157,13 @@ function MenuPage({ menuItems }) {
                   </div>
                 </div>
                 <div className="p-3">
-                  <h3 className="font-bold text-sm text-gray-900 line-clamp-2 mb-1">{item.item_name}</h3>
+                  <h3 
+                    className="font-bold text-sm text-gray-900 line-clamp-2 mb-1 cursor-pointer hover:text-red-600 transition"
+                    onClick={() => {
+                      setSelectedItem(item);
+                      trackBehavior('view_item', item.item_id);
+                    }}
+                  >{item.item_name}</h3>
                   <p className="text-xs text-gray-400 mb-2">{item.category_name || 'Món ăn'}</p>
                   {qty > 0 ? (
                     <div className="flex items-center justify-between">
@@ -122,6 +187,55 @@ function MenuPage({ menuItems }) {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* ITEM DETAIL MODAL */}
+      {selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedItem(null)}>
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="relative">
+              <img 
+                src={selectedItem.image_url || FOOD_IMAGES[0]} 
+                alt={selectedItem.item_name}
+                className="w-full h-64 object-cover rounded-t-2xl"
+              />
+              <button 
+                onClick={() => setSelectedItem(null)}
+                className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition"
+              >
+                ✕
+              </button>
+              <button
+                onClick={() => toggleFavorite(selectedItem.item_id)}
+                className={`absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition ${favItems.has(selectedItem.item_id) ? 'bg-red-600 text-white' : 'bg-white text-gray-400 hover:text-red-500'}`}
+                disabled={favLoading[selectedItem.item_id]}
+              >
+                {favLoading[selectedItem.item_id] ? '⏳' : favItems.has(selectedItem.item_id) ? '❤️' : '🤍'}
+              </button>
+            </div>
+            <div className="p-6">
+              <h2 className="text-2xl font-bold mb-2">{selectedItem.item_name}</h2>
+              <p className="text-gray-600 mb-4">{selectedItem.description || 'Món ăn ngon từ FastFood'}</p>
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-3xl font-black text-red-600">
+                  {selectedItem.price?.toLocaleString('vi-VN')}đ
+                </span>
+                <span className="text-sm text-gray-500">
+                  ⏱️ {selectedItem.preparation_time || 15} phút
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  addToCart(selectedItem);
+                  setSelectedItem(null);
+                }}
+                className="w-full py-3 bg-red-600 text-white rounded-xl font-bold text-lg hover:bg-red-700 transition"
+              >
+                🛒 Thêm vào giỏ - {selectedItem.price?.toLocaleString('vi-VN')}đ
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

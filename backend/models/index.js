@@ -868,6 +868,64 @@ const Notification = sequelize.define('Notification', {
 });
 
 // =============================================
+// 21. USER BEHAVIOR LOG MODEL (Ghi nhận hành vi)
+// =============================================
+const UserBehaviorLog = sequelize.define('UserBehaviorLog', {
+  log_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  user_id: { type: DataTypes.INTEGER, allowNull: false },
+  action_type: { type: DataTypes.ENUM('view_item', 'add_to_cart', 'place_order', 'search', 'add_favorite', 'remove_favorite', 'rate_item', 'view_category', 'click_recommendation'), allowNull: false },
+  item_id: { type: DataTypes.INTEGER },
+  category_id: { type: DataTypes.INTEGER },
+  search_query: { type: DataTypes.STRING(255) },
+  metadata: { type: DataTypes.JSON },
+  session_id: { type: DataTypes.STRING(100) },
+}, { tableName: 'user_behavior_log', timestamps: true, createdAt: 'created_at', updatedAt: false, underscored: true });
+
+// =============================================
+// 22. USER PREFERENCE MODEL (Sở thích người dùng)
+// =============================================
+const UserPreference = sequelize.define('UserPreference', {
+  preference_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  user_id: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  favorite_category_id: { type: DataTypes.INTEGER },
+  avg_order_value: { type: DataTypes.DECIMAL(10,2), defaultValue: 0 },
+  preferred_order_time: { type: DataTypes.STRING(50) },
+  spice_level: { type: DataTypes.ENUM('none', 'mild', 'medium', 'hot') },
+  dietary_tags: { type: DataTypes.JSON },
+  allergen_avoid: { type: DataTypes.JSON },
+  total_orders: { type: DataTypes.INTEGER, defaultValue: 0 },
+  total_spent: { type: DataTypes.DECIMAL(12,2), defaultValue: 0 },
+  most_ordered_item_id: { type: DataTypes.INTEGER },
+  last_order_at: { type: DataTypes.DATE },
+}, { tableName: 'user_preferences', timestamps: true, createdAt: false, updatedAt: 'updated_at', underscored: true });
+
+// =============================================
+// 23. USER FAVORITE MODEL (Món yêu thích)
+// =============================================
+const UserFavorite = sequelize.define('UserFavorite', {
+  favorite_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  user_id: { type: DataTypes.INTEGER, allowNull: false },
+  item_id: { type: DataTypes.INTEGER, allowNull: false },
+  source: { type: DataTypes.ENUM('manual', 'auto_favorite'), defaultValue: 'manual' },
+}, { tableName: 'user_favorites', timestamps: true, createdAt: 'created_at', updatedAt: false, underscored: true });
+
+// =============================================
+// 24. USER ORDER HISTORY MODEL (Lịch sử đơn hàng)
+// =============================================
+const UserOrderHistory = sequelize.define('UserOrderHistory', {
+  history_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  user_id: { type: DataTypes.INTEGER, allowNull: false },
+  order_id: { type: DataTypes.INTEGER, allowNull: false },
+  item_id: { type: DataTypes.INTEGER, allowNull: false },
+  item_name: { type: DataTypes.STRING(200), allowNull: false },
+  quantity: { type: DataTypes.INTEGER, defaultValue: 1 },
+  unit_price: { type: DataTypes.DECIMAL(10,2), allowNull: false },
+  category_id: { type: DataTypes.INTEGER },
+  order_date: { type: DataTypes.DATE, allowNull: false },
+  rating: { type: DataTypes.INTEGER },
+}, { tableName: 'user_order_history', timestamps: false, underscored: true });
+
+// =============================================
 // =============================================
 // ASSOCIATIONS
 // =============================================
@@ -965,6 +1023,29 @@ Notification.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Notification.belongsTo(Branch, { foreignKey: 'branch_id', as: 'branch' });
 Notification.belongsTo(Order, { foreignKey: 'related_order_id', as: 'order' });
 
+// === USER BEHAVIOR LOG ASSOCIATIONS ===
+UserBehaviorLog.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+UserBehaviorLog.belongsTo(MenuItem, { foreignKey: 'item_id', as: 'menu_item' });
+UserBehaviorLog.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
+User.hasMany(UserBehaviorLog, { foreignKey: 'user_id', as: 'behavior_logs' });
+
+// === USER PREFERENCE ASSOCIATIONS ===
+UserPreference.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+UserPreference.belongsTo(Category, { foreignKey: 'favorite_category_id', as: 'favorite_category' });
+UserPreference.belongsTo(MenuItem, { foreignKey: 'most_ordered_item_id', as: 'most_ordered_item' });
+User.hasOne(UserPreference, { foreignKey: 'user_id', as: 'preferences' });
+
+// === USER FAVORITE ASSOCIATIONS ===
+UserFavorite.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+UserFavorite.belongsTo(MenuItem, { foreignKey: 'item_id', as: 'menu_item' });
+User.hasMany(UserFavorite, { foreignKey: 'user_id', as: 'favorites' });
+MenuItem.hasMany(UserFavorite, { foreignKey: 'item_id', as: 'user_favorites' });
+
+// === USER ORDER HISTORY ASSOCIATIONS ===
+UserOrderHistory.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+UserOrderHistory.belongsTo(MenuItem, { foreignKey: 'item_id', as: 'menu_item' });
+User.hasMany(UserOrderHistory, { foreignKey: 'user_id', as: 'order_history' });
+
 // === BRANCH HOURS SIMPLE ASSOCIATIONS ===
 BranchHoursSimple.belongsTo(Branch, { foreignKey: 'branch_id', as: 'branch' });
 
@@ -996,4 +1077,8 @@ module.exports = {
   Expense,
   PaymentTransaction,
   Notification,
+  UserBehaviorLog,
+  UserPreference,
+  UserFavorite,
+  UserOrderHistory,
 };

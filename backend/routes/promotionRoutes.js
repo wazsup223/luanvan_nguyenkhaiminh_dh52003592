@@ -5,13 +5,16 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // PROMOTION ROUTES
 // =============================================
 
 // GET /api/promotions - Get all promotions
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { branch_id, active_only } = req.query;
 
@@ -19,8 +22,8 @@ router.get('/', async (req, res) => {
     if (branch_id) where.branch_id = branch_id;
     if (active_only === 'true') {
       where.is_active = true;
-      where.start_date = { $lte: new Date() };
-      where.end_date = { $gte: new Date() };
+      where.start_date = { [Op.lte]: new Date() };
+      where.end_date = { [Op.gte]: new Date() };
     }
 
     const promotions = await db.Promotion.findAll({
@@ -37,7 +40,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/promotions/:id - Get single promotion
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -57,7 +60,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/promotions - Create promotion
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, promotion_code, promotion_name, discount_type, discount_value, min_order_amount, max_discount_amount, usage_limit, start_date, end_date } = req.body;
 
@@ -98,7 +101,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/promotions/:id - Update promotion
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -122,7 +125,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // POST /api/promotions/validate - Validate promotion code
-router.post('/validate', async (req, res) => {
+router.post('/validate', optionalAuth, async (req, res) => {
   try {
     const { promotion_code, order_amount, branch_id } = req.body;
 
@@ -193,7 +196,7 @@ router.post('/validate', async (req, res) => {
 });
 
 // DELETE /api/promotions/:id - Delete promotion
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -216,7 +219,7 @@ router.delete('/:id', async (req, res) => {
 // =============================================
 
 // GET /api/promotions/loyalty/rewards - Get all rewards
-router.get('/loyalty/rewards', async (req, res) => {
+router.get('/loyalty/rewards', optionalAuth, async (req, res) => {
   try {
     const rewards = await db.LoyaltyReward.findAll({
       where: { is_active: true },
@@ -231,7 +234,7 @@ router.get('/loyalty/rewards', async (req, res) => {
 });
 
 // GET /api/promotions/loyalty/user/:userId - Get user loyalty info
-router.get('/loyalty/user/:userId', async (req, res) => {
+router.get('/loyalty/user/:userId', authenticate, async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -265,7 +268,7 @@ router.get('/loyalty/user/:userId', async (req, res) => {
 });
 
 // POST /api/promotions/loyalty/redeem - Redeem loyalty points
-router.post('/loyalty/redeem', async (req, res) => {
+router.post('/loyalty/redeem', authenticate, requireRoles('Customer'), async (req, res) => {
   try {
     const { user_id, reward_id } = req.body;
 

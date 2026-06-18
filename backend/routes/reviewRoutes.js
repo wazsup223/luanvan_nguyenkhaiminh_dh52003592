@@ -5,13 +5,15 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // REVIEW ROUTES
 // =============================================
 
 // GET /api/reviews - Get all reviews
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { item_id, order_id, user_id, approved_only, limit = 50, offset = 0 } = req.query;
 
@@ -47,7 +49,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/reviews/item/:itemId - Get reviews for a menu item
-router.get('/item/:itemId', async (req, res) => {
+router.get('/item/:itemId', optionalAuth, async (req, res) => {
   try {
     const { itemId } = req.params;
 
@@ -87,7 +89,7 @@ router.get('/item/:itemId', async (req, res) => {
 });
 
 // POST /api/reviews - Create review
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Customer'), async (req, res) => {
   try {
     const { order_id, user_id, item_id, rating, comment, has_photo, photo_url } = req.body;
 
@@ -154,7 +156,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/reviews/:id/approve - Approve review (Admin/Manager only)
-router.put('/:id/approve', async (req, res) => {
+router.put('/:id/approve', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -176,7 +178,7 @@ router.put('/:id/approve', async (req, res) => {
 });
 
 // PUT /api/reviews/:id/reject - Reject review (Admin/Manager only)
-router.put('/:id/reject', async (req, res) => {
+router.put('/:id/reject', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -198,7 +200,7 @@ router.put('/:id/reject', async (req, res) => {
 });
 
 // DELETE /api/reviews/:id - Delete review
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
 

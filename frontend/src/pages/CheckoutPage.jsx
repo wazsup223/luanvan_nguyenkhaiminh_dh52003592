@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const API = 'http://localhost:3001/api';
+import { API_ENDPOINTS } from '../config/api';
 const FOOD_IMAGES = [
   'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop',
   'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=300&fit=crop',
@@ -23,7 +22,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     const saved = localStorage.getItem('fastfood_cart');
     if (saved) setCart(JSON.parse(saved));
-    fetch(`${API}/payment/methods`)
+    fetch(API_ENDPOINTS.PAYMENT_METHODS)
       .then(r => r.json())
       .then(d => d.success && setPaymentMethods(d.data))
       .catch(() => {});
@@ -55,7 +54,7 @@ export default function CheckoutPage() {
     try {
       if (selectedPayment !== 'cash') {
         // Create order first, then redirect to payment
-        const orderRes = await fetch(`${API}/orders`, {
+        const orderRes = await fetch(API_ENDPOINTS.ORDERS, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             customer_name: orderInfo.customerName,
@@ -79,8 +78,8 @@ export default function CheckoutPage() {
         const orderId = orderData.data?.order_id || orderData.data?.order?.order_id;
 
         // Then create payment
-        const endpoint = selectedPayment === 'momo' ? '/payment/momo/create' : '/payment/zalopay/create';
-        const res = await fetch(`${API}${endpoint}`, {
+        const paymentUrl = selectedPayment === 'momo' ? API_ENDPOINTS.PAYMENT_MOMO_CREATE : API_ENDPOINTS.PAYMENT_ZALOPAY_CREATE;
+        const res = await fetch(paymentUrl, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount: total, orderInfo: `Thanh toan don #${orderId}`, orderId, items: cart }),
         });
@@ -96,7 +95,7 @@ export default function CheckoutPage() {
         }
       } else {
         // Cash: create order directly
-        const res = await fetch(`${API}/orders`, {
+        const res = await fetch(API_ENDPOINTS.ORDERS, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             customer_name: orderInfo.customerName,

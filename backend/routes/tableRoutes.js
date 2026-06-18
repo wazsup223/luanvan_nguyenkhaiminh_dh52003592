@@ -5,9 +5,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // GET /api/tables - Get all tables
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { branch_id, status } = req.query;
     const where = {};
@@ -26,7 +29,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/tables/:id - Get single table
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const table = await db.Table.findByPk(req.params.id, {
       include: [
@@ -34,7 +37,7 @@ router.get('/:id', async (req, res) => {
         {
           model: db.Order,
           as: 'orders',
-          where: { status: { $in: ['pending', 'confirmed', 'preparing', 'ready'] } },
+          where: { status: { [Op.in]: ['pending', 'confirmed', 'preparing', 'ready'] } },
           required: false,
           limit: 5,
           order: [['created_at', 'DESC']],
@@ -49,7 +52,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // GET /api/tables/branch/:branchId/qr - Get QR data for branch tables
-router.get('/branch/:branchId/qr', async (req, res) => {
+router.get('/branch/:branchId/qr', optionalAuth, async (req, res) => {
   try {
     const tables = await db.Table.findAll({
       where: { branch_id: req.params.branchId },
@@ -68,7 +71,7 @@ router.get('/branch/:branchId/qr', async (req, res) => {
 });
 
 // GET /api/tables/:id/join - Join table via QR (no auth needed)
-router.get('/:id/join', async (req, res) => {
+router.get('/:id/join', optionalAuth, async (req, res) => {
   try {
     const table = await db.Table.findByPk(req.params.id, {
       include: [
@@ -92,7 +95,7 @@ router.get('/:id/join', async (req, res) => {
 });
 
 // POST /api/tables - Create new table
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, table_number, capacity } = req.body;
     if (!branch_id || !table_number) {
@@ -109,7 +112,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/tables/:id - Update table
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { table_number, capacity, status } = req.body;
     const table = await db.Table.findByPk(req.params.id);
@@ -122,7 +125,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // PUT /api/tables/:id/status - Quick update status
-router.put('/:id/status', async (req, res) => {
+router.put('/:id/status', authenticate, requireRoles('Waiter', 'Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { status } = req.body;
     const valid = ['available', 'occupied', 'reserved'];
@@ -139,7 +142,7 @@ router.put('/:id/status', async (req, res) => {
 });
 
 // DELETE /api/tables/:id - Delete table
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const table = await db.Table.findByPk(req.params.id);
     if (!table) return res.status(404).json({ success: false, message: 'Không tìm thấy bàn' });
@@ -155,7 +158,7 @@ router.delete('/:id', async (req, res) => {
 
 // ===== Branch Hours (F06) =====
 // GET /api/tables/hours/:branchId - Get operating hours
-router.get('/hours/:branchId', async (req, res) => {
+router.get('/hours/:branchId', optionalAuth, async (req, res) => {
   try {
     const hours = await db.BranchHours.findAll({
       where: { branch_id: req.params.branchId },
@@ -168,7 +171,7 @@ router.get('/hours/:branchId', async (req, res) => {
 });
 
 // PUT /api/tables/hours/:branchId - Update operating hours
-router.put('/hours/:branchId', async (req, res) => {
+router.put('/hours/:branchId', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { hours } = req.body; // Array of { day_of_week, open_time, close_time, is_closed }
     for (const h of hours) {

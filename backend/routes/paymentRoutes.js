@@ -10,6 +10,8 @@ const paymentConfig = require('../config/payment');
 
 // Import models
 const db = require('../models');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // HELPER FUNCTIONS
@@ -60,7 +62,7 @@ function verifyZaloPayCallback(data, expectedSignature) {
 // =============================================
 
 // POST /api/payment/momo/create - Tạo thanh toán MoMo
-router.post('/momo/create', async (req, res) => {
+router.post('/momo/create', authenticate, requireRoles('Customer', 'Cashier', 'Waiter'), async (req, res) => {
   try {
     const { orderId, amount, orderInfo, branchId, items, deliveryAddress, deliveryFee } = req.body;
 
@@ -218,7 +220,7 @@ router.post('/momo/callback', async (req, res) => {
 });
 
 // POST /api/payment/momo/query - Query MoMo transaction status
-router.post('/momo/query', async (req, res) => {
+router.post('/momo/query', authenticate, requireRoles('Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { orderId, requestId } = req.body;
 
@@ -264,7 +266,7 @@ router.post('/momo/query', async (req, res) => {
 // =============================================
 
 // POST /api/payment/zalopay/create - Tạo thanh toán ZaloPay
-router.post('/zalopay/create', async (req, res) => {
+router.post('/zalopay/create', authenticate, requireRoles('Customer', 'Cashier', 'Waiter'), async (req, res) => {
   try {
     const { orderId, amount, orderInfo, branchId, items } = req.body;
 
@@ -399,7 +401,7 @@ router.post('/zalopay/callback', async (req, res) => {
 });
 
 // POST /api/payment/zalopay/query - Query ZaloPay transaction status
-router.post('/zalopay/query', async (req, res) => {
+router.post('/zalopay/query', authenticate, requireRoles('Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { appTransId } = req.body;
 
@@ -443,7 +445,7 @@ router.post('/zalopay/query', async (req, res) => {
 // =============================================
 
 // GET /api/payment/methods - Danh sách phương thức thanh toán
-router.get('/methods', (req, res) => {
+router.get('/methods', optionalAuth, (req, res) => {
   const methods = [
     {
       id: 'cash',

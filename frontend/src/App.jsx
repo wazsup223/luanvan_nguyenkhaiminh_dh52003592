@@ -3,6 +3,7 @@ import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminDashboard from './pages/AdminDashboard';
+import EmployeeManagement from './pages/EmployeeManagement';
 import KitchenDisplay from './pages/KitchenDisplay';
 import PrintBill from './pages/PrintBill';
 import OrderTracking from './pages/OrderTracking';
@@ -12,6 +13,7 @@ import ReviewPage from './pages/ReviewPage';
 import ReconciliationPage from './pages/ReconciliationPage';
 import TableManagement from './pages/TableManagement';
 import MenuPage from './pages/MenuPage';
+import RecommendationsPage from './pages/RecommendationsPage';
 import './index.css';
 
 // ─── Auth Helpers ────────────────────────────────────────
@@ -143,6 +145,7 @@ function App() {
                 <Link to="/"                    className="text-sm font-semibold text-gray-600 hover:text-red-600 transition">Trang chủ</Link>
                 <Link to="/menu"                className="text-sm font-semibold text-gray-600 hover:text-red-600 transition">Thực đơn</Link>
                 <Link to="/reviews"              className="text-sm font-semibold text-gray-600 hover:text-red-600 transition">⭐ Đánh giá</Link>
+                <Link to="/recommendations"    className="text-sm font-semibold text-gray-600 hover:text-red-600 transition">🎯 Gợi ý</Link>
                 <Link to="/checkout"            className="text-sm font-semibold text-gray-600 hover:text-red-600 transition flex items-center gap-1">
                   🛒 Giỏ hàng
                   {cartCount > 0 && (
@@ -263,6 +266,7 @@ function App() {
             <Route path="/print-bill/:id" element={<PrintBill />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/reviews" element={<ReviewPage />} />
+            <Route path="/recommendations" element={isLoggedIn() ? <RecommendationsPage /> : <Navigate to="/login" replace />} />
             <Route path="/reconciliation" element={<RequireAdmin><ReconciliationPage /></RequireAdmin>} />
             <Route path="/tables" element={<RequireAdmin><TableManagement /></RequireAdmin>} />
             {/* Auth routes – redirect if already logged in */}
@@ -270,6 +274,9 @@ function App() {
             <Route path="/register" element={<RedirectIfAuth><AuthPage /></RedirectIfAuth>} />
             <Route path="/auth"      element={<RedirectIfAuth><AuthPage /></RedirectIfAuth>} />
             {/* Protected: admin only */}
+            <Route path="/admin/employees" element={
+              <RequireAdmin><EmployeeManagement /></RequireAdmin>
+            } />
             <Route path="/admin" element={
               <RequireAdmin><AdminDashboard user={user} /></RequireAdmin>
             } />

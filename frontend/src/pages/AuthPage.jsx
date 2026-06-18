@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-const API = 'http://localhost:3001/api';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ export default function AuthPage() {
     if (!form.username || !form.password) { setError('Vui lòng nhập tên đăng nhập và mật khẩu'); return; }
     try {
       setLoading(true);
-      const res = await fetch(`${API}/users/login`, {
+      const res = await fetch(API_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: form.username, password: form.password }),
@@ -53,7 +52,7 @@ export default function AuthPage() {
     if (form.password.length < 6) { setError('Mật khẩu phải có ít nhất 6 ký tự'); return; }
     try {
       setLoading(true);
-      const res = await fetch(`${API}/users/register`, {
+      const res = await fetch(API_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: form.username, password: form.password, email: form.email, full_name: form.full_name, phone: form.phone || null, role: 'Customer' }),

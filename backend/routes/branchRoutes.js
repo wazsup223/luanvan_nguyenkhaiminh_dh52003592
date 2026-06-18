@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const Branch = db.Branch;
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // GET /api/branches - Get all active branches
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const branches = await Branch.findAll({
       where: { is_active: true },
@@ -18,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/branches/:id - Get branch by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const branch = await Branch.findByPk(req.params.id);
     if (!branch) {
@@ -32,7 +34,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // GET /api/branches/:id/hours - Get branch operating hours
-router.get('/:id/hours', async (req, res) => {
+router.get('/:id/hours', optionalAuth, async (req, res) => {
   try {
     const branch = await Branch.findByPk(req.params.id);
     if (!branch) {
@@ -49,7 +51,7 @@ router.get('/:id/hours', async (req, res) => {
 });
 
 // POST /api/branches - Create new branch (Admin only)
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_name, address, phone } = req.body;
     
@@ -75,7 +77,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/branches/:id - Update branch (Admin/BranchManager)
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const branch = await Branch.findByPk(req.params.id);
     if (!branch) {
@@ -99,7 +101,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/branches/:id - Delete branch (Admin only)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const branch = await Branch.findByPk(req.params.id);
     if (!branch) {

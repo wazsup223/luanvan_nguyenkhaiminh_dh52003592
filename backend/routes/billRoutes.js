@@ -7,11 +7,13 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // GET /api/bills/:orderId - Lấy thông tin bill
 // =============================================
-router.get('/:orderId', async (req, res) => {
+router.get('/:orderId', authenticate, requireRoles('Customer', 'Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { orderId } = req.params;
     const { branchId } = req.query;
@@ -172,7 +174,7 @@ router.get('/:orderId', async (req, res) => {
 // =============================================
 // GET /api/bills/:orderId/print - In bill (trả về HTML để print)
 // =============================================
-router.get('/:orderId/print', async (req, res) => {
+router.get('/:orderId/print', authenticate, requireRoles('Customer', 'Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { orderId } = req.params;
     
@@ -341,7 +343,7 @@ router.get('/:orderId/print', async (req, res) => {
 // =============================================
 // GET /api/bills/:orderId/pdf - Tải bill dạng PDF
 // =============================================
-router.get('/:orderId/pdf', async (req, res) => {
+router.get('/:orderId/pdf', authenticate, requireRoles('Customer', 'Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { orderId } = req.params;
     
@@ -411,7 +413,7 @@ router.get('/:orderId/pdf', async (req, res) => {
 // =============================================
 // POST /api/bills/:orderId/email - Gửi bill qua email
 // =============================================
-router.post('/:orderId/email', async (req, res) => {
+router.post('/:orderId/email', authenticate, requireRoles('Customer', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { orderId } = req.params;
     const { email } = req.body;

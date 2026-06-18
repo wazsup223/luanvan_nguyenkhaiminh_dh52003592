@@ -6,8 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
-
-const API = 'http://localhost:3001';
+import { API_BASE } from '../config/api';
 
 export default function ReviewPage() {
   const { itemId } = useParams();
@@ -32,7 +31,7 @@ export default function ReviewPage() {
   const fetchMenuAndReviews = async () => {
     try {
       setLoading(true);
-      const menuRes = await fetch(`${API}/api/menu`);
+      const menuRes = await fetch(`${API_BASE}/api/menu`);
       const menuData = await menuRes.json();
       if (menuData.success) {
         setMenuItems(menuData.data);
@@ -51,7 +50,7 @@ export default function ReviewPage() {
 
   const fetchReviews = async (id) => {
     try {
-      const res = await fetch(`${API}/api/reviews/item/${id}`);
+      const res = await fetch(`${API_BASE}/api/reviews/item/${id}`);
       const data = await res.json();
       if (data.success) setReviews(data.data);
     } catch (err) {
@@ -76,7 +75,7 @@ export default function ReviewPage() {
     try {
       setSubmitting(true);
       setError('');
-      const res = await fetch(`${API}/api/reviews`, {
+      const res = await fetch(`${API_BASE}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

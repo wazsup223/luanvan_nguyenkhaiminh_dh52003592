@@ -62,12 +62,14 @@ const KitchenDisplay = () => {
     loadOrders();
     const interval = setInterval(loadOrders, 30000);
 
-    socketService.connect();
+    const userId = localStorage.getItem('fastfood_userId');
+    const branchId = localStorage.getItem('fastfood_branchId') || '1';
+    socketService.connect(userId, branchId);
     socketService.onNewOrder((order) => {
       setOrders(prev => [order, ...prev]);
       playSound();
     });
-    socketService.onOrderUpdate((data) => {
+    socketService.onOrderStatusChange((data) => {
       setOrders(prev => prev.map(o => o.order_id === data.order_id ? { ...o, ...data } : o));
     });
 
@@ -199,7 +201,7 @@ const KitchenDisplay = () => {
 
                     {/* Items */}
                     <div className="space-y-2 mb-4">
-                      {order.items?.slice(0, 4).map((item, idx) => (
+                      {order.order_items?.slice(0, 4).map((item, idx) => (
                         <div key={idx} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-gray-200">
                           <div className="flex items-center gap-2">
                             <span className="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
@@ -209,9 +211,9 @@ const KitchenDisplay = () => {
                           </div>
                         </div>
                       ))}
-                      {order.items?.length > 4 && (
+                      {order.order_items?.length > 4 && (
                         <div className="text-center text-sm text-gray-400">
-                          +{order.items.length - 4} món khác
+                          +{order.order_items.length - 4} món khác
                         </div>
                       )}
                     </div>

@@ -5,8 +5,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const API = 'http://localhost:3001';
+import { API_BASE } from '../config/api';
 
 export default function ReconciliationPage() {
   const navigate = useNavigate();
@@ -27,9 +26,9 @@ export default function ReconciliationPage() {
     try {
       setLoading(true);
       const [recRes, detRes, repRes] = await Promise.all([
-        fetch(`${API}/api/reconciliation`).then(r => r.json()),
-        fetch(`${API}/api/reconciliation/details`).then(r => r.json()),
-        fetch(`${API}/api/reconciliation/report`).then(r => r.json()),
+        fetch(`${API_BASE}/api/reconciliation`).then(r => r.json()),
+        fetch(`${API_BASE}/api/reconciliation/details`).then(r => r.json()),
+        fetch(`${API_BASE}/api/reconciliation/report`).then(r => r.json()),
       ]);
       if (recRes.success) setReconciliation(recRes.data);
       if (detRes.success) setDetails(detRes.data);
@@ -44,7 +43,7 @@ export default function ReconciliationPage() {
   const handleMarkReconciled = async (transactionId) => {
     try {
       setMarking(true);
-      const res = await fetch(`${API}/api/reconciliation/mark`, {
+      const res = await fetch(`${API_BASE}/api/reconciliation/mark`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transaction_id: transactionId })
@@ -67,7 +66,7 @@ export default function ReconciliationPage() {
   const handleRecordReconciliation = async () => {
     try {
       setMarking(true);
-      const res = await fetch(`${API}/api/reconciliation/record`, {
+      const res = await fetch(`${API_BASE}/api/reconciliation/record`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ branch_id: 1 })

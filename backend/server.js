@@ -55,6 +55,7 @@ const tableRoutes = require('./routes/tableRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const reconciliationRoutes = require('./routes/reconciliationRoutes');
 const billRoutes = require('./routes/billRoutes');
+const recommendationRoutes = require('./routes/recommendationRoutes');
 
 // Use routes
 app.use('/api/branches', branchRoutes);
@@ -69,6 +70,7 @@ app.use('/api/tables', tableRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/reconciliation', reconciliationRoutes);
 app.use('/api/bills', billRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 // =============================================
 // SOCKET.IO - REAL-TIME SUPPORT (F05)

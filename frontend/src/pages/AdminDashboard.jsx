@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import socketService from '../services/socketService';
+import { API_BASE } from '../config/api';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,7 +29,11 @@ ChartJS.register(
   Legend
 );
 
-const API_BASE = 'http://localhost:3001/api';
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('fastfood_token');
+  if (!token) return null;
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+};
 
 const AdminDashboard = ({ user }) => {
   const navigate = useNavigate();
@@ -39,26 +45,67 @@ const AdminDashboard = ({ user }) => {
   const [revenue, setRevenue] = useState([]);
   const [stats, setStats] = useState(null);
   const [cogsData, setCogsData] = useState(null);
+  const [expenseData, setExpenseData] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   // Load data on mount
   useEffect(() => {
     loadAllData();
-  }, []);
+
+    // Socket.io real-time connection
+    socketService.connect();
+
+    // Real-time order notifications
+    socketService.onNewOrder((data) => {
+      if (activeTab === 'orders' || activeTab === 'dashboard') {
+        loadAllData();
+      }
+      showToast(`🆕 Đơn mới #${data.data?.order_id || data.orderId} vừa được tạo!`, 'info');
+    });
+
+    // Real-time payment notifications
+    socketService.onPaymentReceived((data) => {
+      if (activeTab === 'orders' || activeTab === 'payments') {
+        loadAllData();
+      }
+      showToast(`💰 Thanh toán đơn #${data.data?.orderId} thành công!`, 'success');
+    });
+
+    // Real-time low stock alerts
+    socketService.onLowStockAlert((data) => {
+      showToast(`⚠️ Cảnh báo: ${data.data?.item_name || 'Nguyên liệu'} sắp hết hàng!`, 'warning');
+    });
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, [activeTab]);
 
   const loadAllData = async () => {
     setLoading(true);
     setError(null);
+    const headers = getAuthHeaders();
+    if (!headers) {
+      setError('Vui lòng đăng nhập');
+      setLoading(false);
+      return;
+    }
     try {
       const [ordersRes, inventoryRes, usersRes, promotionsRes, statsRes, reviewsRes] = await Promise.all([
-        fetch(`${API_BASE}/orders`).then(r => r.json()),
-        fetch(`${API_BASE}/inventory`).then(r => r.json()),
-        fetch(`${API_BASE}/users`).then(r => r.json()),
-        fetch(`${API_BASE}/promotions`).then(r => r.json()),
-        fetch(`${API_BASE}/orders/stats/summary`).then(r => r.json()),
-        fetch(`${API_BASE}/reviews`).then(r => r.json()),
+        fetch(`${API_BASE}/orders`, { headers }).then(r => r.json()),
+        fetch(`${API_BASE}/inventory`, { headers }).then(r => r.json()),
+        fetch(`${API_BASE}/users`, { headers }).then(r => r.json()),
+        fetch(`${API_BASE}/promotions`, { headers }).then(r => r.json()),
+        fetch(`${API_BASE}/orders/stats/summary`, { headers }).then(r => r.json()),
+        fetch(`${API_BASE}/reviews`, { headers }).then(r => r.json()),
       ]);
 
       if (ordersRes.success) setOrders(ordersRes.data);
@@ -69,14 +116,21 @@ const AdminDashboard = ({ user }) => {
       if (reviewsRes.success) setReviews(reviewsRes.data);
 
       // Load revenue data
-      const revenueRes = await fetch(`${API_BASE}/orders/stats/revenue?group_by=day`);
+      const revenueRes = await fetch(`${API_BASE}/orders/stats/revenue?group_by=day`, { headers });
       const revenueData = await revenueRes.json();
       if (revenueData.success) setRevenue(revenueData.data);
 
       // Load COGS data
-      const cogsRes = await fetch(`${API_BASE}/inventory/stats/cogs`);
+      const cogsRes = await fetch(`${API_BASE}/inventory/stats/cogs`, { headers });
       const cogsResult = await cogsRes.json();
       if (cogsResult.success) setCogsData(cogsResult.data);
+
+      // Load Expense/Profit data
+      try {
+        const expenseRes = await fetch(`${API_BASE}/expenses/stats/profit`, { headers });
+        const expenseResult = await expenseRes.json();
+        if (expenseResult.success) setExpenseData(expenseResult.data);
+      } catch (e) { console.warn('Expense API not available:', e); }
 
     } catch (err) {
       console.error('Error loading data:', err);
@@ -316,6 +370,7 @@ const AdminDashboard = ({ user }) => {
               { id: 'users', label: '👥 Nhân viên', icon: '👥' },
               { id: 'promotions', label: '🎁 Khuyến mãi', icon: '🎁' },
               { id: 'reviews', label: '⭐ Đánh giá', icon: '⭐' },
+              { id: 'finance', label: '💰 Tài chính', icon: '💰' },
               { id: 'reports', label: '📈 Báo cáo', icon: '📈' },
             ].map(tab => (
               <button
@@ -812,6 +867,108 @@ const AdminDashboard = ({ user }) => {
         )}
 
         {/* ============================================ */}
+        {/* FINANCE TAB - 💰 Tài chính */}
+        {/* ============================================ */}
+        {activeTab === 'finance' && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">💰 Tài chính</h2>
+
+            {/* COGS Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-blue-500">
+                <p className="text-sm text-gray-500">Revenue</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {cogsData ? parseInt(cogsData.total_revenue).toLocaleString('vi-VN') + 'đ' : '-'}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-red-500">
+                <p className="text-sm text-gray-500">COGS (Giá vốn)</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {cogsData ? parseInt(cogsData.total_cogs).toLocaleString('vi-VN') + 'đ' : '-'}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-green-500">
+                <p className="text-sm text-gray-500">Gross Profit</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {cogsData ? parseInt(cogsData.gross_profit).toLocaleString('vi-VN') + 'đ' : '-'}
+                </p>
+              </div>
+              <div className="bg-white rounded-xl shadow-md p-5 border-l-4 border-purple-500">
+                <p className="text-sm text-gray-500">Gross Margin %</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {cogsData ? cogsData.gross_margin + '%' : '-'}
+                </p>
+              </div>
+            </div>
+
+            {/* Revenue Bar Chart (div/CSS) */}
+            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+              <h3 className="text-lg font-semibold mb-4">📈 Doanh thu theo ngày</h3>
+              {revenue.length > 0 ? (
+                <div className="flex items-end gap-2 h-64">
+                  {revenue.slice(0, 14).map((r, idx) => {
+                    const maxRev = Math.max(...revenue.map(x => parseInt(x.revenue) || 0));
+                    const val = parseInt(r.revenue) || 0;
+                    const heightPct = maxRev > 0 ? (val / maxRev) * 100 : 0;
+                    return (
+                      <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group relative">
+                        <div
+                          className="w-full rounded-t-md transition-all hover:opacity-80"
+                          style={{
+                            height: `${heightPct}%`,
+                            background: 'linear-gradient(to top, #E4002B, #FFB81C)',
+                            minHeight: val > 0 ? '4px' : '0px'
+                          }}
+                        />
+                        <div className="absolute -top-8 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-10">
+                          {val.toLocaleString('vi-VN')}đ
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1 truncate w-full text-center">
+                          {r.date ? r.date.slice(5, 10) : idx + 1}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-gray-400">Chưa có dữ liệu doanh thu</div>
+              )}
+            </div>
+
+            {/* Expense Summary */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <h3 className="text-lg font-semibold mb-4">💼 Chi phí & Lợi nhuận</h3>
+              {expenseData ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 rounded-lg p-4 text-center">
+                    <p className="text-sm text-blue-600">Revenue</p>
+                    <p className="text-2xl font-bold text-blue-800">
+                      {(parseInt(expenseData.total_revenue) || 0).toLocaleString('vi-VN')}đ
+                    </p>
+                  </div>
+                  <div className="bg-red-50 rounded-lg p-4 text-center">
+                    <p className="text-sm text-red-600">Expenses</p>
+                    <p className="text-2xl font-bold text-red-800">
+                      {(parseInt(expenseData.total_expenses) || 0).toLocaleString('vi-VN')}đ
+                    </p>
+                  </div>
+                  <div className={`rounded-lg p-4 text-center ${
+                    (parseInt(expenseData.net_profit) || 0) >= 0 ? 'bg-green-50' : 'bg-red-50'
+                  }`}>
+                    <p className={`text-sm ${(parseInt(expenseData.net_profit) || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>Net Profit</p>
+                    <p className={`text-2xl font-bold ${(parseInt(expenseData.net_profit) || 0) >= 0 ? 'text-green-800' : 'text-red-800'}`}>
+                      {(parseInt(expenseData.net_profit) || 0).toLocaleString('vi-VN')}đ
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">Chưa có dữ liệu chi phí</div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ============================================ */}
         {/* PROMOTIONS TAB */}
         {/* ============================================ */}
         {activeTab === 'reviews' && (
@@ -1070,6 +1227,17 @@ const AdminDashboard = ({ user }) => {
           </div>
         )}
       </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-xl shadow-2xl font-bold text-white max-w-sm animate-pulse ${
+          toast.type === 'success' ? 'bg-green-600' :
+          toast.type === 'warning' ? 'bg-yellow-500 text-gray-900' :
+          'bg-blue-600'
+        }`}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 };

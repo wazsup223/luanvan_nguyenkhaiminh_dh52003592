@@ -7,6 +7,8 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../models');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // HELPER: Check if user has permission
@@ -20,7 +22,7 @@ function hasPermission(user, requiredRoles) {
 // =============================================
 
 // GET /api/users - Get all users
-router.get('/', async (req, res) => {
+router.get('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, role, is_active } = req.query;
 
@@ -44,7 +46,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/users/:id - Get single user
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -65,7 +67,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/users - Create new user
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, username, password, email, phone, full_name, role } = req.body;
 
@@ -113,7 +115,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/users/:id - Update user
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { email, phone, full_name, role, branch_id, is_active } = req.body;
@@ -151,7 +153,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // PUT /api/users/:id/password - Change password
-router.put('/:id/password', async (req, res) => {
+router.put('/:id/password', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { current_password, new_password } = req.body;
@@ -181,7 +183,7 @@ router.put('/:id/password', async (req, res) => {
 });
 
 // DELETE /api/users/:id - Delete user
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -324,7 +326,7 @@ router.post('/register', async (req, res) => {
 // =============================================
 
 // GET /api/users/staff/:branchId - Get staff by branch
-router.get('/staff/:branchId', async (req, res) => {
+router.get('/staff/:branchId', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branchId } = req.params;
     const { role } = req.query;
@@ -350,7 +352,7 @@ router.get('/staff/:branchId', async (req, res) => {
 // =============================================
 
 // GET /api/users/roles - Get available roles
-router.get('/roles', (req, res) => {
+router.get('/roles', optionalAuth, (req, res) => {
   const roles = [
     { id: 'Admin', name: 'Quản trị viên', description: 'Toàn quyền hệ thống' },
     { id: 'BranchManager', name: 'Quản lý chi nhánh', description: 'Quản lý 1 chi nhánh' },

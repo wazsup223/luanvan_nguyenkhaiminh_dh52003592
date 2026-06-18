@@ -5,17 +5,20 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // GET /api/expenses - List expenses
-router.get('/', async (req, res) => {
+router.get('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, from_date, to_date } = req.query;
     const where = {};
     if (branch_id) where.branch_id = branch_id;
     if (from_date || to_date) {
       where.expense_date = {};
-      if (from_date) where.expense_date.$gte = from_date;
-      if (to_date) where.expense_date.$lte = to_date;
+      if (from_date) where.expense_date[Op.gte] = from_date;
+      if (to_date) where.expense_date[Op.lte] = to_date;
     }
 
     const expenses = await db.Expense.findAll({
@@ -33,7 +36,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/expenses/stats/profit - Profit report (F10)
-router.get('/stats/profit', async (req, res) => {
+router.get('/stats/profit', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, from_date, to_date } = req.query;
 
@@ -42,8 +45,8 @@ router.get('/stats/profit', async (req, res) => {
     if (branch_id) orderWhere.branch_id = branch_id;
     if (from_date || to_date) {
       orderWhere.created_at = {};
-      if (from_date) orderWhere.created_at.$gte = new Date(from_date);
-      if (to_date) orderWhere.created_at.$lte = new Date(to_date + ' 23:59:59');
+      if (from_date) orderWhere.created_at[Op.gte] = new Date(from_date);
+      if (to_date) orderWhere.created_at[Op.lte] = new Date(to_date + ' 23:59:59');
     }
     const orders = await db.Order.findAll({
       where: orderWhere,
@@ -57,8 +60,8 @@ router.get('/stats/profit', async (req, res) => {
     if (branch_id) expWhere.branch_id = branch_id;
     if (from_date || to_date) {
       expWhere.expense_date = {};
-      if (from_date) expWhere.expense_date.$gte = from_date;
-      if (to_date) expWhere.expense_date.$lte = to_date;
+      if (from_date) expWhere.expense_date[Op.gte] = from_date;
+      if (to_date) expWhere.expense_date[Op.lte] = to_date;
     }
     const expenses = await db.Expense.findAll({ where: expWhere, attributes: ['amount', 'description'] });
     const totalExpenses = expenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
@@ -90,7 +93,7 @@ router.get('/stats/profit', async (req, res) => {
 });
 
 // GET /api/expenses/categories - List unique expense descriptions as categories
-router.get('/categories', async (req, res) => {
+router.get('/categories', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     // Get distinct descriptions as categories
     const expenses = await db.Expense.findAll({
@@ -109,7 +112,7 @@ router.get('/categories', async (req, res) => {
 });
 
 // POST /api/expenses - Add expense
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, amount, expense_date, description, user_id } = req.body;
     if (!branch_id || !amount || !expense_date) {
@@ -129,7 +132,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE /api/expenses/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const expense = await db.Expense.findByPk(req.params.id);
     if (!expense) return res.status(404).json({ success: false, message: 'Không tìm thấy chi phí' });

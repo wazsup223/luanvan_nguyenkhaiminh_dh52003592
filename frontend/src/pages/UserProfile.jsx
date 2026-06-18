@@ -7,8 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const API = 'http://localhost:3001/api';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function UserProfile() {
   const navigate = useNavigate();
@@ -45,7 +44,7 @@ export default function UserProfile() {
     });
 
     // Fetch latest data from server
-    fetch(`${API}/users/${userId}`)
+    fetch(`${API_ENDPOINTS.user}/${userId}`)
       .then(r => r.json())
       .then(data => {
         if (data.success) {
@@ -73,7 +72,7 @@ export default function UserProfile() {
     
     setSaving(true);
     try {
-      const res = await fetch(`${API}/users/${userId}`, {
+      const res = await fetch(`${API_ENDPOINTS.user}/${userId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

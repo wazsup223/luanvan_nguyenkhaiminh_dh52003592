@@ -5,13 +5,16 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // HELPER: Calculate low stock items
 // =============================================
 async function getLowStockAlerts(branchId = null) {
   const where = {
-    quantity: { $lte: db.sequelize.col('min_threshold') }
+    quantity: { [Op.lte]: db.sequelize.col('min_threshold') }
   };
   if (branchId) where.branch_id = branchId;
 
@@ -29,14 +32,14 @@ async function getLowStockAlerts(branchId = null) {
 // =============================================
 
 // GET /api/inventory - Get all inventory items
-router.get('/', async (req, res) => {
+router.get('/', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier', 'Kitchen'), async (req, res) => {
   try {
     const { branch_id, low_stock_only } = req.query;
 
     const where = {};
     if (branch_id) where.branch_id = branch_id;
     if (low_stock_only === 'true') {
-      where.quantity = { $lte: db.sequelize.col('min_threshold') };
+      where.quantity = { [Op.lte]: db.sequelize.col('min_threshold') };
     }
 
     const items = await db.InventoryItem.findAll({
@@ -53,7 +56,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/inventory/:id - Get single inventory item
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier', 'Kitchen'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -78,7 +81,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/inventory - Add new inventory item
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, item_name, quantity, unit, min_threshold, cost_price, supplier_name, supplier_phone, last_import_date } = req.body;
 
@@ -110,7 +113,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/inventory/:id - Update inventory item
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -134,7 +137,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // POST /api/inventory/:id/import - Import more stock
-router.post('/:id/import', async (req, res) => {
+router.post('/:id/import', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity, import_date } = req.body;
@@ -166,7 +169,7 @@ router.post('/:id/import', async (req, res) => {
 });
 
 // DELETE /api/inventory/:id - Delete inventory item
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -189,7 +192,7 @@ router.delete('/:id', async (req, res) => {
 // =============================================
 
 // GET /api/inventory/cogs - Get COGS report
-router.get('/stats/cogs', async (req, res) => {
+router.get('/stats/cogs', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { branch_id, from_date, to_date } = req.query;
 
@@ -197,8 +200,8 @@ router.get('/stats/cogs', async (req, res) => {
     if (branch_id) where.branch_id = branch_id;
     if (from_date || to_date) {
       where.created_at = {};
-      if (from_date) where.created_at.$gte = new Date(from_date);
-      if (to_date) where.created_at.$lte = new Date(to_date);
+      if (from_date) where.created_at[Op.gte] = new Date(from_date);
+      if (to_date) where.created_at[Op.lte] = new Date(to_date);
     }
 
     // Get orders with items
@@ -279,12 +282,12 @@ router.get('/stats/cogs', async (req, res) => {
 // =============================================
 
 // GET /api/inventory/alerts - Get low stock alerts
-router.get('/stats/alerts', async (req, res) => {
+router.get('/stats/alerts', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { branch_id } = req.query;
 
     const where = {
-      quantity: { $lte: db.sequelize.col('InventoryItems.min_threshold') }
+      quantity: { [Op.lte]: db.sequelize.col('InventoryItems.min_threshold') }
     };
     if (branch_id) where.branch_id = branch_id;
 
@@ -316,7 +319,7 @@ router.get('/stats/alerts', async (req, res) => {
 // =============================================
 
 // GET /api/inventory/mapping/:item_id - Get mapping for a menu item
-router.get('/mapping/:item_id', async (req, res) => {
+router.get('/mapping/:item_id', authenticate, requireRoles('Admin', 'BranchManager', 'Kitchen'), async (req, res) => {
   try {
     const { item_id } = req.params;
 
@@ -338,7 +341,7 @@ router.get('/mapping/:item_id', async (req, res) => {
 });
 
 // POST /api/inventory/mapping - Create menu-inventory mapping
-router.post('/mapping', async (req, res) => {
+router.post('/mapping', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { item_id, inventory_id, quantity_required, unit, note } = req.body;
 

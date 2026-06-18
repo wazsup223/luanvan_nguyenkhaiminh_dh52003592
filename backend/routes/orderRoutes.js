@@ -8,6 +8,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // =============================================
 // HELPER: Auto-deduct inventory when order is confirmed (F07)
@@ -117,7 +120,7 @@ async function restoreInventory(orderId) {
 // =============================================
 // GET /api/orders - Get all orders (with filters)
 // =============================================
-router.get('/', async (req, res) => {
+router.get('/', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier', 'Kitchen', 'Waiter'), async (req, res) => {
   try {
     const { branch_id, status, user_id, from_date, to_date, order_type, limit = 50, offset = 0 } = req.query;
 
@@ -169,12 +172,12 @@ router.get('/', async (req, res) => {
 // =============================================
 // GET /api/orders/kitchen - Orders for Kitchen display
 // =============================================
-router.get('/kitchen', async (req, res) => {
+router.get('/kitchen', authenticate, requireRoles('Kitchen', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id } = req.query;
 
     const where = {
-      status: ['pending', 'confirmed', 'preparing']
+      status: { [Op.in]: ['pending', 'confirmed', 'preparing'] }
     };
 
     const orders = await db.Order.findAll({
@@ -200,7 +203,7 @@ router.get('/kitchen', async (req, res) => {
 // =============================================
 // GET /api/orders/:id - Get order by ID
 // =============================================
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -235,7 +238,7 @@ router.get('/:id', async (req, res) => {
 // =============================================
 // POST /api/orders - Create new order
 // =============================================
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Customer', 'Waiter', 'Cashier', 'BranchManager', 'Admin'), async (req, res) => {
   try {
     const {
       branch_id, user_id, staff_id, table_id,
@@ -378,7 +381,7 @@ router.post('/', async (req, res) => {
 // =============================================
 // PUT /api/orders/:id/status - Update order status
 // =============================================
-router.put('/:id/status', async (req, res) => {
+router.put('/:id/status', authenticate, requireRoles('Kitchen', 'Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
     const { status, staff_id } = req.body;
@@ -452,7 +455,7 @@ router.put('/:id/status', async (req, res) => {
 // =============================================
 // PUT /api/orders/:id/payment - Update payment status
 // =============================================
-router.put('/:id/payment', async (req, res) => {
+router.put('/:id/payment', authenticate, requireRoles('Cashier', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { id } = req.params;
     const { payment_status, payment_method, transaction_id } = req.body;
@@ -504,7 +507,7 @@ router.put('/:id/payment', async (req, res) => {
 // =============================================
 // PUT /api/orders/:id/cancel - Cancel order
 // =============================================
-router.put('/:id/cancel', async (req, res) => {
+router.put('/:id/cancel', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
@@ -553,7 +556,7 @@ router.put('/:id/cancel', async (req, res) => {
 // =============================================
 // GET /api/orders/stats/summary - Order statistics
 // =============================================
-router.get('/stats/summary', async (req, res) => {
+router.get('/stats/summary', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, period = 'today' } = req.query;
 
@@ -618,7 +621,7 @@ router.get('/stats/summary', async (req, res) => {
 // =============================================
 // GET /api/orders/stats/revenue - Revenue report
 // =============================================
-router.get('/stats/revenue', async (req, res) => {
+router.get('/stats/revenue', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { branch_id, from_date, to_date, group_by = 'day' } = req.query;
 

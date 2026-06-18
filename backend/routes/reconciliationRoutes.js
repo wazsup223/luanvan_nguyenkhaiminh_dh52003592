@@ -5,9 +5,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // GET /api/reconciliation - Daily reconciliation summary
-router.get('/', async (req, res) => {
+router.get('/', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { date, branch_id } = req.query;
     const targetDate = date || new Date().toISOString().split('T')[0];
@@ -18,7 +21,7 @@ router.get('/', async (req, res) => {
         where: { branch_id, payment_status: 'paid' },
         attributes: ['order_id'],
       }).then(orders => orders.map(o => o.order_id));
-      where.order_id = { $in: orderIds };
+      where.order_id = { [Op.in]: orderIds };
     }
 
     const transactions = await db.PaymentTransaction.findAll({
@@ -59,7 +62,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/reconciliation/details - Detailed reconciliation
-router.get('/details', async (req, res) => {
+router.get('/details', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { date, branch_id, payment_method } = req.query;
     const targetDate = date || new Date().toISOString().split('T')[0];
@@ -67,7 +70,7 @@ router.get('/details', async (req, res) => {
     // Get all orders paid on date
     const orderWhere = {
       payment_status: 'paid',
-      created_at: { $gte: new Date(targetDate + ' 00:00:00'), $lte: new Date(targetDate + ' 23:59:59') },
+      created_at: { [Op.gte]: new Date(targetDate + ' 00:00:00'), [Op.lte]: new Date(targetDate + ' 23:59:59') },
     };
     if (branch_id) orderWhere.branch_id = branch_id;
 
@@ -98,7 +101,7 @@ router.get('/details', async (req, res) => {
 });
 
 // POST /api/reconciliation/mark - Mark transactions as reconciled
-router.post('/mark', async (req, res) => {
+router.post('/mark', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { transaction_ids } = req.body;
     if (!transaction_ids || !Array.isArray(transaction_ids)) {
@@ -106,7 +109,7 @@ router.post('/mark', async (req, res) => {
     }
     await db.PaymentTransaction.update(
       { reconciled: true },
-      { where: { transaction_id: { $in: transaction_ids } } }
+      { where: { transaction_id: { [Op.in]: transaction_ids } } }
     );
     res.json({ success: true, message: `Đã đối soát ${transaction_ids.length} giao dịch` });
   } catch (error) {
@@ -115,7 +118,7 @@ router.post('/mark', async (req, res) => {
 });
 
 // POST /api/reconciliation/record - Record external payment (MoMo/ZaloPay callback simulation)
-router.post('/record', async (req, res) => {
+router.post('/record', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { order_id, payment_method, external_transaction_id, amount, status, callback_payload } = req.body;
     if (!payment_method || !amount) {
@@ -138,7 +141,7 @@ router.post('/record', async (req, res) => {
 });
 
 // GET /api/reconciliation/report - Monthly report
-router.get('/report', async (req, res) => {
+router.get('/report', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
   try {
     const { month, year, branch_id } = req.query;
     const m = parseInt(month) || new Date().getMonth() + 1;
@@ -148,11 +151,11 @@ router.get('/report', async (req, res) => {
 
     const where = {
       status: 'success',
-      created_at: { $gte: new Date(startDate), $lte: new Date(endDate + ' 23:59:59') },
+      created_at: { [Op.gte]: new Date(startDate), [Op.lte]: new Date(endDate + ' 23:59:59') },
     };
     if (branch_id) {
       const orders = await db.Order.findAll({ where: { branch_id }, attributes: ['order_id'] });
-      where.order_id = { $in: orders.map(o => o.order_id) };
+      where.order_id = { [Op.in]: orders.map(o => o.order_id) };
     }
 
     const transactions = await db.PaymentTransaction.findAll({ where });

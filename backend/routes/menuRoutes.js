@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const { Op } = require('sequelize');
 const MenuItem = db.MenuItem;
 const Category = db.Category;
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const { requireRoles } = require('../middleware/roleCheck');
 
 // GET /api/menu - Get all menu items (with filters)
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { 
       category_id, 
@@ -61,7 +64,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/menu/featured - Get featured items
-router.get('/featured', async (req, res) => {
+router.get('/featured', optionalAuth, async (req, res) => {
   try {
     const featuredItems = await MenuItem.findAll({
       where: { 
@@ -84,7 +87,7 @@ router.get('/featured', async (req, res) => {
 });
 
 // GET /api/menu/categories - Get all categories
-router.get('/categories', async (req, res) => {
+router.get('/categories', optionalAuth, async (req, res) => {
   try {
     const categories = await Category.findAll({
       attributes: ['category_id', 'category_name'],
@@ -98,7 +101,7 @@ router.get('/categories', async (req, res) => {
 });
 
 // GET /api/menu/category/:category_id - Get items by category
-router.get('/category/:category_id', async (req, res) => {
+router.get('/category/:category_id', optionalAuth, async (req, res) => {
   try {
     const items = await MenuItem.findAll({
       where: { 
@@ -119,7 +122,7 @@ router.get('/category/:category_id', async (req, res) => {
 });
 
 // GET /api/menu/:id - Get menu item by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const item = await MenuItem.findByPk(req.params.id, {
       include: [{
@@ -140,7 +143,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/menu - Create new menu item (Admin/BranchManager)
-router.post('/', async (req, res) => {
+router.post('/', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const { 
       category_id, 
@@ -181,7 +184,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/menu/:id - Update menu item (Admin/BranchManager)
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const item = await MenuItem.findByPk(req.params.id);
     if (!item) {
@@ -220,7 +223,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/menu/:id - Delete menu item (Admin only)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, requireRoles('Admin', 'BranchManager'), async (req, res) => {
   try {
     const item = await MenuItem.findByPk(req.params.id);
     if (!item) {

@@ -5,8 +5,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const API = 'http://localhost:3001';
+import { API_BASE } from '../config/api';
 
 export default function TableManagement() {
   const navigate = useNavigate();
@@ -30,8 +29,8 @@ export default function TableManagement() {
     try {
       setLoading(true);
       const [tRes, bRes] = await Promise.all([
-        fetch(`${API}/api/tables`).then(r => r.json()),
-        fetch(`${API}/api/branches`).then(r => r.json()),
+        fetch(`${API_BASE}/api/tables`).then(r => r.json()),
+        fetch(`${API_BASE}/api/branches`).then(r => r.json()),
       ]);
       if (tRes.success) setTables(tRes.data);
       if (bRes.success) {
@@ -49,7 +48,7 @@ export default function TableManagement() {
     try {
       setUpdating(tableId);
       setError('');
-      const res = await fetch(`${API}/api/tables/${tableId}/status`, {
+      const res = await fetch(`${API_BASE}/api/tables/${tableId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
@@ -74,7 +73,7 @@ export default function TableManagement() {
     if (!newTable.table_number.trim()) { setError('Nhập số bàn'); return; }
     try {
       setError('');
-      const res = await fetch(`${API}/api/tables`, {
+      const res = await fetch(`${API_BASE}/api/tables`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTable)
@@ -97,7 +96,7 @@ export default function TableManagement() {
   const handleDeleteTable = async (tableId) => {
     if (!confirm('Xóa bàn này?')) return;
     try {
-      const res = await fetch(`${API}/api/tables/${tableId}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/api/tables/${tableId}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setTables(prev => prev.filter(t => t.table_id !== tableId));

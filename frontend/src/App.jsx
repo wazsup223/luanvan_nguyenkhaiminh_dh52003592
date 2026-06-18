@@ -14,6 +14,7 @@ import ReconciliationPage from './pages/ReconciliationPage';
 import TableManagement from './pages/TableManagement';
 import MenuPage from './pages/MenuPage';
 import RecommendationsPage from './pages/RecommendationsPage';
+import NotFound from './pages/NotFound';
 import './index.css';
 
 // ─── Auth Helpers ────────────────────────────────────────
@@ -284,6 +285,9 @@ function App() {
             <Route path="/kitchen" element={
               <RequireStaff><KitchenDisplay /></RequireStaff>
             } />
+            
+            {/* 404 Not Found - MUST BE LAST */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
 

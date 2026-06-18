@@ -109,7 +109,8 @@ const RecommendationsPage = () => {
   // =============================================
   const addToCart = async (item) => {
     try {
-      const cart = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
+      const cartStr = localStorage.getItem('fastfood_cart') || '[]';
+      const cart = JSON.parse(cartStr);
       const existing = cart.find(i => i.item_id === item.item_id);
       if (existing) {
         existing.quantity += 1;

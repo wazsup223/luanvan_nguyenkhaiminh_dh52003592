@@ -69,7 +69,13 @@ export default function ReviewPage() {
     if (!selectedItem) { setError('Vui lòng chọn món ăn'); return; }
     if (!comment.trim()) { setError('Vui lòng nhập nhận xét'); return; }
 
-    const user = JSON.parse(localStorage.getItem('fastfood_user') || 'null');
+    let user;
+    try {
+      user = JSON.parse(localStorage.getItem('fastfood_user') || 'null');
+    } catch {
+      user = null;
+      localStorage.removeItem('fastfood_user');
+    }
     if (!user) { setError('Vui lòng đăng nhập để đánh giá'); navigate('/login'); return; }
 
     try {

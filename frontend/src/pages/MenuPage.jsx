@@ -39,14 +39,25 @@ function MenuPage({ menuItems }) {
   };
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
-    setCart(saved);
+    try {
+      const saved = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
+      setCart(saved);
+    } catch {
+      localStorage.removeItem('fastfood_cart');
+      setCart([]);
+    }
     const cats = [...new Set(menuItems.map(i => i.category_name).filter(Boolean))];
     setCategories(['Tất cả', ...cats]);
   }, [menuItems]);
 
   const addToCart = (item) => {
-    const existing = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
+    let existing;
+    try {
+      existing = JSON.parse(localStorage.getItem('fastfood_cart') || '[]');
+    } catch {
+      existing = [];
+      localStorage.removeItem('fastfood_cart');
+    }
     const idx = existing.findIndex(i => i.item_id === item.item_id);
     const quantity = idx >= 0 ? existing[idx].quantity + 1 : 1;
     

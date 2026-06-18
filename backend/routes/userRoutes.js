@@ -3,12 +3,32 @@
 // =============================================
 
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../models');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { requireRoles } = require('../middleware/roleCheck');
+
+// =============================================
+// RATE LIMITING for Auth Endpoints
+// =============================================
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts
+  message: { error: 'Quá nhiều lần thử đăng nhập, vui lòng thử lại sau 15 phút' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // 3 accounts per hour per IP
+  message: { error: 'Quá nhiều yêu cầu đăng ký, vui lòng thử lại sau 1 giờ' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // =============================================
 // HELPER: Check if user has permission
@@ -265,7 +285,7 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /api/users/register - Register (for customers)
-router.post('/register', async (req, res) => {
+router.post('/register', registerLimiter, async (req, res) => {
   try {
     const { username, password, email, phone, full_name } = req.body;
 

@@ -34,7 +34,6 @@ const HomePage = () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Fetching data from API...');
         
         const [menuResult, branchResult] = await Promise.all([
           menuAPI.getFeatured(),
@@ -46,14 +45,12 @@ const HomePage = () => {
         
         if (menuResult.success) {
           setFeaturedItems(menuResult.data);
-          console.log('Featured items loaded:', menuResult.data.length);
         } else {
           console.error('Menu API returned success=false:', menuResult);
         }
         
         if (branchResult.success) {
           setBranches(branchResult.data);
-          console.log('Branches loaded:', branchResult.data.length);
         } else {
           console.error('Branch API returned success=false:', branchResult);
         }

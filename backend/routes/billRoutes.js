@@ -9,6 +9,7 @@ const router = express.Router();
 const db = require('../models');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { requireRoles } = require('../middleware/roleCheck');
+const { sendMail } = require('../config/mailer');
 
 // =============================================
 // GET /api/bills/:orderId - Lấy thông tin bill
@@ -413,6 +414,8 @@ router.get('/:orderId/pdf', authenticate, requireRoles('Customer', 'Cashier', 'A
 // =============================================
 // POST /api/bills/:orderId/email - Gửi bill qua email
 // =============================================
+// POST /api/bills/:orderId/email - Gửi hóa đơn qua email
+// =============================================
 router.post('/:orderId/email', authenticate, requireRoles('Customer', 'Admin', 'BranchManager'), async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -425,14 +428,80 @@ router.post('/:orderId/email', authenticate, requireRoles('Customer', 'Admin', '
       });
     }
 
-    // TODO: Implement email sending
-    // const nodemailer = require('nodemailer');
-    // const transporter = nodemailer.createTransport({...});
-    // await transporter.sendMail({...});
+    // Lấy thông tin đơn hàng
+    const order = await db.Order.findOne({
+      where: { order_id: orderId },
+      include: [
+        { model: db.Branch, as: 'branch', attributes: ['branch_name', 'address', 'phone'] },
+        { model: db.User, as: 'customer', attributes: ['full_name'] },
+        {
+          model: db.OrderItem, as: 'order_items',
+          include: [
+            { model: db.MenuItem, as: 'menu_item', attributes: ['item_name'] }
+          ]
+        },
+        {
+          model: db.OrderPromotion, as: 'order_promotions',
+          include: [{ model: db.Promotion, as: 'promotion', attributes: ['promotion_name'] }]
+        }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+    }
+
+    // Build HTML bill
+    const itemsHtml = order.order_items.map(item =>
+      `<tr><td style=\"padding:8px;border-bottom:1px solid #eee;\">${item.menu_item?.item_name || 'Món ăn'}</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:center;\">${item.quantity}</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:right;\">${(item.unit_price || 0).toLocaleString('vi-VN')}₫</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:right;\">${((item.unit_price || 0) * (item.quantity || 0)).toLocaleString('vi-VN')}₫</td></tr>`
+    ).join('');
+
+    const html = `
+      <div style=\"max-width:600px;margin:0 auto;font-family:Arial,sans-serif;\">
+        <div style=\"background:#E4002B;padding:20px;text-align:center;\">
+          <h1 style=\"color:#fff;margin:0;font-size:24px;\">🍗 FAST FOOD KFC</h1>
+          <p style=\"color:#FFC107;margin:5px 0 0;\">Hóa đơn thanh toán</p>
+        </div>
+        <div style=\"padding:20px;background:#fff;\">
+          <p><strong>Khách hàng:</strong> ${order.customer?.full_name || 'Khách vãng lai'}</p>
+          <p><strong>Cửa hàng:</strong> ${order.branch?.branch_name || 'N/A'}</p>
+          <p><strong>Địa chỉ:</strong> ${order.branch?.address || ''}</p>
+          <p><strong>Ngày:</strong> ${new Date(order.order_date || order.createdAt).toLocaleDateString('vi-VN')}</p>
+          <hr style=\"border:none;border-top:2px solid #E4002B;margin:15px 0;\" />
+          <table style=\"width:100%;border-collapse:collapse;\">
+            <thead><tr style=\"background:#f5f5f5;\">
+              <th style=\"padding:8px;text-align:left;\">Món</th>
+              <th style=\"padding:8px;text-align:center;\">SL</th>
+              <th style=\"padding:8px;text-align:right;\">Đơn giá</th>
+              <th style=\"padding:8px;text-align:right;\">Thành tiền</th>
+            </tr></thead>
+            <tbody>${itemsHtml}</tbody>
+          </table>
+          <hr style=\"border:none;border-top:1px solid #ddd;margin:15px 0;\" />
+          <div style=\"text-align:right;font-size:16px;\">
+            <p style=\"margin:5px 0;\"><strong>Tổng:</strong> ${(order.total_amount || 0).toLocaleString('vi-VN')}₫</p>
+            <p style=\"margin:5px 0;color:#E4002B;\"><strong>Giảm giá:</strong> -${(order.discount_amount || 0).toLocaleString('vi-VN')}₫</p>
+            <p style=\"margin:5px 0;font-size:20px;color:#E4002B;\"><strong>Thanh toán:</strong> ${(order.final_amount || order.total_amount || 0).toLocaleString('vi-VN')}₫</p>
+          </div>
+          <p style=\"text-align:center;color:#999;font-size:12px;margin-top:20px;\">Cảm ơn quý khách!</p>
+        </div>
+      </div>
+    `;
+
+    const result = await sendMail({
+      to: email,
+      subject: `Hóa đơn #${orderId} - FastFood KFC`,
+      html,
+    });
+
+    if (!result.success) {
+      return res.status(500).json({ success: false, message: 'Gửi email thất bại', error: result.error });
+    }
 
     res.json({
       success: true,
-      message: `Hóa đơn #${orderId} đã được gửi đến ${email}`
+      message: `Hóa đơn #${orderId} đã được gửi đến ${email}`,
+      ...(result.previewUrl ? { previewUrl: result.previewUrl } : {}),
     });
 
   } catch (error) {

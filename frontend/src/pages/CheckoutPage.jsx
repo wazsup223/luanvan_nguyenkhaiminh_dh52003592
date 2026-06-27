@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Link } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
+
+// Auth token helper
+const getToken = () => localStorage.getItem('fastfood_token') || '';
+const authHeaders = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` });
 const FOOD_IMAGES = [
   'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop',
   'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=300&fit=crop',
@@ -28,6 +33,19 @@ export default function CheckoutPage() {
       .catch(() => {});
   }, []);
 
+  // Ghi nhận đơn hàng vào hệ thống cá nhân hóa sau khi order thành công
+  const recordOrderToRecommendations = async (orderId) => {
+    const userId = localStorage.getItem('fastfood_userId');
+    if (!userId) return;
+    try {
+      await fetch(API_ENDPOINTS.RECOMMENDATIONS_RECORD_ORDER, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ user_id: parseInt(userId), order_id: orderId })
+      });
+    } catch (e) { console.error('Record order error:', e); }
+  };
+
   const subtotal     = cart.reduce((s, i) => s + i.price * i.quantity, 0);
   const deliveryFee  = orderInfo.orderType === 'delivery' ? 15000 : 0;
   const total        = subtotal + deliveryFee;
@@ -47,15 +65,16 @@ export default function CheckoutPage() {
   };
 
   const handlePayment = async () => {
-    if (!cart.length)           { alert('Giỏ hàng trống!'); return; }
-    if (!orderInfo.customerName || !orderInfo.phone) { alert('Vui lòng nhập họ tên và số điện thoại!'); return; }
-    if (orderInfo.orderType === 'delivery' && !orderInfo.address) { alert('Vui lòng nhập địa chỉ giao hàng!'); return; }
+    if (!cart.length)           { alert('Giá» hÃ ng trá»‘ng!'); return; }
+    if (!orderInfo.customerName || !orderInfo.phone) { alert('Vui lÃ²ng nháº­p há» tÃªn vÃ  sá»‘ Ä‘iá»‡n thoáº¡i!'); return; }
+    if (orderInfo.orderType === 'delivery' && !orderInfo.address) { alert('Vui lÃ²ng nháº­p Ä‘á»‹a chá»‰ giao hÃ ng!'); return; }
     setLoading(true);
     try {
       if (selectedPayment !== 'cash') {
         // Create order first, then redirect to payment
         const orderRes = await fetch(API_ENDPOINTS.ORDERS, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          headers: authHeaders(),
           body: JSON.stringify({
             customer_name: orderInfo.customerName,
             customer_phone: orderInfo.phone,
@@ -71,7 +90,7 @@ export default function CheckoutPage() {
         });
         const orderData = await orderRes.json();
         if (!orderData.success) {
-          alert(orderData.message || 'Tạo đơn thất bại');
+          alert(orderData.message || 'Táº¡o Ä‘Æ¡n tháº¥t báº¡i');
           setLoading(false);
           return;
         }
@@ -80,7 +99,8 @@ export default function CheckoutPage() {
         // Then create payment
         const paymentUrl = selectedPayment === 'momo' ? API_ENDPOINTS.PAYMENT_MOMO_CREATE : API_ENDPOINTS.PAYMENT_ZALOPAY_CREATE;
         const res = await fetch(paymentUrl, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          headers: authHeaders(),
           body: JSON.stringify({ amount: total, orderInfo: `Thanh toan don #${orderId}`, orderId, items: cart }),
         });
         const data = await res.json();
@@ -90,13 +110,14 @@ export default function CheckoutPage() {
           window.dispatchEvent(new Event('cartUpdated'));
           setPaymentUrl(data.data?.order_url || data.data?.payUrl || '#');
         } else {
-          alert(data.message || 'Lỗi thanh toán');
+          alert(data.message || 'Lá»—i thanh toÃ¡n');
           setLoading(false);
         }
       } else {
         // Cash: create order directly
         const res = await fetch(API_ENDPOINTS.ORDERS, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          headers: authHeaders(),
           body: JSON.stringify({
             customer_name: orderInfo.customerName,
             customer_phone: orderInfo.phone,
@@ -112,15 +133,18 @@ export default function CheckoutPage() {
         });
         const data = await res.json();
         if (data.success) {
+          const createdOrderId = data.data?.order_id || data.data?.order?.order_id;
+          // Ghi nhận vào hệ thống cá nhân hóa
+          recordOrderToRecommendations(createdOrderId);
           localStorage.removeItem('fastfood_cart');
-          window.location.href = `/track/${data.data?.order_id || data.data?.order?.order_id || ''}`;
+          window.location.href = `/track/${createdOrderId || ''}`;
         } else {
-          alert(data.message || 'Tạo đơn thất bại');
+          alert(data.message || 'Táº¡o Ä‘Æ¡n tháº¥t báº¡i');
           setLoading(false);
         }
       }
     } catch (err) {
-      alert('Lỗi kết nối server!');
+      alert('Lá»—i káº¿t ná»‘i server!');
       setLoading(false);
     }
   };
@@ -131,19 +155,22 @@ export default function CheckoutPage() {
       <div className="max-w-lg mx-auto px-4 py-12">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 text-center">
           <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">{selectedPayment === 'momo' ? '💜' : '🔴'}</span>
+            <span className="text-3xl">{selectedPayment === 'momo' ? 'ðŸ’œ' : 'ðŸ”´'}</span>
           </div>
-          <h2 className="text-2xl font-black text-gray-900 mb-2">Quét mã QR để thanh toán</h2>
+          <h2 className="text-2xl font-black text-gray-900 mb-2">QuÃ©t mÃ£ QR Ä‘á»ƒ thanh toÃ¡n</h2>
           <p className="text-gray-500 mb-6">{selectedPayment === 'momo' ? 'MoMo' : 'ZaloPay'}</p>
 
           <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-            <p className="text-sm text-gray-500">Số tiền thanh toán</p>
-            <p className="text-3xl font-black text-red-600">{total.toLocaleString('vi-VN')}đ</p>
+            <p className="text-sm text-gray-500">Sá»‘ tiá»n thanh toÃ¡n</p>
+            <p className="text-3xl font-black text-red-600">{total.toLocaleString('vi-VN')}Ä‘</p>
           </div>
 
-          <div className="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-8 mb-6">
-            <p className="text-gray-400 text-sm">QR Code sẽ hiển thị tại đây</p>
-            <p className="text-xs text-gray-400 mt-2">{paymentUrl}</p>
+          <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-6 flex flex-col items-center">
+            {paymentUrl && paymentUrl !== '#' ? (
+              <QRCodeCanvas value={paymentUrl} size={220} level="M" includeMargin />
+            ) : (
+              <p className="text-gray-400 text-sm">QR Code sáº½ hiá»ƒn thá»‹ táº¡i Ä‘Ã¢y</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-3">
@@ -155,15 +182,15 @@ export default function CheckoutPage() {
                 if (pendingOrderId) window.location.href = `/track/${pendingOrderId}`;
                 else window.location.href = '/';
               }}
-              className="w-full py-3.5 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition">
-              ✅ Tôi đã thanh toán xong
+              className="w-full py-3.5 bg-yellow-500 text-white font-bold rounded-xl hover:bg-red-700 transition">
+              âœ… TÃ´i Ä‘Ã£ thanh toÃ¡n xong
             </button>
             <button onClick={() => { setPaymentUrl(null); setLoading(false); }}
               className="w-full py-3 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition">
-              ← Quay lại
+              â† Quay láº¡i
             </button>
           </div>
-          <p className="text-xs text-gray-400 mt-4">⚠️ Chế độ TEST – trong thực tế hãy quét mã QR để thanh toán.</p>
+          <p className="text-xs text-gray-400 mt-4">âš ï¸ Cháº¿ Ä‘á»™ TEST â€“ trong thá»±c táº¿ hÃ£y quÃ©t mÃ£ QR Ä‘á»ƒ thanh toÃ¡n.</p>
         </div>
       </div>
     );
@@ -172,11 +199,11 @@ export default function CheckoutPage() {
   if (!cart.length) {
     return (
       <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <div className="text-6xl mb-6">🛒</div>
-        <h2 className="text-2xl font-black text-gray-900 mb-3">Giỏ hàng trống</h2>
-        <p className="text-gray-500 mb-6">Bạn chưa chọn món ăn nào.</p>
+        <div className="text-6xl mb-6">ðŸ›’</div>
+        <h2 className="text-2xl font-black text-gray-900 mb-3">Giá» hÃ ng trá»‘ng</h2>
+        <p className="text-gray-500 mb-6">Báº¡n chÆ°a chá»n mÃ³n Äƒn nÃ o.</p>
         <Link to="/menu" className="inline-block px-8 py-3 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition shadow-lg shadow-red-200">
-          Xem thực đơn ngay
+          Xem thá»±c Ä‘Æ¡n ngay
         </Link>
       </div>
     );
@@ -185,18 +212,18 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-black text-gray-900 mb-2">
-        🛒 Thanh toán <span className="text-red-600">đơn hàng</span>
+        ðŸ›’ Thanh toÃ¡n <span className="text-red-600">Ä‘Æ¡n hÃ ng</span>
       </h1>
-      <p className="text-gray-400 mb-8">{cart.reduce((s, i) => s + i.quantity, 0)} món trong giỏ</p>
+      <p className="text-gray-400 mb-8">{cart.reduce((s, i) => s + i.quantity, 0)} mÃ³n trong giá»</p>
 
       <div className="grid lg:grid-cols-5 gap-8">
-        {/* ── LEFT: Cart + Info ───────────────────── */}
+        {/* â”€â”€ LEFT: Cart + Info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="lg:col-span-3 space-y-6">
 
           {/* Cart items */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-50">
-              <h2 className="font-bold text-gray-900">Giỏ hàng của bạn</h2>
+              <h2 className="font-bold text-gray-900">Giá» hÃ ng cá»§a báº¡n</h2>
             </div>
             <div className="divide-y divide-gray-50">
               {cart.map((item, i) => (
@@ -206,12 +233,12 @@ export default function CheckoutPage() {
                     onError={e => { e.target.src = FOOD_IMAGES[i % FOOD_IMAGES.length]; }} />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-sm text-gray-900 line-clamp-1">{item.item_name}</h3>
-                    <p className="text-red-600 text-sm font-semibold">{item.price.toLocaleString('vi-VN')}đ</p>
+                    <p className="text-red-600 text-sm font-semibold">{item.price.toLocaleString('vi-VN')}Ä‘</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button onClick={() => changeQty(item.item_id, item.quantity - 1)}
                       className="w-8 h-8 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-red-100 hover:text-red-600 transition flex items-center justify-center">
-                      −
+                      âˆ’
                     </button>
                     <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
                     <button onClick={() => changeQty(item.item_id, item.quantity + 1)}
@@ -220,48 +247,48 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                   <p className="font-black text-sm text-gray-900 w-20 text-right flex-shrink-0">
-                    {(item.price * item.quantity).toLocaleString('vi-VN')}đ
+                    {(item.price * item.quantity).toLocaleString('vi-VN')}Ä‘
                   </p>
                   <button onClick={() => removeItem(item.item_id)}
                     className="w-8 h-8 text-gray-300 hover:text-red-500 transition flex-shrink-0 flex items-center justify-center">
-                    🗑️
+                    ðŸ—‘ï¸
                   </button>
                 </div>
               ))}
             </div>
             {/* Totals */}
             <div className="px-6 py-4 bg-gray-50 space-y-2">
-              <div className="flex justify-between text-sm text-gray-500"><span>Tạm tính</span><span className="font-semibold">{subtotal.toLocaleString('vi-VN')}đ</span></div>
-              {deliveryFee > 0 && <div className="flex justify-between text-sm text-gray-500"><span>Phí giao hàng</span><span className="font-semibold">{deliveryFee.toLocaleString('vi-VN')}đ</span></div>}
-              <div className="flex justify-between text-lg font-black text-red-600 border-t border-gray-200 pt-2 mt-2"><span>Tổng cộng</span><span>{total.toLocaleString('vi-VN')}đ</span></div>
+              <div className="flex justify-between text-sm text-gray-500"><span>Táº¡m tÃ­nh</span><span className="font-semibold">{subtotal.toLocaleString('vi-VN')}Ä‘</span></div>
+              {deliveryFee > 0 && <div className="flex justify-between text-sm text-gray-500"><span>PhÃ­ giao hÃ ng</span><span className="font-semibold">{deliveryFee.toLocaleString('vi-VN')}Ä‘</span></div>}
+              <div className="flex justify-between text-lg font-black text-red-600 border-t border-gray-200 pt-2 mt-2"><span>Tá»•ng cá»™ng</span><span>{total.toLocaleString('vi-VN')}Ä‘</span></div>
             </div>
           </div>
 
           {/* Customer info */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="font-bold text-gray-900 mb-5">📋 Thông tin khách hàng</h2>
+            <h2 className="font-bold text-gray-900 mb-5">ðŸ“‹ ThÃ´ng tin khÃ¡ch hÃ ng</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Họ tên *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Há» tÃªn *</label>
                 <input value={orderInfo.customerName}
                   onChange={e => setOrderInfo(i => ({ ...i, customerName: e.target.value }))}
-                  placeholder="Nguyễn Văn A"
+                  placeholder="Nguyá»…n VÄƒn A"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Số điện thoại *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Sá»‘ Ä‘iá»‡n thoáº¡i *</label>
                 <input value={orderInfo.phone}
                   onChange={e => setOrderInfo(i => ({ ...i, phone: e.target.value }))}
                   placeholder="090-XXX-XXXX"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Hình thức</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">HÃ¬nh thá»©c</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { value: 'takeaway', label: '🏪 Tự lấy', icon: '🏪' },
-                    { value: 'delivery', label: '🚚 Giao hàng', icon: '🚚' },
-                    { value: 'dine_in',  label: '🍽️ Ăn tại bàn', icon: '🍽️' },
+                    { value: 'takeaway', label: 'ðŸª Tá»± láº¥y', icon: 'ðŸª' },
+                    { value: 'delivery', label: 'ðŸšš Giao hÃ ng', icon: 'ðŸšš' },
+                    { value: 'dine_in',  label: 'ðŸ½ï¸ Ä‚n táº¡i bÃ n', icon: 'ðŸ½ï¸' },
                   ].map(opt => (
                     <button key={opt.value}
                       onClick={() => setOrderInfo(i => ({ ...i, orderType: opt.value }))}
@@ -277,29 +304,29 @@ export default function CheckoutPage() {
               </div>
               {orderInfo.orderType === 'delivery' && (
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Địa chỉ giao hàng *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Äá»‹a chá»‰ giao hÃ ng *</label>
                   <textarea value={orderInfo.address}
                     onChange={e => setOrderInfo(i => ({ ...i, address: e.target.value }))}
-                    placeholder="123 Đường ABC, Phường XYZ, Quận 1, TP.HCM"
+                    placeholder="123 ÄÆ°á»ng ABC, PhÆ°á»ng XYZ, Quáº­n 1, TP.HCM"
                     rows={2}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition resize-none" />
                 </div>
               )}
               <div className="sm:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Ghi chú</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Ghi chÃº</label>
                 <input value={orderInfo.note}
                   onChange={e => setOrderInfo(i => ({ ...i, note: e.target.value }))}
-                  placeholder="Ít đồ chua, không hành..."
+                  placeholder="Ãt Ä‘á»“ chua, khÃ´ng hÃ nh..."
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── RIGHT: Payment ───────────────────────── */}
+        {/* â”€â”€ RIGHT: Payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24">
-            <h2 className="font-bold text-gray-900 mb-5">💳 Thanh toán</h2>
+            <h2 className="font-bold text-gray-900 mb-5">ðŸ’³ Thanh toÃ¡n</h2>
 
             {/* Payment methods */}
             <div className="space-y-2 mb-6">
@@ -311,23 +338,23 @@ export default function CheckoutPage() {
                       ? 'border-red-500 bg-red-50'
                       : method.enabled ? 'border-gray-200 hover:border-red-300' : 'opacity-40 cursor-not-allowed'
                   }`}>
-                  <span className="text-2xl">{method.icon || '💳'}</span>
+                  <span className="text-2xl">{method.icon || 'ðŸ’³'}</span>
                   <div className="text-left flex-1">
                     <p className="font-bold text-sm text-gray-900">{method.name}</p>
                     <p className="text-xs text-gray-400">{method.description}</p>
                   </div>
                   {selectedPayment === method.id && (
                     <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs">✓</span>
+                      <span className="text-white text-xs">âœ“</span>
                     </div>
                   )}
                 </button>
               )) : (
                 <>
                   {[
-                    { id: 'cash',    icon: '💵', label: 'Tiền mặt',      desc: 'Thanh toán khi nhận hàng' },
-                    { id: 'momo',    icon: '💜', label: 'MoMo',          desc: 'Thanh toán qua ví MoMo' },
-                    { id: 'zalopay', icon: '🔴', label: 'ZaloPay',      desc: 'Thanh toán qua ZaloPay' },
+                    { id: 'cash',    icon: 'ðŸ’µ', label: 'Tiá»n máº·t',      desc: 'Thanh toÃ¡n khi nháº­n hÃ ng' },
+                    { id: 'momo',    icon: 'ðŸ’œ', label: 'MoMo',          desc: 'Thanh toÃ¡n qua vÃ­ MoMo' },
+                    { id: 'zalopay', icon: 'ðŸ”´', label: 'ZaloPay',      desc: 'Thanh toÃ¡n qua ZaloPay' },
                   ].map(m => (
                     <button key={m.id}
                       onClick={() => setSelectedPayment(m.id)}
@@ -339,7 +366,7 @@ export default function CheckoutPage() {
                         <p className="font-bold text-sm text-gray-900">{m.label}</p>
                         <p className="text-xs text-gray-400">{m.desc}</p>
                       </div>
-                      {selectedPayment === m.id && <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs">✓</span></div>}
+                      {selectedPayment === m.id && <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs">âœ“</span></div>}
                     </button>
                   ))}
                 </>
@@ -348,10 +375,10 @@ export default function CheckoutPage() {
 
             {/* Summary */}
             <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-2">
-              <div className="flex justify-between text-sm text-gray-500"><span>Tạm tính</span><span className="font-semibold">{subtotal.toLocaleString('vi-VN')}đ</span></div>
-              {deliveryFee > 0 && <div className="flex justify-between text-sm text-gray-500"><span>Phí giao hàng</span><span className="font-semibold">{deliveryFee.toLocaleString('vi-VN')}đ</span></div>}
+              <div className="flex justify-between text-sm text-gray-500"><span>Táº¡m tÃ­nh</span><span className="font-semibold">{subtotal.toLocaleString('vi-VN')}Ä‘</span></div>
+              {deliveryFee > 0 && <div className="flex justify-between text-sm text-gray-500"><span>PhÃ­ giao hÃ ng</span><span className="font-semibold">{deliveryFee.toLocaleString('vi-VN')}Ä‘</span></div>}
               <div className="flex justify-between text-lg font-black text-red-600 border-t border-gray-200 pt-2 mt-2">
-                <span>Tổng</span><span>{total.toLocaleString('vi-VN')}đ</span>
+                <span>Tá»•ng</span><span>{total.toLocaleString('vi-VN')}Ä‘</span>
               </div>
             </div>
 
@@ -360,13 +387,13 @@ export default function CheckoutPage() {
               disabled={loading}
               className="w-full py-4 bg-red-600 text-white font-black text-lg rounded-xl hover:bg-red-700 active:scale-95 transition-all shadow-lg shadow-red-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
               {loading
-                ? <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Đang xử lý...</>
-                : <>{selectedPayment === 'cash' ? '💵' : selectedPayment === 'momo' ? '💜' : '🔴'} Thanh toán {total.toLocaleString('vi-VN')}đ</>
+                ? <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Äang xá»­ lÃ½...</>
+                : <>{selectedPayment === 'cash' ? 'ðŸ’µ' : selectedPayment === 'momo' ? 'ðŸ’œ' : 'ðŸ”´'} Thanh toÃ¡n {total.toLocaleString('vi-VN')}Ä‘</>
               }
             </button>
 
             <p className="text-center text-xs text-gray-400 mt-4 flex items-center justify-center gap-1">
-              🔒 Thanh toán an toàn qua MoMo & ZaloPay
+              ðŸ”’ Thanh toÃ¡n an toÃ n qua MoMo & ZaloPay
             </p>
           </div>
         </div>

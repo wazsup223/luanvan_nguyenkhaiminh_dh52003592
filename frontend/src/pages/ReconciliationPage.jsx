@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ============================================
- * RECONCILIATION PAGE - F15: Đối soát thanh toán
+ * RECONCILIATION PAGE - F15: Äá»‘i soÃ¡t thanh toÃ¡n
  * ============================================
  */
 import React, { useState, useEffect } from 'react';
@@ -34,7 +34,7 @@ export default function ReconciliationPage() {
       if (detRes.success) setDetails(detRes.data);
       if (repRes.success) setReport(repRes.data);
     } catch (err) {
-      setError('Không thể tải dữ liệu đối soát');
+      setError('KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u Ä‘á»‘i soÃ¡t');
     } finally {
       setLoading(false);
     }
@@ -50,14 +50,14 @@ export default function ReconciliationPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSuccess('Đã đánh dấu đối soát thành công ✅');
+        setSuccess('ÄÃ£ Ä‘Ã¡nh dáº¥u Ä‘á»‘i soÃ¡t thÃ nh cÃ´ng âœ…');
         await fetchData();
         setTimeout(() => setSuccess(''), 3000);
       } else {
-        setError(data.message || 'Lỗi đối soát');
+        setError(data.message || 'Lá»—i Ä‘á»‘i soÃ¡t');
       }
     } catch (err) {
-      setError('Lỗi kết nối server');
+      setError('Lá»—i káº¿t ná»‘i server');
     } finally {
       setMarking(false);
     }
@@ -73,21 +73,21 @@ export default function ReconciliationPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSuccess('Đã ghi nhận phiên đối soát thành công ✅');
+        setSuccess('ÄÃ£ ghi nháº­n phiÃªn Ä‘á»‘i soÃ¡t thÃ nh cÃ´ng âœ…');
         await fetchData();
         setTimeout(() => setSuccess(''), 3000);
       } else {
-        setError(data.message || 'Lỗi ghi nhận');
+        setError(data.message || 'Lá»—i ghi nháº­n');
       }
     } catch (err) {
-      setError('Lỗi kết nối server');
+      setError('Lá»—i káº¿t ná»‘i server');
     } finally {
       setMarking(false);
     }
   };
 
   const formatCurrency = (amount) => {
-    return Number(amount || 0).toLocaleString('vi-VN') + 'đ';
+    return Number(amount || 0).toLocaleString('vi-VN') + 'Ä‘';
   };
 
   const formatDate = (dateStr) => {
@@ -96,7 +96,7 @@ export default function ReconciliationPage() {
 
   const statusColor = (status) => {
     switch (status) {
-      case 'reconciled': return 'bg-green-100 text-green-700';
+      case 'reconciled': return 'bg-green-100 text-yellow-700';
       case 'pending': return 'bg-yellow-100 text-yellow-700';
       case 'disputed': return 'bg-red-100 text-red-700';
       default: return 'bg-gray-100 text-gray-700';
@@ -105,9 +105,9 @@ export default function ReconciliationPage() {
 
   const statusLabel = (status) => {
     switch (status) {
-      case 'reconciled': return '✅ Đã đối soát';
-      case 'pending': return '⏳ Chờ đối soát';
-      case 'disputed': return '❌ Khác biệt';
+      case 'reconciled': return 'âœ… ÄÃ£ Ä‘á»‘i soÃ¡t';
+      case 'pending': return 'â³ Chá» Ä‘á»‘i soÃ¡t';
+      case 'disputed': return 'âŒ KhÃ¡c biá»‡t';
       default: return status;
     }
   };
@@ -125,40 +125,40 @@ export default function ReconciliationPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-black">🔍 Đối soát thanh toán</h1>
-              <p className="text-red-100 text-sm">Quản lý giao dịch và đối soát</p>
+              <h1 className="text-2xl font-black">ðŸ” Äá»‘i soÃ¡t thanh toÃ¡n</h1>
+              <p className="text-red-100 text-sm">Quáº£n lÃ½ giao dá»‹ch vÃ  Ä‘á»‘i soÃ¡t</p>
             </div>
             <button
               onClick={handleRecordReconciliation}
               disabled={marking}
               className="px-5 py-2.5 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition disabled:opacity-50"
             >
-              📋 Ghi nhận phiên
+              ðŸ“‹ Ghi nháº­n phiÃªn
             </button>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {success && <div className="bg-green-50 text-green-700 p-3 rounded-xl mb-4 font-semibold">{success}</div>}
+        {success && <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl mb-4 font-semibold">{success}</div>}
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-4 font-semibold">{error}</div>}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-sm text-gray-500 mb-1">Tổng giao dịch</p>
+          <p className="text-sm text-gray-500 mb-1">Tá»•ng giao dá»‹ch</p>
           <p className="text-2xl font-black text-gray-900">{reconciliation?.total_transactions || details.length || 0}</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-sm text-gray-500 mb-1">Đã đối soát</p>
-          <p className="text-2xl font-black text-green-600">{reconciliation?.reconciled_count || details.filter(d => d.status === 'reconciled').length}</p>
+          <p className="text-sm text-gray-500 mb-1">ÄÃ£ Ä‘á»‘i soÃ¡t</p>
+          <p className="text-2xl font-black text-yellow-600">{reconciliation?.reconciled_count || details.filter(d => d.status === 'reconciled').length}</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-sm text-gray-500 mb-1">Chờ đối soát</p>
+          <p className="text-sm text-gray-500 mb-1">Chá» Ä‘á»‘i soÃ¡t</p>
           <p className="text-2xl font-black text-yellow-600">{reconciliation?.pending_count || details.filter(d => d.status === 'pending').length}</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-sm text-gray-500 mb-1">Tổng tiền</p>
+          <p className="text-sm text-gray-500 mb-1">Tá»•ng tiá»n</p>
           <p className="text-xl font-black text-red-600">{formatCurrency(reconciliation?.total_amount || report?.total_revenue)}</p>
         </div>
       </div>
@@ -166,9 +166,9 @@ export default function ReconciliationPage() {
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
         {[
-          { id: 'overview', label: '📊 Tổng quan' },
-          { id: 'details', label: '📋 Chi tiết' },
-          { id: 'report', label: '📈 Báo cáo' },
+          { id: 'overview', label: 'ðŸ“Š Tá»•ng quan' },
+          { id: 'details', label: 'ðŸ“‹ Chi tiáº¿t' },
+          { id: 'report', label: 'ðŸ“ˆ BÃ¡o cÃ¡o' },
         ].map(tab => (
           <button
             key={tab.id}
@@ -187,23 +187,23 @@ export default function ReconciliationPage() {
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="font-bold text-lg text-gray-900 mb-4">Tổng quan đối soát</h2>
+          <h2 className="font-bold text-lg text-gray-900 mb-4">Tá»•ng quan Ä‘á»‘i soÃ¡t</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Revenue by payment method */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Theo phương thức thanh toán</h3>
+              <h3 className="font-semibold text-gray-700 mb-3">Theo phÆ°Æ¡ng thá»©c thanh toÃ¡n</h3>
               {report?.by_payment_method ? Object.entries(report.by_payment_method).map(([method, data]) => (
                 <div key={method} className="flex items-center justify-between py-2 border-b border-gray-50">
                   <span className="text-sm text-gray-600 capitalize">{method}</span>
                   <span className="font-bold text-sm text-gray-900">{formatCurrency(data.total || data)}</span>
                 </div>
               )) : (
-                <p className="text-sm text-gray-400">Không có dữ liệu</p>
+                <p className="text-sm text-gray-400">KhÃ´ng cÃ³ dá»¯ liá»‡u</p>
               )}
             </div>
             {/* Status breakdown */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3">Theo trạng thái</h3>
+              <h3 className="font-semibold text-gray-700 mb-3">Theo tráº¡ng thÃ¡i</h3>
               {details.length > 0 ? (
                 <>
                   {['reconciled', 'pending', 'disputed'].map(status => {
@@ -223,7 +223,7 @@ export default function ReconciliationPage() {
                   })}
                 </>
               ) : (
-                <p className="text-sm text-gray-400">Không có dữ liệu</p>
+                <p className="text-sm text-gray-400">KhÃ´ng cÃ³ dá»¯ liá»‡u</p>
               )}
             </div>
           </div>
@@ -237,20 +237,20 @@ export default function ReconciliationPage() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Mã GD</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Đơn hàng</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Phương thức</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Số tiền</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Trạng thái</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Thời gian</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Hành động</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">MÃ£ GD</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">ÄÆ¡n hÃ ng</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">PhÆ°Æ¡ng thá»©c</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Sá»‘ tiá»n</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Tráº¡ng thÃ¡i</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Thá»i gian</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">HÃ nh Ä‘á»™ng</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {details.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-10 text-gray-400">
-                      Chưa có giao dịch nào
+                      ChÆ°a cÃ³ giao dá»‹ch nÃ o
                     </td>
                   </tr>
                 ) : (
@@ -271,9 +271,9 @@ export default function ReconciliationPage() {
                           <button
                             onClick={() => handleMarkReconciled(d.transaction_id)}
                             disabled={marking}
-                            className="px-3 py-1 text-xs font-bold bg-green-500 text-white rounded-full hover:bg-green-600 transition disabled:opacity-50"
+                            className="px-3 py-1 text-xs font-bold bg-yellow-500 text-white rounded-full hover:bg-red-700 transition disabled:opacity-50"
                           >
-                            ✓ Đối soát
+                            âœ“ Äá»‘i soÃ¡t
                           </button>
                         )}
                       </td>
@@ -290,24 +290,24 @@ export default function ReconciliationPage() {
       {activeTab === 'report' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-bold text-lg text-gray-900 mb-4">Báo cáo đối soát</h2>
+            <h2 className="font-bold text-lg text-gray-900 mb-4">BÃ¡o cÃ¡o Ä‘á»‘i soÃ¡t</h2>
             {report ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-green-50 rounded-xl p-5">
-                  <p className="text-sm text-green-600 mb-1">Tổng doanh thu</p>
-                  <p className="text-2xl font-black text-green-700">{formatCurrency(report.total_revenue)}</p>
+                <div className="bg-yellow-50 rounded-xl p-5">
+                  <p className="text-sm text-yellow-600 mb-1">Tá»•ng doanh thu</p>
+                  <p className="text-2xl font-black text-yellow-700">{formatCurrency(report.total_revenue)}</p>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-5">
-                  <p className="text-sm text-blue-600 mb-1">Đã đối soát</p>
-                  <p className="text-2xl font-black text-blue-700">{formatCurrency(report.reconciled_amount)}</p>
+                <div className="bg-red-50 rounded-xl p-5">
+                  <p className="text-sm text-red-600 mb-1">ÄÃ£ Ä‘á»‘i soÃ¡t</p>
+                  <p className="text-2xl font-black text-red-700">{formatCurrency(report.reconciled_amount)}</p>
                 </div>
                 <div className="bg-yellow-50 rounded-xl p-5">
-                  <p className="text-sm text-yellow-600 mb-1">Chênh lệch</p>
+                  <p className="text-sm text-yellow-600 mb-1">ChÃªnh lá»‡ch</p>
                   <p className="text-2xl font-black text-yellow-700">{formatCurrency(report.discrepancy || report.difference)}</p>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-400">Không có dữ liệu báo cáo</p>
+              <p className="text-gray-400">KhÃ´ng cÃ³ dá»¯ liá»‡u bÃ¡o cÃ¡o</p>
             )}
           </div>
         </div>
@@ -319,7 +319,7 @@ export default function ReconciliationPage() {
           onClick={() => navigate('/admin')}
           className="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 transition"
         >
-          ← Quay lại Quản trị
+          â† Quay láº¡i Quáº£n trá»‹
         </button>
       </div>
       </div>

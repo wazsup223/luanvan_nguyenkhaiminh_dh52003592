@@ -1,8 +1,8 @@
-/**
+﻿/**
  * ============================================
  * ORDER TRACKING - F05 Real-time Order Tracking
- * Theo dõi đơn hàng real-time cho khách hàng
- * Brand: KFC Style - Đỏ/Vàng/Trắng
+ * Theo dÃµi Ä‘Æ¡n hÃ ng real-time cho khÃ¡ch hÃ ng
+ * Brand: KFC Style - Äá»/VÃ ng/Tráº¯ng
  * ============================================
  */
 
@@ -31,7 +31,7 @@ const OrderTracking = () => {
       }
     } catch (error) {
       console.error('Error loading order:', error);
-      setError('Không thể tải thông tin đơn hàng');
+      setError('KhÃ´ng thá»ƒ táº£i thÃ´ng tin Ä‘Æ¡n hÃ ng');
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ const OrderTracking = () => {
 
     socketService.onOrderCancelled((data) => {
       if (data.data.orderId === parseInt(orderId)) {
-        alert('Đơn hàng của bạn đã bị hủy!');
+        alert('ÄÆ¡n hÃ ng cá»§a báº¡n Ä‘Ã£ bá»‹ há»§y!');
         loadOrder();
       }
     });
@@ -74,21 +74,21 @@ const OrderTracking = () => {
         rating,
         comment
       });
-      alert('Cảm ơn bạn đã đánh giá!');
+      alert('Cáº£m Æ¡n báº¡n Ä‘Ã£ Ä‘Ã¡nh giÃ¡!');
       setShowRating(false);
     } catch (error) {
-      alert('Lỗi gửi đánh giá');
+      alert('Lá»—i gá»­i Ä‘Ã¡nh giÃ¡');
     }
   };
 
   const getStatusInfo = (status) => {
     const statuses = {
-      pending:    { label: 'Đang chờ xác nhận', color: 'bg-yellow-500', icon: '⏳', textColor: 'text-yellow-700' },
-      confirmed:  { label: 'Đã xác nhận', color: 'bg-blue-500', icon: '✅', textColor: 'text-blue-700' },
-      preparing:  { label: 'Đang chế biến', color: 'bg-orange-500', icon: '👨‍🍳', textColor: 'text-orange-700' },
-      ready:      { label: 'Sẵn sàng phục vụ', color: 'bg-green-500', icon: '✨', textColor: 'text-green-700' },
-      delivered:  { label: 'Đã giao', color: 'bg-green-600', icon: '🎉', textColor: 'text-green-700' },
-      cancelled:  { label: 'Đã hủy', color: 'bg-red-600', icon: '❌', textColor: 'text-red-700' }
+      pending:    { label: 'Äang chá» xÃ¡c nháº­n', color: 'bg-yellow-500', icon: 'â³', textColor: 'text-yellow-700' },
+      confirmed:  { label: 'ÄÃ£ xÃ¡c nháº­n', color: 'bg-red-500', icon: 'âœ…', textColor: 'text-red-700' },
+      preparing:  { label: 'Äang cháº¿ biáº¿n', color: 'bg-orange-500', icon: 'ðŸ‘¨â€ðŸ³', textColor: 'text-orange-700' },
+      ready:      { label: 'Sáºµn sÃ ng phá»¥c vá»¥', color: 'bg-yellow-500', icon: 'âœ¨', textColor: 'text-yellow-700' },
+      delivered:  { label: 'ÄÃ£ giao', color: 'bg-green-600', icon: 'ðŸŽ‰', textColor: 'text-yellow-700' },
+      cancelled:  { label: 'ÄÃ£ há»§y', color: 'bg-red-600', icon: 'âŒ', textColor: 'text-red-700' }
     };
     return statuses[status] || statuses.pending;
   };
@@ -102,8 +102,8 @@ const OrderTracking = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-5xl mb-4">⏳</div>
-          <p className="text-gray-500">Đang tải đơn hàng...</p>
+          <div className="text-5xl mb-4">â³</div>
+          <p className="text-gray-500">Äang táº£i Ä‘Æ¡n hÃ ng...</p>
         </div>
       </div>
     );
@@ -113,10 +113,10 @@ const OrderTracking = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-5xl mb-4">❌</div>
-          <p className="text-red-600 font-bold mb-4">{error || 'Không tìm thấy đơn hàng'}</p>
+          <div className="text-5xl mb-4">âŒ</div>
+          <p className="text-red-600 font-bold mb-4">{error || 'KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng'}</p>
           <button onClick={() => navigate('/')} className="px-6 py-2 bg-red-600 text-white rounded-lg font-bold">
-            Về trang chủ
+            Vá» trang chá»§
           </button>
         </div>
       </div>
@@ -133,14 +133,14 @@ const OrderTracking = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">📦</span>
+              <span className="text-3xl">ðŸ“¦</span>
               <div>
-                <h1 className="text-xl font-black">Đơn hàng #{orderId}</h1>
-                <p className="text-red-100 text-sm">Theo dõi real-time</p>
+                <h1 className="text-xl font-black">ÄÆ¡n hÃ ng #{orderId}</h1>
+                <p className="text-red-100 text-sm">Theo dÃµi real-time</p>
               </div>
             </div>
             <div className="bg-white/20 px-3 py-1 rounded-lg text-sm">
-              📡 Live
+              ðŸ“¡ Live
             </div>
           </div>
         </div>
@@ -155,9 +155,9 @@ const OrderTracking = () => {
               <div className="text-2xl font-black">{statusInfo.label}</div>
             </div>
             <div className="text-right text-sm opacity-80">
-              <div>🕐 {new Date(order.created_at).toLocaleString('vi-VN')}</div>
+              <div>ðŸ• {new Date(order.created_at).toLocaleString('vi-VN')}</div>
               {order.estimated_time && (
-                <div className="mt-1">⏱ Dự kiến: {order.estimated_time} phút</div>
+                <div className="mt-1">â± Dá»± kiáº¿n: {order.estimated_time} phÃºt</div>
               )}
             </div>
           </div>
@@ -171,10 +171,10 @@ const OrderTracking = () => {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
                   step <= statusStep ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-400'
                 }`}>
-                  {step <= statusStep ? '✓' : step}
+                  {step <= statusStep ? 'âœ“' : step}
                 </div>
                 <div className="text-xs mt-1 text-gray-500">
-                  {['Chờ', 'Xác nhận', 'Làm', 'Sẵn', 'Xong'][step - 1]}
+                  {['Chá»', 'XÃ¡c nháº­n', 'LÃ m', 'Sáºµn', 'Xong'][step - 1]}
                 </div>
               </div>
             ))}
@@ -190,7 +190,7 @@ const OrderTracking = () => {
         {/* Order Items */}
         <div className="bg-white rounded-2xl p-5 shadow">
           <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            📋 Chi tiết đơn hàng
+            ðŸ“‹ Chi tiáº¿t Ä‘Æ¡n hÃ ng
           </h3>
           
           <div className="space-y-3">
@@ -201,12 +201,12 @@ const OrderTracking = () => {
                     {item.quantity}
                   </span>
                   <div>
-                    <div className="font-medium text-gray-800">{item.menu_item?.item_name || `Món #${item.item_id}`}</div>
-                    {item.notes && <div className="text-xs text-gray-400">📝 {item.notes}</div>}
+                    <div className="font-medium text-gray-800">{item.menu_item?.item_name || `MÃ³n #${item.item_id}`}</div>
+                    {item.notes && <div className="text-xs text-gray-400">ðŸ“ {item.notes}</div>}
                   </div>
                 </div>
                 <div className="font-bold text-gray-900">
-                  {(item.quantity * parseFloat(item.unit_price)).toLocaleString('vi-VN')}đ
+                  {(item.quantity * parseFloat(item.unit_price)).toLocaleString('vi-VN')}Ä‘
                 </div>
               </div>
             ))}
@@ -215,25 +215,25 @@ const OrderTracking = () => {
           {/* Totals */}
           <div className="border-t-2 border-gray-100 mt-4 pt-4 space-y-2">
             <div className="flex justify-between text-gray-600">
-              <span>Tạm tính</span>
-              <span>{order.subtotal?.toLocaleString('vi-VN')}đ</span>
+              <span>Táº¡m tÃ­nh</span>
+              <span>{order.subtotal?.toLocaleString('vi-VN')}Ä‘</span>
             </div>
             {order.discount_amount > 0 && (
               <div className="flex justify-between text-red-600 font-medium">
-                <span>Giảm giá</span>
-                <span>-{order.discount_amount.toLocaleString('vi-VN')}đ</span>
+                <span>Giáº£m giÃ¡</span>
+                <span>-{order.discount_amount.toLocaleString('vi-VN')}Ä‘</span>
               </div>
             )}
             {order.tax_amount > 0 && (
               <div className="flex justify-between text-gray-600">
-                <span>Thuế (10%)</span>
-                <span>{order.tax_amount.toLocaleString('vi-VN')}đ</span>
+                <span>Thuáº¿ (10%)</span>
+                <span>{order.tax_amount.toLocaleString('vi-VN')}Ä‘</span>
               </div>
             )}
             <div className="flex justify-between text-xl font-black text-gray-900 pt-2 border-t">
-              <span>Tổng cộng</span>
+              <span>Tá»•ng cá»™ng</span>
               <span className="text-red-600">
-                {(order.subtotal - order.discount_amount + order.tax_amount).toLocaleString('vi-VN')}đ
+                {(order.subtotal - order.discount_amount + order.tax_amount).toLocaleString('vi-VN')}Ä‘
               </span>
             </div>
           </div>
@@ -241,19 +241,19 @@ const OrderTracking = () => {
 
         {/* Payment Status */}
         <div className={`rounded-2xl p-5 text-center ${
-          order.payment_status === 'paid' ? 'bg-green-50 border-2 border-green-500' : 'bg-yellow-50 border-2 border-yellow-500'
+          order.payment_status === 'paid' ? 'bg-yellow-50 border-2 border-yellow-500' : 'bg-yellow-50 border-2 border-yellow-500'
         }`}>
           <div className="text-4xl mb-2">
-            {order.payment_status === 'paid' ? '✅' : '⏳'}
+            {order.payment_status === 'paid' ? 'âœ…' : 'â³'}
           </div>
           <div className="font-bold text-lg">
-            {order.payment_status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+            {order.payment_status === 'paid' ? 'ÄÃ£ thanh toÃ¡n' : 'ChÆ°a thanh toÃ¡n'}
           </div>
           <div className="text-gray-600 mt-1">
-            {order.payment_method === 'cash' ? '💵 Tiền mặt' :
-             order.payment_method === 'momo' ? '💚 MoMo' :
-             order.payment_method === 'zalopay' ? '💙 ZaloPay' :
-             order.payment_method === 'vnpay' ? '💜 VNPay' : 'Chưa chọn'}
+            {order.payment_method === 'cash' ? 'ðŸ’µ Tiá»n máº·t' :
+             order.payment_method === 'momo' ? 'ðŸ’š MoMo' :
+             order.payment_method === 'zalopay' ? 'ðŸ’™ ZaloPay' :
+             order.payment_method === 'vnpay' ? 'ðŸ’œ VNPay' : 'ChÆ°a chá»n'}
           </div>
         </div>
 
@@ -264,7 +264,7 @@ const OrderTracking = () => {
               onClick={() => setShowRating(true)}
               className="flex-1 py-3 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 transition"
             >
-              ⭐ Đánh giá
+              â­ ÄÃ¡nh giÃ¡
             </button>
           )}
           
@@ -272,14 +272,14 @@ const OrderTracking = () => {
             onClick={() => navigate(`/print-bill/${orderId}`)}
             className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition"
           >
-            🖨️ In hóa đơn
+            ðŸ–¨ï¸ In hÃ³a Ä‘Æ¡n
           </button>
 
           <Link
             to="/"
             className="flex-1 py-3 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-900 transition text-center"
           >
-            ← Đặt thêm
+            â† Äáº·t thÃªm
           </Link>
         </div>
 
@@ -287,7 +287,7 @@ const OrderTracking = () => {
         {showRating && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-              <h3 className="text-xl font-bold mb-4 text-center">⭐ Đánh giá đơn hàng</h3>
+              <h3 className="text-xl font-bold mb-4 text-center">â­ ÄÃ¡nh giÃ¡ Ä‘Æ¡n hÃ ng</h3>
               
               <div className="flex justify-center gap-2 mb-4">
                 {[1, 2, 3, 4, 5].map(star => (
@@ -296,7 +296,7 @@ const OrderTracking = () => {
                     onClick={() => setRating(star)}
                     className={`text-3xl transition ${star <= rating ? 'text-yellow-500' : 'text-gray-300'}`}
                   >
-                    ⭐
+                    â­
                   </button>
                 ))}
               </div>
@@ -304,7 +304,7 @@ const OrderTracking = () => {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Nhập nhận xét của bạn..."
+                placeholder="Nháº­p nháº­n xÃ©t cá»§a báº¡n..."
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl mb-4 resize-none"
                 rows={3}
               />
@@ -314,13 +314,13 @@ const OrderTracking = () => {
                   onClick={() => setShowRating(false)}
                   className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-xl font-medium"
                 >
-                  Hủy
+                  Há»§y
                 </button>
                 <button
                   onClick={submitRating}
                   className="flex-1 py-2 bg-red-600 text-white rounded-xl font-bold"
                 >
-                  Gửi đánh giá
+                  Gá»­i Ä‘Ã¡nh giÃ¡
                 </button>
               </div>
             </div>

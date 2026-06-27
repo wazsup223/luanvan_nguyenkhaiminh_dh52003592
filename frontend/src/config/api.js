@@ -56,6 +56,7 @@ const API_ENDPOINTS = {
 
   // Recommendations
   RECOMMENDATIONS: `${API_BASE}/recommendations`,
+  RECOMMENDATIONS_RECORD_ORDER: `${API_BASE}/recommendations/record-order`,
   RECOMMENDATIONS_TRENDING: `${API_BASE}/recommendations/trending`,
   RECOMMENDATIONS_PERSONALIZED: (userId) => `${API_BASE}/recommendations/personalized/${userId}`,
   RECOMMENDATIONS_HISTORY: (userId) => `${API_BASE}/recommendations/history/${userId}`,

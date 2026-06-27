@@ -344,10 +344,17 @@ router.delete('/favorites/:userId/:itemId', authenticate, requireRoles('Customer
 // 9. GHI NHẬN ĐƠN HÀNG (gọi sau khi confirmed)
 // POST /api/recommendations/record-order
 // =============================================
-router.post('/record-order', authenticate, requireRoles('Admin', 'BranchManager', 'Cashier'), async (req, res) => {
+router.post('/record-order', authenticate, async (req, res) => {
   try {
     const { user_id, order_id } = req.body;
-    
+    const currentUserId = req.user.user_id; // Lấy từ JWT token
+
+    // Cho phép khách hàng ghi nhận đơn của chính mình
+    const isStaff = ['Admin', 'BranchManager', 'Cashier'].includes(req.user.role);
+    if (!isStaff && user_id != currentUserId) {
+      return res.status(403).json({ success: false, message: 'Không có quyền ghi nhận đơn của người khác' });
+    }
+
     if (!user_id || !order_id) {
       return res.status(400).json({ success: false, message: 'Thiếu user_id hoặc order_id' });
     }

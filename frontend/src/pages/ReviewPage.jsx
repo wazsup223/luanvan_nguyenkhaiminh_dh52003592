@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ============================================
- * REVIEW PAGE - F13: Đánh giá món ăn
+ * REVIEW PAGE - F13: ÄÃ¡nh giÃ¡ mÃ³n Äƒn
  * ============================================
  */
 import React, { useState, useEffect } from 'react';
@@ -42,7 +42,7 @@ export default function ReviewPage() {
         }
       }
     } catch (err) {
-      setError('Không thể tải dữ liệu');
+      setError('KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u');
     } finally {
       setLoading(false);
     }
@@ -66,8 +66,8 @@ export default function ReviewPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedItem) { setError('Vui lòng chọn món ăn'); return; }
-    if (!comment.trim()) { setError('Vui lòng nhập nhận xét'); return; }
+    if (!selectedItem) { setError('Vui lÃ²ng chá»n mÃ³n Äƒn'); return; }
+    if (!comment.trim()) { setError('Vui lÃ²ng nháº­p nháº­n xÃ©t'); return; }
 
     let user;
     try {
@@ -76,7 +76,7 @@ export default function ReviewPage() {
       user = null;
       localStorage.removeItem('fastfood_user');
     }
-    if (!user) { setError('Vui lòng đăng nhập để đánh giá'); navigate('/login'); return; }
+    if (!user) { setError('Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ Ä‘Ã¡nh giÃ¡'); navigate('/login'); return; }
 
     try {
       setSubmitting(true);
@@ -93,16 +93,16 @@ export default function ReviewPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSuccess('Cảm ơn bạn đã đánh giá! 🎉');
+        setSuccess('Cáº£m Æ¡n báº¡n Ä‘Ã£ Ä‘Ã¡nh giÃ¡! ðŸŽ‰');
         setComment('');
         setRating(5);
         await fetchReviews(selectedItem.item_id);
         setTimeout(() => setSuccess(''), 3000);
       } else {
-        setError(data.message || 'Lỗi gửi đánh giá');
+        setError(data.message || 'Lá»—i gá»­i Ä‘Ã¡nh giÃ¡');
       }
     } catch (err) {
-      setError('Không thể gửi đánh giá');
+      setError('KhÃ´ng thá»ƒ gá»­i Ä‘Ã¡nh giÃ¡');
     } finally {
       setSubmitting(false);
     }
@@ -129,8 +129,8 @@ export default function ReviewPage() {
       {/* Header - KFC Red */}
       <div className="bg-red-600 text-white shadow-lg">
         <div className="max-w-5xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-black">⭐ Đánh giá món ăn</h1>
-          <p className="text-red-100 text-sm">Chia sẻ trải nghiệm của bạn</p>
+          <h1 className="text-2xl font-black">â­ ÄÃ¡nh giÃ¡ mÃ³n Äƒn</h1>
+          <p className="text-red-100 text-sm">Chia sáº» tráº£i nghiá»‡m cá»§a báº¡n</p>
         </div>
       </div>
 
@@ -139,7 +139,7 @@ export default function ReviewPage() {
         {/* Left: Item Selection */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl border border-gray-100 p-4 sticky top-24">
-            <h2 className="font-bold text-gray-900 mb-3">Chọn món ăn</h2>
+            <h2 className="font-bold text-gray-900 mb-3">Chá»n mÃ³n Äƒn</h2>
             <div className="space-y-2 max-h-[60vh] overflow-y-auto">
               {menuItems.map(item => (
                 <button
@@ -159,7 +159,7 @@ export default function ReviewPage() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-gray-900 truncate">{item.item_name}</p>
-                    <p className="text-xs text-gray-400">{item.price?.toLocaleString('vi-VN')}đ</p>
+                    <p className="text-xs text-gray-400">{item.price?.toLocaleString('vi-VN')}Ä‘</p>
                   </div>
                 </button>
               ))}
@@ -171,8 +171,8 @@ export default function ReviewPage() {
         <div className="lg:col-span-2 space-y-6">
           {!selectedItem ? (
             <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-              <p className="text-6xl mb-4">🍽️</p>
-              <p className="text-gray-500 font-medium">Chọn món ăn để xem & viết đánh giá</p>
+              <p className="text-6xl mb-4">ðŸ½ï¸</p>
+              <p className="text-gray-500 font-medium">Chá»n mÃ³n Äƒn Ä‘á»ƒ xem & viáº¿t Ä‘Ã¡nh giÃ¡</p>
             </div>
           ) : (
             <>
@@ -188,8 +188,8 @@ export default function ReviewPage() {
                   <h2 className="text-xl font-black text-gray-900">{selectedItem.item_name}</h2>
                   <p className="text-sm text-gray-500">{selectedItem.category_name}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-yellow-500 font-black text-lg">⭐ {avgRating}</span>
-                    <span className="text-sm text-gray-400">({reviews.length} đánh giá)</span>
+                    <span className="text-yellow-500 font-black text-lg">â­ {avgRating}</span>
+                    <span className="text-sm text-gray-400">({reviews.length} Ä‘Ã¡nh giÃ¡)</span>
                   </div>
                 </div>
               </div>
@@ -197,11 +197,11 @@ export default function ReviewPage() {
               {/* Rating distribution */}
               {reviews.length > 0 && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                  <h3 className="font-bold text-gray-900 mb-4">Phân bổ đánh giá</h3>
+                  <h3 className="font-bold text-gray-900 mb-4">PhÃ¢n bá»• Ä‘Ã¡nh giÃ¡</h3>
                   <div className="space-y-2">
                     {ratingDist.map(d => (
                       <div key={d.star} className="flex items-center gap-3">
-                        <span className="text-sm font-bold w-8">{d.star} ⭐</span>
+                        <span className="text-sm font-bold w-8">{d.star} â­</span>
                         <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
                           <div className="h-full bg-yellow-400 rounded-full transition-all" style={{ width: `${d.pct}%` }}></div>
                         </div>
@@ -214,9 +214,9 @@ export default function ReviewPage() {
 
               {/* Review form */}
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-bold text-gray-900 mb-4">Viết đánh giá</h3>
+                <h3 className="font-bold text-gray-900 mb-4">Viáº¿t Ä‘Ã¡nh giÃ¡</h3>
                 {success && (
-                  <div className="bg-green-50 text-green-700 p-3 rounded-xl mb-4 font-semibold">{success}</div>
+                  <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl mb-4 font-semibold">{success}</div>
                 )}
                 {error && (
                   <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-4 font-semibold">{error}</div>
@@ -224,7 +224,7 @@ export default function ReviewPage() {
                 <form onSubmit={handleSubmit}>
                   {/* Star rating */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Đánh giá sao</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">ÄÃ¡nh giÃ¡ sao</label>
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map(star => (
                         <button
@@ -235,7 +235,7 @@ export default function ReviewPage() {
                           onMouseLeave={() => setHoverRating(0)}
                           className="text-3xl transition-transform hover:scale-125"
                         >
-                          {star <= (hoverRating || rating) ? '⭐' : '☆'}
+                          {star <= (hoverRating || rating) ? 'â­' : 'â˜†'}
                         </button>
                       ))}
                       <span className="ml-2 text-sm font-bold text-gray-500 self-center">{rating}/5</span>
@@ -243,13 +243,13 @@ export default function ReviewPage() {
                   </div>
                   {/* Comment */}
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nhận xét</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nháº­n xÃ©t</label>
                     <textarea
                       value={comment}
                       onChange={e => setComment(e.target.value)}
                       rows={3}
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none resize-none"
-                      placeholder="Món ăn này thế nào? Hãy chia sẻ..."
+                      placeholder="MÃ³n Äƒn nÃ y tháº¿ nÃ o? HÃ£y chia sáº»..."
                     />
                   </div>
                   <button
@@ -257,18 +257,18 @@ export default function ReviewPage() {
                     disabled={submitting}
                     className="px-6 py-2.5 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition disabled:opacity-50"
                   >
-                    {submitting ? 'Đang gửi...' : '📌 Gửi đánh giá'}
+                    {submitting ? 'Äang gá»­i...' : 'ðŸ“Œ Gá»­i Ä‘Ã¡nh giÃ¡'}
                   </button>
                 </form>
               </div>
 
               {/* Existing reviews */}
               <div className="space-y-4">
-                <h3 className="font-bold text-gray-900">Đánh giá ({reviews.length})</h3>
+                <h3 className="font-bold text-gray-900">ÄÃ¡nh giÃ¡ ({reviews.length})</h3>
                 {reviews.length === 0 ? (
                   <div className="text-center py-10 bg-white rounded-2xl border border-gray-100">
-                    <p className="text-4xl mb-2">💬</p>
-                    <p className="text-gray-400">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+                    <p className="text-4xl mb-2">ðŸ’¬</p>
+                    <p className="text-gray-400">ChÆ°a cÃ³ Ä‘Ã¡nh giÃ¡ nÃ o. HÃ£y lÃ  ngÆ°á»i Ä‘áº§u tiÃªn!</p>
                   </div>
                 ) : (
                   reviews.map(review => (
@@ -280,7 +280,7 @@ export default function ReviewPage() {
                           </div>
                           <div>
                             <p className="font-semibold text-sm text-gray-900">
-                              {review.user?.full_name || review.customer_name || 'Khách hàng'}
+                              {review.user?.full_name || review.customer_name || 'KhÃ¡ch hÃ ng'}
                             </p>
                             <p className="text-xs text-gray-400">
                               {new Date(review.created_at).toLocaleDateString('vi-VN')}
@@ -289,13 +289,13 @@ export default function ReviewPage() {
                         </div>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map(s => (
-                            <span key={s} className="text-sm">{s <= review.rating ? '⭐' : '☆'}</span>
+                            <span key={s} className="text-sm">{s <= review.rating ? 'â­' : 'â˜†'}</span>
                           ))}
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
                       {review.status === 'pending' && (
-                        <span className="inline-block mt-2 text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full font-semibold">Chờ duyệt</span>
+                        <span className="inline-block mt-2 text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full font-semibold">Chá» duyá»‡t</span>
                       )}
                     </div>
                   ))

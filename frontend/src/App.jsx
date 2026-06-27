@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CheckoutPage from './pages/CheckoutPage';
-import AdminDashboard from './pages/AdminDashboard';
-import EmployeeManagement from './pages/EmployeeManagement';
+import { API_ENDPOINTS } from './config/api';
 import KitchenDisplay from './pages/KitchenDisplay';
 import PrintBill from './pages/PrintBill';
 import OrderTracking from './pages/OrderTracking';
@@ -16,6 +15,19 @@ import MenuPage from './pages/MenuPage';
 import RecommendationsPage from './pages/RecommendationsPage';
 import NotFound from './pages/NotFound';
 import './index.css';
+
+// Lazy-load heavy components (Chart.js is ~400KB)
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const EmployeeManagement = lazy(() => import('./pages/EmployeeManagement'));
+
+function ComponentLoader() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="w-12 h-12 border-4 border-red-100 border-t-red-600 rounded-full animate-spin mb-4"></div>
+      <p className="text-gray-500 font-medium">Đang tải...</p>
+    </div>
+  );
+}
 
 // ─── Auth Helpers ────────────────────────────────────────
 const STAFF_ROLES = ['Admin', 'BranchManager', 'Cashier', 'Kitchen', 'Server'];
@@ -80,8 +92,8 @@ function App() {
       try {
         setLoading(true);
         const [bRes, mRes] = await Promise.all([
-          fetch('http://localhost:3001/api/branches'),
-          fetch('http://localhost:3001/api/menu'),
+          fetch(API_ENDPOINTS.BRANCHES),
+          fetch(API_ENDPOINTS.MENU),
         ]);
         const [bJson, mJson] = await Promise.all([bRes.json(), mRes.json()]);
         if (bJson.success) setBranches(bJson.data);
@@ -276,10 +288,10 @@ function App() {
             <Route path="/auth"      element={<RedirectIfAuth><AuthPage /></RedirectIfAuth>} />
             {/* Protected: admin only */}
             <Route path="/admin/employees" element={
-              <RequireAdmin><EmployeeManagement /></RequireAdmin>
+              <RequireAdmin><Suspense fallback={<ComponentLoader />}><EmployeeManagement /></Suspense></RequireAdmin>
             } />
             <Route path="/admin" element={
-              <RequireAdmin><AdminDashboard user={user} /></RequireAdmin>
+              <RequireAdmin><Suspense fallback={<ComponentLoader />}><AdminDashboard user={user} /></Suspense></RequireAdmin>
             } />
             {/* Protected: kitchen/staff only */}
             <Route path="/kitchen" element={

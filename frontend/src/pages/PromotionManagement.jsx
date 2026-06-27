@@ -1,7 +1,7 @@
-/**
+﻿/**
  * ============================================
  * PROMOTION MANAGEMENT - F13
- * Quản lý Khuyến mãi cho Admin/Manager
+ * Quáº£n lÃ½ Khuyáº¿n mÃ£i cho Admin/Manager
  * Brand: KFC Style - #E4002B, #FFB81C, #FFF
  * ============================================
  */
@@ -69,7 +69,7 @@ const PromotionManagement = () => {
       loadPromotions();
     } catch (error) {
       console.error('Error saving promotion:', error);
-      alert('Lỗi lưu khuyến mãi: ' + (error.message || 'Unknown error'));
+      alert('Lá»—i lÆ°u khuyáº¿n mÃ£i: ' + (error.message || 'Unknown error'));
     }
   };
 
@@ -90,13 +90,13 @@ const PromotionManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Bạn có chắc muốn xóa khuyến mãi này?')) return;
+    if (!window.confirm('Báº¡n cÃ³ cháº¯c muá»‘n xÃ³a khuyáº¿n mÃ£i nÃ y?')) return;
     try {
       await api.delete(`/promotions/${id}`);
       loadPromotions();
     } catch (error) {
       console.error('Error deleting promotion:', error);
-      alert('Lỗi xóa khuyến mãi');
+      alert('Lá»—i xÃ³a khuyáº¿n mÃ£i');
     }
   };
 
@@ -115,13 +115,13 @@ const PromotionManagement = () => {
   const getStatusBadge = (promo) => {
     const now = new Date();
     const endDate = promo.end_date ? new Date(promo.end_date) : null;
-    if (!promo.is_active) return <span className="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600">Tắt</span>;
-    if (endDate && endDate < now) return <span className="px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">Hết hạn</span>;
-    if (promo.is_active) return <span className="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">Hoạt động</span>;
-    return <span className="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600">Tắt</span>;
+    if (!promo.is_active) return <span className="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600">Táº¯t</span>;
+    if (endDate && endDate < now) return <span className="px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">Háº¿t háº¡n</span>;
+    if (promo.is_active) return <span className="px-2 py-1 rounded text-xs font-bold bg-green-100 text-yellow-700">Hoáº¡t Ä‘á»™ng</span>;
+    return <span className="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600">Táº¯t</span>;
   };
 
-  const formatVND = (val) => parseInt(val || 0).toLocaleString('vi-VN') + 'đ';
+  const formatVND = (val) => parseInt(val || 0).toLocaleString('vi-VN') + 'Ä‘';
 
   if (loading) {
     return (
@@ -138,10 +138,10 @@ const PromotionManagement = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">🎁</span>
+              <span className="text-3xl">ðŸŽ</span>
               <div>
-                <h1 className="text-2xl font-black text-white">Quản lý Khuyến mãi</h1>
-                <p className="text-sm" style={{ color: '#FFB81C' }}>Tạo & quản lý mã giảm giá</p>
+                <h1 className="text-2xl font-black text-white">Quáº£n lÃ½ Khuyáº¿n mÃ£i</h1>
+                <p className="text-sm" style={{ color: '#FFB81C' }}>Táº¡o & quáº£n lÃ½ mÃ£ giáº£m giÃ¡</p>
               </div>
             </div>
             <button
@@ -149,7 +149,7 @@ const PromotionManagement = () => {
               className="px-5 py-2.5 rounded-lg font-bold text-sm transition shadow-md"
               style={{ background: showForm ? '#FFB81C' : '#FFB81C', color: '#E4002B' }}
             >
-              {showForm ? '✕ Đóng form' : '+ Tạo khuyến mãi mới'}
+              {showForm ? 'âœ• ÄÃ³ng form' : '+ Táº¡o khuyáº¿n mÃ£i má»›i'}
             </button>
           </div>
         </div>
@@ -160,11 +160,11 @@ const PromotionManagement = () => {
         {showForm && (
           <div className="bg-white rounded-xl shadow-md p-6 mb-6 border-t-4" style={{ borderTopColor: '#E4002B' }}>
             <h2 className="text-xl font-bold mb-4" style={{ color: '#E4002B' }}>
-              {editingPromotion ? '✏️ Sửa khuyến mãi' : '➕ Tạo khuyến mãi mới'}
+              {editingPromotion ? 'âœï¸ Sá»­a khuyáº¿n mÃ£i' : 'âž• Táº¡o khuyáº¿n mÃ£i má»›i'}
             </h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Mã khuyến mãi *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">MÃ£ khuyáº¿n mÃ£i *</label>
                 <input
                   type="text"
                   required
@@ -175,29 +175,29 @@ const PromotionManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Tên khuyến mãi *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">TÃªn khuyáº¿n mÃ£i *</label>
                 <input
                   type="text"
                   required
                   value={formData.promotion_name}
                   onChange={e => setFormData({ ...formData, promotion_name: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 outline-none"
-                  placeholder="VD: Giảm giá mùa hè"
+                  placeholder="VD: Giáº£m giÃ¡ mÃ¹a hÃ¨"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Loại giảm</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Loáº¡i giáº£m</label>
                 <select
                   value={formData.discount_type}
                   onChange={e => setFormData({ ...formData, discount_type: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 outline-none"
                 >
-                  <option value="percentage">Phần trăm (%)</option>
-                  <option value="fixed">Số tiền cố định (VNĐ)</option>
+                  <option value="percentage">Pháº§n trÄƒm (%)</option>
+                  <option value="fixed">Sá»‘ tiá»n cá»‘ Ä‘á»‹nh (VNÄ)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Giá trị giảm *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">GiÃ¡ trá»‹ giáº£m *</label>
                 <input
                   type="number"
                   required
@@ -209,7 +209,7 @@ const PromotionManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Đơn tối thiểu (VNĐ)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">ÄÆ¡n tá»‘i thiá»ƒu (VNÄ)</label>
                 <input
                   type="number"
                   min="0"
@@ -219,7 +219,7 @@ const PromotionManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Giới hạn sử dụng</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Giá»›i háº¡n sá»­ dá»¥ng</label>
                 <input
                   type="number"
                   min="1"
@@ -229,7 +229,7 @@ const PromotionManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Ngày bắt đầu</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">NgÃ y báº¯t Ä‘áº§u</label>
                 <input
                   type="date"
                   value={formData.start_date}
@@ -238,7 +238,7 @@ const PromotionManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Ngày kết thúc</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">NgÃ y káº¿t thÃºc</label>
                 <input
                   type="date"
                   value={formData.end_date}
@@ -254,7 +254,7 @@ const PromotionManagement = () => {
                     onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
                     className="w-5 h-5 rounded accent-red-500"
                   />
-                  <span className="font-semibold text-gray-700">Kích hoạt ngay</span>
+                  <span className="font-semibold text-gray-700">KÃ­ch hoáº¡t ngay</span>
                 </label>
               </div>
               <div className="md:col-span-2 lg:col-span-3 flex gap-3 mt-2">
@@ -263,14 +263,14 @@ const PromotionManagement = () => {
                   className="px-6 py-2.5 rounded-lg font-bold text-white shadow-md transition hover:opacity-90"
                   style={{ background: '#E4002B' }}
                 >
-                  {editingPromotion ? '💾 Cập nhật' : '➕ Tạo mới'}
+                  {editingPromotion ? 'ðŸ’¾ Cáº­p nháº­t' : 'âž• Táº¡o má»›i'}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
                   className="px-6 py-2.5 rounded-lg font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition"
                 >
-                  Hủy
+                  Há»§y
                 </button>
               </div>
             </form>
@@ -280,21 +280,21 @@ const PromotionManagement = () => {
         {/* Table */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="px-6 py-4 border-b" style={{ borderColor: '#FFB81C' }}>
-            <h3 className="font-bold text-gray-800">📋 Danh sách khuyến mãi ({promotions.length})</h3>
+            <h3 className="font-bold text-gray-800">ðŸ“‹ Danh sÃ¡ch khuyáº¿n mÃ£i ({promotions.length})</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Mã</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Tên</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Loại giảm</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Giá trị</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Đơn tối thiểu</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Thời gian</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Đã dùng/Limit</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Trạng thái</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Hành động</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">MÃ£</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">TÃªn</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Loáº¡i giáº£m</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">GiÃ¡ trá»‹</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">ÄÆ¡n tá»‘i thiá»ƒu</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Thá»i gian</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">ÄÃ£ dÃ¹ng/Limit</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">Tráº¡ng thÃ¡i</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500">HÃ nh Ä‘á»™ng</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -305,7 +305,7 @@ const PromotionManagement = () => {
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-800">{promo.promotion_name}</td>
                     <td className="px-4 py-3 text-sm">
-                      {promo.discount_type === 'percentage' ? 'Phần trăm (%)' : 'Cố định (VNĐ)'}
+                      {promo.discount_type === 'percentage' ? 'Pháº§n trÄƒm (%)' : 'Cá»‘ Ä‘á»‹nh (VNÄ)'}
                     </td>
                     <td className="px-4 py-3 font-semibold" style={{ color: '#E4002B' }}>
                       {promo.discount_type === 'percentage'
@@ -315,12 +315,12 @@ const PromotionManagement = () => {
                     <td className="px-4 py-3 text-sm">{formatVND(promo.min_order_amount)}</td>
                     <td className="px-4 py-3 text-xs text-gray-600">
                       {promo.start_date ? new Date(promo.start_date).toLocaleDateString('vi-VN') : '-'}
-                      {' → '}
+                      {' â†’ '}
                       {promo.end_date ? new Date(promo.end_date).toLocaleDateString('vi-VN') : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className="font-semibold">{promo.usage_count || 0}</span>
-                      /{promo.usage_limit || '∞'}
+                      /{promo.usage_limit || 'âˆž'}
                     </td>
                     <td className="px-4 py-3">{getStatusBadge(promo)}</td>
                     <td className="px-4 py-3">
@@ -330,22 +330,22 @@ const PromotionManagement = () => {
                           className={`px-3 py-1.5 rounded text-xs font-bold transition ${
                             promo.is_active
                               ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                              : 'bg-green-100 text-green-700 hover:bg-green-200'
+                              : 'bg-green-100 text-yellow-700 hover:bg-yellow-200'
                           }`}
                         >
-                          {promo.is_active ? '⏸ Tắt' : '▶ Bật'}
+                          {promo.is_active ? 'â¸ Táº¯t' : 'â–¶ Báº­t'}
                         </button>
                         <button
                           onClick={() => handleEdit(promo)}
-                          className="px-3 py-1.5 rounded text-xs font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+                          className="px-3 py-1.5 rounded text-xs font-bold bg-red-100 text-red-700 hover:bg-blue-200 transition"
                         >
-                          ✏️ Sửa
+                          âœï¸ Sá»­a
                         </button>
                         <button
                           onClick={() => handleDelete(promo.promotion_id)}
                           className="px-3 py-1.5 rounded text-xs font-bold bg-red-100 text-red-700 hover:bg-red-200 transition"
                         >
-                          🗑️ Xóa
+                          ðŸ—‘ï¸ XÃ³a
                         </button>
                       </div>
                     </td>
@@ -354,7 +354,7 @@ const PromotionManagement = () => {
                 {promotions.length === 0 && (
                   <tr>
                     <td colSpan="9" className="px-4 py-12 text-center text-gray-400">
-                      Chưa có khuyến mãi nào. Nhấn "Tạo khuyến mãi mới" để bắt đầu!
+                      ChÆ°a cÃ³ khuyáº¿n mÃ£i nÃ o. Nháº¥n "Táº¡o khuyáº¿n mÃ£i má»›i" Ä‘á»ƒ báº¯t Ä‘áº§u!
                     </td>
                   </tr>
                 )}

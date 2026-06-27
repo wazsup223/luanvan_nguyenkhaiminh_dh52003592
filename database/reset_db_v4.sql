@@ -1,4 +1,4 @@
--- ============================================
+﻿-- ============================================
 -- reset_db_v4.sql
 -- Xóa sạch + Tạo mới + Seed data (1 file duy nhất)
 -- Chuẩn 3NF + Đơn giản hóa over-engineered
@@ -385,6 +385,104 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ============================================
+
+
+-- ============================================
+-- BƯỚC 2b: USER BEHAVIOR TRACKING (4 BẢNG MỚI - F13)
+-- Chuẩn 3NF, Liên kết FK rõ ràng với hệ thống hiện tại
+-- ============================================
+
+-- Bảng 1: user_behavior_log — Ghi lại mọi hành vi người dùng
+-- 3NF: Chỉ lưu FK, không duplicate thông tin user/item/category
+CREATE TABLE IF NOT EXISTS `user_behavior_log` (
+  `log_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `aaction_type` ENUM('view_item','add_to_cart','place_order','search','add_favorite','remove_favorite','rate_item','view_category','click_recommendation') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_id` INT DEFAULT NULL,
+  `category_id` INT DEFAULT NULL,
+  `search_query` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `metadata` JSON DEFAULT NULL COMMENT 'Dữ liệu bổ sung: quantity, price, rating, v.v.',
+  `session_id` VARCHAR(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Phiên duyệt web',
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`log_id`),
+  KEY `idx_ubl_user` (`user_id`),
+  KEY `idx_ubl_action` (`aaction_type`),
+  KEY `idx_ubl_item` (`item_id`),
+  KEY `idx_ubl_created` (`created_at`),
+  KEY `idx_ubl_user_action` (`user_id`, `aaction_type`),
+  KEY `idx_ubl_user_item` (`user_id`, `item_id`),
+  CONSTRAINT `fk_ubl_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ubl_item` FOREIGN KEY (`item_id`) REFERENCES `menu_items` (`item_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_ubl_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng 2: user_preferences — Sở thích người dùng (tổng hợp từ hành vi)
+-- 3NF: 1:1 với users, chỉ lưu FK đến category/item
+CREATE TABLE IF NOT EXISTS `user_preferences` (
+  `preference_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `ffavorite_category_id` INT DEFAULT NULL COMMENT 'Danh mục đặt nhiều nhất (FK -> categories)',
+  `aavg_order_value` DECIMAL(10,2) DEFAULT 0.00 COMMENT 'Giá trị đơn trung bình',
+  `preferred_order_time` VARCHAR(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Khung giờ hay đặt: sáng/trưa/chiều/tối',
+  `spice_level` ENUM('none','mild','medium','hot') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mức cay ưa thích',
+  `dietary_tags` JSON DEFAULT NULL COMMENT 'Danh sách tags ăn kiêng',
+  `aallergen_avoid` JSON DEFAULT NULL COMMENT 'Danh sách dị ứng cần tránh',
+  `total_orders` INT DEFAULT 0,
+  `total_spent` DECIMAL(12,2) DEFAULT 0.00,
+  `most_ordered_item_id` INT DEFAULT NULL,
+  `last_order_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`preference_id`),
+  UNIQUE KEY `uk_pref_user` (`user_id`),
+  KEY `idx_pref_category` (`ffavorite_category_id`),
+  KEY `idx_pref_most_item` (`most_ordered_item_id`),
+  CONSTRAINT `fk_pref_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pref_category` FOREIGN KEY (`ffavorite_category_id`) REFERENCES `categories` (`category_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_pref_most_item` FOREIGN KEY (`most_ordered_item_id`) REFERENCES `menu_items` (`item_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng 3: user_favorites — Món ăn yêu thích (thủ công + tự động)
+-- 3NF: Chỉ lưu user-item pair, FK đến user và menu_item
+CREATE TABLE IF NOT EXISTS `user_favorites` (
+  `ffavorite_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `item_id` INT NOT NULL,
+  `source` ENUM('manual','auto_favorite') COLLATE utf8mb4_unicode_ci DEFAULT 'manual' COMMENT 'manual = tự thêm, auto = hệ thống tự thêm khi đặt >=3 lần',
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ffavorite_id`),
+  UNIQUE KEY `uk_fav_user_item` (`user_id`, `item_id`),
+  KEY `idx_fav_user` (`user_id`),
+  KEY `idx_fav_item` (`item_id`),
+  CONSTRAINT `fk_fav_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fav_item` FOREIGN KEY (`item_id`) REFERENCES `menu_items` (`item_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng 4: user_order_history — Lịch sử đơn hàng chi tiết (denormalized cho query nhanh)
+-- 3NF Compliance Note: Đây là bảng log/history, chấp nhận snapshot (item_name, unit_price)
+-- vì giá món có thể thay đổi theo thời gian. FK vẫn đầy đủ đến user, order, item.
+CREATE TABLE IF NOT EXISTS `user_order_history` (
+  `history_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `order_id` INT NOT NULL,
+  `item_id` INT NOT NULL,
+  `item_name` VARCHAR(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Snapshot tên món lúc đặt',
+  `quantity` INT NOT NULL DEFAULT 1,
+  `unit_price` DECIMAL(10,2) NOT NULL COMMENT 'Snapshot giá lúc đặt',
+  `category_id` INT DEFAULT NULL,
+  `order_date` TIMESTAMP NOT NULL,
+  `rating` INT DEFAULT NULL COMMENT 'Đánh giá sao nếu có (FK đến reviews)',
+  PRIMARY KEY (`history_id`),
+  KEY `idx_uoh_user` (`user_id`),
+  KEY `idx_uoh_order` (`order_id`),
+  KEY `idx_uoh_item` (`item_id`),
+  KEY `idx_uoh_date` (`order_date`),
+  KEY `idx_uoh_user_date` (`user_id`, `order_date`),
+  CONSTRAINT `fk_uoh_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_uoh_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_uoh_item` FOREIGN KEY (`item_id`) REFERENCES `menu_items` (`item_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 -- BƯỚC 3: SEED DATA (DỮ LIỆU MẪU)
 -- ============================================
 
@@ -732,6 +830,95 @@ INSERT INTO `notifications` (`notification_id`, `user_id`, `branch_id`, `notific
 (4, 18, 1, 'payment_received', 'Thanh toán thành công', 'Đơn hàng #2 đã thanh toán qua MoMo', 1, 2),
 (5, 19, 2, 'order_created', 'Đơn hàng #3 đã tạo', 'Khách hàng Nguyễn Văn A đặt món', 0, 3);
 
+
+
+-- --------------------------------------------------------
+-- 3.21: user_behavior_log — Hành vi người dùng (dựa trên orders & reviews có sẵn)
+-- --------------------------------------------------------
+INSERT INTO user_behavior_log (log_id, user_id, action_type, item_id, category_id, search_query, metadata, session_id, created_at) VALUES
+(1, 17, 'view_item', 1, 1, NULL, '{"source":"home"}', 'SESSION-A01', '2026-06-01 10:30:00'),
+(2, 17, 'add_to_cart', 1, 1, NULL, '{"quantity":1,"price":65000}', 'SESSION-A01', '2026-06-01 10:32:00'),
+(3, 17, 'view_item', 14, 4, NULL, '{"source":"menu"}', 'SESSION-A01', '2026-06-01 10:33:00'),
+(4, 17, 'add_to_cart', 14, 4, NULL, '{"quantity":2,"price":15000}', 'SESSION-A01', '2026-06-01 10:33:30'),
+(5, 17, 'view_item', 12, 10, NULL, '{"source":"menu"}', 'SESSION-A01', '2026-06-01 10:34:00'),
+(6, 17, 'add_to_cart', 12, 10, NULL, '{"quantity":1,"price":50000}', 'SESSION-A01', '2026-06-01 10:34:30'),
+(7, 17, 'place_order', NULL, NULL, NULL, '{"order_id":1,"total":145000}', 'SESSION-A01', '2026-06-01 10:35:00'),
+(8, 18, 'view_item', 2, 1, NULL, '{"source":"home"}', 'SESSION-B01', '2026-06-02 09:15:00'),
+(9, 18, 'add_to_cart', 2, 1, NULL, '{"quantity":2,"price":45000}', 'SESSION-B01', '2026-06-02 09:16:00'),
+(10, 18, 'view_item', 5, 2, NULL, '{"source":"menu"}', 'SESSION-B01', '2026-06-02 09:17:00'),
+(11, 18, 'add_to_cart', 5, 2, NULL, '{"quantity":1,"price":150000}', 'SESSION-B01', '2026-06-02 09:17:30'),
+(12, 18, 'view_item', 15, 11, NULL, '{"source":"menu"}', 'SESSION-B01', '2026-06-02 09:18:00'),
+(13, 18, 'add_to_cart', 15, 11, NULL, '{"quantity":3,"price":10000}', 'SESSION-B01', '2026-06-02 09:18:30'),
+(14, 18, 'place_order', NULL, NULL, NULL, '{"order_id":2,"total":180000}', 'SESSION-B01', '2026-06-02 09:20:00'),
+(15, 19, 'view_item', 9, 3, NULL, '{"source":"home"}', 'SESSION-C01', '2026-06-02 10:00:00'),
+(16, 19, 'add_to_cart', 9, 3, NULL, '{"quantity":1,"price":45000}', 'SESSION-C01', '2026-06-02 10:01:00'),
+(17, 19, 'view_item', 16, 4, NULL, '{"source":"menu"}', 'SESSION-C01', '2026-06-02 10:02:00'),
+(18, 19, 'add_to_cart', 16, 4, NULL, '{"quantity":2,"price":20000}', 'SESSION-C01', '2026-06-02 10:02:30'),
+(19, 19, 'place_order', NULL, NULL, NULL, '{"order_id":3,"total":95000}', 'SESSION-C01', '2026-06-02 10:05:00'),
+(20, 20, 'view_category', NULL, 2, NULL, '{"source":"home"}', 'SESSION-D01', '2026-06-02 14:00:00'),
+(21, 20, 'view_item', 6, 2, NULL, '{"source":"category"}', 'SESSION-D01', '2026-06-02 14:01:00'),
+(22, 20, 'add_to_cart', 6, 2, NULL, '{"quantity":1,"price":135000}', 'SESSION-D01', '2026-06-02 14:01:30'),
+(23, 20, 'view_item', 15, 11, NULL, '{"source":"menu"}', 'SESSION-D01', '2026-06-02 14:02:00'),
+(24, 20, 'add_to_cart', 15, 11, NULL, '{"quantity":1,"price":10000}', 'SESSION-D01', '2026-06-02 14:02:30'),
+(25, 20, 'place_order', NULL, NULL, NULL, '{"order_id":4,"total":135000}', 'SESSION-D01', '2026-06-02 14:05:00'),
+(26, 20, 'rate_item', 6, 2, NULL, '{"rating":5,"review_id":6}', 'SESSION-D01', '2026-06-02 14:30:00'),
+(27, 21, 'search', NULL, NULL, 'burger ca hoi', NULL, 'SESSION-E01', '2026-06-02 15:00:00'),
+(28, 21, 'view_item', 3, 1, NULL, '{"source":"search"}', 'SESSION-E01', '2026-06-02 15:01:00'),
+(29, 21, 'add_to_cart', 3, 1, NULL, '{"quantity":1,"price":85000}', 'SESSION-E01', '2026-06-02 15:01:30'),
+(30, 21, 'view_item', 17, 12, NULL, '{"source":"menu"}', 'SESSION-E01', '2026-06-02 15:02:00'),
+(31, 21, 'add_to_cart', 17, 12, NULL, '{"quantity":2,"price":25000}', 'SESSION-E01', '2026-06-02 15:02:30'),
+(32, 21, 'place_order', NULL, NULL, NULL, '{"order_id":5,"total":120000}', 'SESSION-E01', '2026-06-02 15:05:00'),
+(33, 17, 'view_item', 9, 3, NULL, '{"source":"recommendation"}', 'SESSION-A02', '2026-06-02 18:00:00'),
+(34, 17, 'add_to_cart', 9, 3, NULL, '{"quantity":1,"price":45000}', 'SESSION-A02', '2026-06-02 18:00:30'),
+(35, 17, 'place_order', NULL, NULL, NULL, '{"order_id":6,"total":180000}', 'SESSION-A02', '2026-06-02 18:05:00'),
+(36, 17, 'click_recommendation', 7, 2, NULL, '{"score":85,"reason":"category_similar"}', 'SESSION-A02', '2026-06-02 18:01:00'),
+(37, 17, 'add_favorite', 1, 1, NULL, '{"source":"manual"}', 'SESSION-A01', '2026-06-01 11:00:00'),
+(38, 18, 'add_favorite', 2, 1, NULL, '{"source":"manual"}', 'SESSION-B01', '2026-06-02 09:30:00'),
+(39, 18, 'add_favorite', 5, 2, NULL, '{"source":"manual"}', 'SESSION-B01', '2026-06-02 09:31:00');
+
+-- --------------------------------------------------------
+-- 3.22: user_preferences — Sở thích tổng hợp (dựa trên lịch sử)
+-- --------------------------------------------------------
+INSERT INTO user_preferences (preference_id, user_id, favorite_category_id, avg_order_value, preferred_order_time, spice_level, dietary_tags, allergen_avoid, total_orders, total_spent, most_ordered_item_id, last_order_at) VALUES
+(1, 17, 1, 162500.00, 'toi', 'medium', '[]', '[]', 2, 325000.00, 1, '2026-06-02 18:05:00'),
+(2, 18, 2, 189000.00, 'sang', 'mild', '[]', '["peanut"]', 2, 378000.00, 2, '2026-06-02 09:20:00'),
+(3, 19, 3, 95000.00, 'sang', 'none', '["low-calorie"]', '[]', 1, 95000.00, 9, '2026-06-02 10:05:00'),
+(4, 20, 2, 135000.00, 'chieu', 'mild', '[]', '[]', 1, 135000.00, 6, '2026-06-02 14:05:00'),
+(5, 21, 1, 120000.00, 'chieu', 'none', '[]', '[]', 1, 120000.00, 3, '2026-06-02 15:05:00'),
+(6, 22, 1, 110000.00, 'toi', 'medium', '["halal"]', '["dairy"]', 1, 110000.00, 1, '2026-06-02 17:00:00'),
+(7, 23, 2, 160000.00, 'toi', 'mild', '[]', '[]', 1, 160000.00, 6, '2026-06-02 18:00:00'),
+(8, 24, 2, 157500.00, 'toi', 'medium', '[]', '[]', 1, 157500.00, 7, '2026-06-02 19:00:00'),
+(9, 25, 3, 240000.00, 'toi', 'hot', '["vegetarian"]', '[]', 1, 240000.00, 11, '2026-06-02 20:00:00');
+
+-- --------------------------------------------------------
+-- 3.23: user_favorites — Món ăn yêu thích
+-- --------------------------------------------------------
+INSERT INTO user_favorites (favorite_id, user_id, item_id, source, created_at) VALUES
+(1, 17, 1, 'manual', '2026-06-01 11:00:00'),
+(2, 17, 7, 'auto_favorite', '2026-06-02 18:01:00'),
+(3, 18, 2, 'manual', '2026-06-02 09:30:00'),
+(4, 18, 5, 'manual', '2026-06-02 09:31:00'),
+(5, 20, 6, 'manual', '2026-06-02 14:30:00'),
+(6, 22, 1, 'auto_favorite', '2026-06-02 17:30:00'),
+(7, 24, 7, 'auto_favorite', '2026-06-02 19:30:00');
+
+-- --------------------------------------------------------
+-- 3.24: user_order_history — Lịch sử đơn hàng (denormalized từ order_items)
+-- --------------------------------------------------------
+INSERT INTO `user_order_history` (`history_id`, `user_id`, `order_id`, `item_id`, `item_name`, `quantity`, `unit_price`, `category_id`, `order_date`, `rating`) VALUES
+(1, 17, 1, 1, 'Burger Bò D?c Bi?t', 1, 65000.00, 1, '2026-06-01 10:35:00', 5),
+(2, 17, 1, 14, 'Coca Cola (Lon)', 2, 15000.00, 4, '2026-06-01 10:35:00', 4),
+(3, 17, 1, 12, 'Bún Bò Hu?', 1, 50000.00, 10, '2026-06-01 10:35:00', NULL),
+(4, 18, 2, 2, 'Burger Gà Giòn', 2, 45000.00, 1, '2026-06-02 09:20:00', 5),
+(5, 18, 2, 5, 'Pizza H?i S?n', 1, 150000.00, 2, '2026-06-02 09:20:00', 3),
+(6, 18, 2, 15, 'Trà Dá (Ly)', 3, 10000.00, 11, '2026-06-02 09:20:00', NULL),
+(7, 19, 3, 9, 'Com T?m Su?n Nu?ng', 1, 45000.00, 3, '2026-06-02 10:05:00', 4),
+(8, 19, 3, 16, 'Nu?c Mía (Ly)', 2, 20000.00, 4, '2026-06-02 10:05:00', NULL),
+(9, 20, 4, 6, 'Pizza Th?t Bò', 1, 135000.00, 2, '2026-06-02 14:05:00', 5),
+(10, 20, 4, 15, 'Trà Dá (Ly)', 1, 10000.00, 11, '2026-06-02 14:05:00', NULL),
+(11, 21, 5, 3, 'Burger Cá H?i', 1, 85000.00, 1, '2026-06-02 15:05:00', 2),
+(12, 21, 5, 17, 'Cafe Su?a Dá', 2, 25000.00, 12, '2026-06-02 15:05:00', NULL);
+
 -- ============================================
 -- BƯỚC 4: TẠO VIEWS (TÍNH FINAL_AMOUNT ĐỘNG)
 -- ============================================
@@ -758,7 +945,7 @@ SELECT
   `b`.`branch_name` AS `branch_name`,
   COUNT(`o`.`order_id`) AS `total_orders`,
   SUM(`o`.`subtotal`) AS `total_revenue`,
-  AVG(`o`.`subtotal`) AS `avg_order_value`
+  AVG(`o`.`subtotal`) AS `aavg_order_value`
 FROM `orders` AS `o`
 JOIN `branches` AS `b` ON `o`.`branch_id` = `b`.`branch_id`
 WHERE `o`.`payment_status` = 'paid'
@@ -796,6 +983,8 @@ SELECT '✅ Database fastfood_multibranch (v4) created successfully!' AS message
 SELECT '✅ 3NF compliant: Removed final_amount & subtotal (now using views)' AS feature_1;
 SELECT '✅ Simplified: branch_hours_simple (replaced branch_hours)' AS feature_2;
 SELECT '✅ Simplified: expenses (removed expense_categories)' AS feature_3;
+SELECT '? 4 User Behavior tables: user_behavior_log, user_preferences, user_favorites, user_order_history' AS feature_6;
+SELECT '? Seeded: 39 behavior_logs, 9 preferences, 7 favorites, 12 order_histories' AS seed_behavior;
 SELECT '✅ Added branch_id to promotions & vouchers' AS feature_4;
 SELECT '✅ Renamed reviews → reviews (consistent naming)' AS feature_5;
 SELECT '✅ Seeded: 5 branches, 26 users, 21 menu items, 12 orders' AS seed_data;

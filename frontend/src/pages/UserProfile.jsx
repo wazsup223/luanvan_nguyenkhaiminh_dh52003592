@@ -1,7 +1,7 @@
-/**
+﻿/**
  * ============================================
- * USER PROFILE PAGE - F14 Quản lý người dùng
- * Trang xem và chỉnh sửa thông tin cá nhân
+ * USER PROFILE PAGE - F14 Quáº£n lÃ½ ngÆ°á»i dÃ¹ng
+ * Trang xem vÃ  chá»‰nh sá»­a thÃ´ng tin cÃ¡ nhÃ¢n
  * ============================================
  */
 
@@ -85,13 +85,13 @@ export default function UserProfile() {
       if (data.success) {
         setUser({ ...user, ...form });
         localStorage.setItem('fastfood_user', JSON.stringify({ ...user, ...form }));
-        setMessage('Cập nhật thành công!');
+        setMessage('Cáº­p nháº­t thÃ nh cÃ´ng!');
         setEditing(false);
       } else {
-        setMessage(data.message || 'Cập nhật thất bại');
+        setMessage(data.message || 'Cáº­p nháº­t tháº¥t báº¡i');
       }
     } catch (err) {
-      setMessage('Lỗi kết nối server');
+      setMessage('Lá»—i káº¿t ná»‘i server');
     } finally {
       setSaving(false);
     }
@@ -101,8 +101,8 @@ export default function UserProfile() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
-          <p className="text-gray-500">Đang tải...</p>
+          <div className="text-4xl mb-4">â³</div>
+          <p className="text-gray-500">Äang táº£i...</p>
         </div>
       </div>
     );
@@ -115,17 +115,17 @@ export default function UserProfile() {
         <div className="max-w-xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">👤</span>
+              <span className="text-3xl">ðŸ‘¤</span>
               <div>
-                <h1 className="text-xl font-black">Hồ sơ cá nhân</h1>
-                <p className="text-red-100 text-sm">Quản lý thông tin tài khoản</p>
+                <h1 className="text-xl font-black">Há»“ sÆ¡ cÃ¡ nhÃ¢n</h1>
+                <p className="text-red-100 text-sm">Quáº£n lÃ½ thÃ´ng tin tÃ i khoáº£n</p>
               </div>
             </div>
             <button
               onClick={() => navigate('/')}
               className="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition font-medium"
             >
-              ← Trang chủ
+              â† Trang chá»§
             </button>
           </div>
         </div>
@@ -137,14 +137,14 @@ export default function UserProfile() {
           <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-xl p-4 mb-4 shadow-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="text-4xl">⭐</span>
+                <span className="text-4xl">â­</span>
                 <div>
-                  <p className="text-white font-bold text-lg">{user.points} điểm</p>
-                  <p className="text-yellow-100 text-sm">Tiết kiệm khi đặt món!</p>
+                  <p className="text-white font-bold text-lg">{user.points} Ä‘iá»ƒm</p>
+                  <p className="text-yellow-100 text-sm">Tiáº¿t kiá»‡m khi Ä‘áº·t mÃ³n!</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-white text-sm font-medium">≈ {(user.points * 1000).toLocaleString('vi-VN')}đ</p>
+                <p className="text-white text-sm font-medium">â‰ˆ {(user.points * 1000).toLocaleString('vi-VN')}Ä‘</p>
               </div>
             </div>
           </div>
@@ -161,14 +161,14 @@ export default function UserProfile() {
               <p className="text-xl font-bold text-gray-900">{user?.full_name || user?.username}</p>
               <p className="text-gray-500">{user?.role}</p>
               {user?.points > 0 && (
-                <p className="text-sm text-yellow-600">⭐ {user.points} điểm tích lũy</p>
+                <p className="text-sm text-yellow-600">â­ {user.points} Ä‘iá»ƒm tÃ­ch lÅ©y</p>
               )}
             </div>
           </div>
 
           {/* Message */}
           {message && (
-            <div className={`mb-4 p-3 rounded-lg ${message.includes('thành công') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            <div className={`mb-4 p-3 rounded-lg ${message.includes('thÃ nh cÃ´ng') ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700'}`}>
               {message}
             </div>
           )}
@@ -177,7 +177,7 @@ export default function UserProfile() {
           <div className="space-y-4">
             {/* Username (readonly) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">TÃªn Ä‘Äƒng nháº­p</label>
               <input
                 type="text"
                 value={user?.username || ''}
@@ -188,7 +188,7 @@ export default function UserProfile() {
 
             {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Há» vÃ  tÃªn</label>
               <input
                 type="text"
                 name="full_name"
@@ -196,7 +196,7 @@ export default function UserProfile() {
                 onChange={handleChange}
                 disabled={!editing}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Nhập họ và tên"
+                placeholder="Nháº­p há» vÃ  tÃªn"
               />
             </div>
 
@@ -210,13 +210,13 @@ export default function UserProfile() {
                 onChange={handleChange}
                 disabled={!editing}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Nhập email"
+                placeholder="Nháº­p email"
               />
             </div>
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Sá»‘ Ä‘iá»‡n thoáº¡i</label>
               <input
                 type="tel"
                 name="phone"
@@ -224,13 +224,13 @@ export default function UserProfile() {
                 onChange={handleChange}
                 disabled={!editing}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Nhập số điện thoại"
+                placeholder="Nháº­p sá»‘ Ä‘iá»‡n thoáº¡i"
               />
             </div>
 
             {/* Address */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Äá»‹a chá»‰</label>
               <textarea
                 name="address"
                 value={form.address}
@@ -238,7 +238,7 @@ export default function UserProfile() {
                 disabled={!editing}
                 rows={2}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Nhập địa chỉ (nếu cần giao hàng)"
+                placeholder="Nháº­p Ä‘á»‹a chá»‰ (náº¿u cáº§n giao hÃ ng)"
               />
             </div>
           </div>
@@ -251,7 +251,7 @@ export default function UserProfile() {
                   onClick={() => setEditing(true)}
                   className="flex-1 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
                 >
-                  ✏️ Chỉnh sửa
+                  âœï¸ Chá»‰nh sá»­a
                 </button>
                 <button
                   onClick={() => {
@@ -260,7 +260,7 @@ export default function UserProfile() {
                   }}
                   className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition"
                 >
-                  Đăng xuất
+                  ÄÄƒng xuáº¥t
                 </button>
               </>
             ) : (
@@ -270,14 +270,14 @@ export default function UserProfile() {
                   className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition"
                   disabled={saving}
                 >
-                  Hủy
+                  Há»§y
                 </button>
                 <button
                   onClick={handleSave}
                   className="flex-1 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
                   disabled={saving}
                 >
-                  {saving ? 'Đang lưu...' : '💾 Lưu thay đổi'}
+                  {saving ? 'Äang lÆ°u...' : 'ðŸ’¾ LÆ°u thay Ä‘á»•i'}
                 </button>
               </>
             )}
@@ -286,12 +286,12 @@ export default function UserProfile() {
 
         {/* Order History Quick Link */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mt-4">
-          <h2 className="font-bold text-gray-900 mb-4">📦 Đơn hàng gần đây</h2>
+          <h2 className="font-bold text-gray-900 mb-4">ðŸ“¦ ÄÆ¡n hÃ ng gáº§n Ä‘Ã¢y</h2>
           <button
             onClick={() => navigate('/')}
             className="w-full py-3 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg font-medium hover:border-red-500 hover:text-red-500 transition"
           >
-            Xem lịch sử đơn hàng →
+            Xem lá»‹ch sá»­ Ä‘Æ¡n hÃ ng â†’
           </button>
         </div>
       </div>

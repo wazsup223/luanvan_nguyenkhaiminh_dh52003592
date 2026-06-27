@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS } from '../config/api';
+
+// Auth token helper for tracking
+const getToken = () => localStorage.getItem('fastfood_token') || '';
 const FOOD_IMAGES = [
   'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop',
   'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop',
@@ -27,7 +30,7 @@ function MenuPage({ menuItems }) {
     try {
       await fetch(API_ENDPOINTS.RECOMMENDATIONS_TRACK, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
         body: JSON.stringify({ 
           user_id: parseInt(userId), 
           action_type: actionType, 
@@ -35,7 +38,7 @@ function MenuPage({ menuItems }) {
           ...extra 
         })
       });
-    } catch (e) { console.log('Track error:', e); }
+    } catch (e) { console.error('Track error:', e); }
   };
 
   useEffect(() => {
@@ -47,7 +50,7 @@ function MenuPage({ menuItems }) {
       setCart([]);
     }
     const cats = [...new Set(menuItems.map(i => i.category_name).filter(Boolean))];
-    setCategories(['Tất cả', ...cats]);
+    setCategories(['Táº¥t cáº£', ...cats]);
   }, [menuItems]);
 
   const addToCart = (item) => {
@@ -85,7 +88,9 @@ function MenuPage({ menuItems }) {
   useEffect(() => {
     const uid = localStorage.getItem('fastfood_userId');
     if (!uid) return;
-    fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_USER(uid))
+    fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_USER(uid), {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    })
       .then(r => r.json())
       .then(data => { if (data.success) setFavItems(new Set(data.data.map(f => f.item_id))); })
       .catch(() => {});
@@ -93,15 +98,19 @@ function MenuPage({ menuItems }) {
 
   const toggleFavorite = async (itemId) => {
     const uid = localStorage.getItem('fastfood_userId');
-    if (!uid) { alert('Vui lòng đăng nhập!'); return; }
+    if (!uid) { alert('Vui lÃ²ng Ä‘Äƒng nháº­p!'); return; }
     setFavLoading(prev => ({ ...prev, [itemId]: true }));
     try {
       if (favItems.has(itemId)) {
-        await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_DELETE(uid, itemId), { method: 'DELETE' });
+        await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_DELETE(uid, itemId), {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
         setFavItems(prev => { const next = new Set(prev); next.delete(itemId); return next; });
       } else {
         await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
           body: JSON.stringify({ user_id: parseInt(uid), item_id: itemId })
         });
         setFavItems(prev => new Set([...prev, itemId]));
@@ -119,9 +128,9 @@ function MenuPage({ menuItems }) {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-black text-gray-900 mb-2">
-          🍔 Thực đơn <span className="text-red-600">FastFood</span>
+          ðŸ” Thá»±c Ä‘Æ¡n <span className="text-red-600">FastFood</span>
         </h1>
-        <p className="text-gray-500">{menuItems.length} món ăn ngon đang chờ bạn</p>
+        <p className="text-gray-500">{menuItems.length} mÃ³n Äƒn ngon Ä‘ang chá» báº¡n</p>
       </div>
 
       {/* Category tabs */}
@@ -129,9 +138,9 @@ function MenuPage({ menuItems }) {
         {categories.map(c => (
           <button
             key={c}
-            onClick={() => setCat(c === 'Tất cả' ? 'all' : c)}
+            onClick={() => setCat(c === 'Táº¥t cáº£' ? 'all' : c)}
             className={`px-4 py-2 rounded-full text-sm font-bold transition ${
-              (c === 'Tất cả' ? cat === 'all' : cat === c)
+              (c === 'Táº¥t cáº£' ? cat === 'all' : cat === c)
                 ? 'bg-red-600 text-white shadow-md shadow-red-200'
                 : 'bg-white text-gray-600 border border-gray-200 hover:border-red-300 hover:text-red-600'
             }`}
@@ -144,8 +153,8 @@ function MenuPage({ menuItems }) {
       {/* Grid */}
       {filtered.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-5xl mb-4">🍽️</p>
-          <p className="text-gray-500">Không có món nào trong danh mục này</p>
+          <p className="text-5xl mb-4">ðŸ½ï¸</p>
+          <p className="text-gray-500">KhÃ´ng cÃ³ mÃ³n nÃ o trong danh má»¥c nÃ y</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -164,7 +173,7 @@ function MenuPage({ menuItems }) {
                     onError={e => { e.target.src = FOOD_IMAGES[i % FOOD_IMAGES.length]; }}
                   />
                   <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
-                    {item.price?.toLocaleString('vi-VN')}đ
+                    {item.price?.toLocaleString('vi-VN')}Ä‘
                   </div>
                 </div>
                 <div className="p-3">
@@ -175,10 +184,10 @@ function MenuPage({ menuItems }) {
                       trackBehavior('view_item', item.item_id);
                     }}
                   >{item.item_name}</h3>
-                  <p className="text-xs text-gray-400 mb-2">{item.category_name || 'Món ăn'}</p>
+                  <p className="text-xs text-gray-400 mb-2">{item.category_name || 'MÃ³n Äƒn'}</p>
                   {qty > 0 ? (
                     <div className="flex items-center justify-between">
-                      <button onClick={() => changeQty(item.item_id, -1)} className="w-8 h-8 bg-red-100 text-red-600 rounded-full font-bold hover:bg-red-200 transition flex items-center justify-center">−</button>
+                      <button onClick={() => changeQty(item.item_id, -1)} className="w-8 h-8 bg-red-100 text-red-600 rounded-full font-bold hover:bg-red-200 transition flex items-center justify-center">âˆ’</button>
                       <span className="font-black text-red-600">{qty}</span>
                       <button onClick={() => changeQty(item.item_id, 1)}  className="w-8 h-8 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition flex items-center justify-center">+</button>
                     </div>
@@ -187,11 +196,11 @@ function MenuPage({ menuItems }) {
                       onClick={() => addToCart(item)}
                       className={`w-full py-2 rounded-xl text-sm font-bold transition ${
                         added[item.item_id]
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-yellow-500 text-white'
                           : 'bg-red-600 text-white hover:bg-red-700'
                       }`}
                     >
-                      {added[item.item_id] ? '✅ Đã thêm!' : '🛒 Thêm vào giỏ'}
+                      {added[item.item_id] ? 'âœ… ÄÃ£ thÃªm!' : 'ðŸ›’ ThÃªm vÃ o giá»'}
                     </button>
                   )}
                 </div>
@@ -215,25 +224,25 @@ function MenuPage({ menuItems }) {
                 onClick={() => setSelectedItem(null)}
                 className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition"
               >
-                ✕
+                âœ•
               </button>
               <button
                 onClick={() => toggleFavorite(selectedItem.item_id)}
                 className={`absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition ${favItems.has(selectedItem.item_id) ? 'bg-red-600 text-white' : 'bg-white text-gray-400 hover:text-red-500'}`}
                 disabled={favLoading[selectedItem.item_id]}
               >
-                {favLoading[selectedItem.item_id] ? '⏳' : favItems.has(selectedItem.item_id) ? '❤️' : '🤍'}
+                {favLoading[selectedItem.item_id] ? 'â³' : favItems.has(selectedItem.item_id) ? 'â¤ï¸' : 'ðŸ¤'}
               </button>
             </div>
             <div className="p-6">
               <h2 className="text-2xl font-bold mb-2">{selectedItem.item_name}</h2>
-              <p className="text-gray-600 mb-4">{selectedItem.description || 'Món ăn ngon từ FastFood'}</p>
+              <p className="text-gray-600 mb-4">{selectedItem.description || 'MÃ³n Äƒn ngon tá»« FastFood'}</p>
               <div className="flex items-center justify-between mb-6">
                 <span className="text-3xl font-black text-red-600">
-                  {selectedItem.price?.toLocaleString('vi-VN')}đ
+                  {selectedItem.price?.toLocaleString('vi-VN')}Ä‘
                 </span>
                 <span className="text-sm text-gray-500">
-                  ⏱️ {selectedItem.preparation_time || 15} phút
+                  â±ï¸ {selectedItem.preparation_time || 15} phÃºt
                 </span>
               </div>
               <button
@@ -243,7 +252,7 @@ function MenuPage({ menuItems }) {
                 }}
                 className="w-full py-3 bg-red-600 text-white rounded-xl font-bold text-lg hover:bg-red-700 transition"
               >
-                🛒 Thêm vào giỏ - {selectedItem.price?.toLocaleString('vi-VN')}đ
+                ðŸ›’ ThÃªm vÃ o giá» - {selectedItem.price?.toLocaleString('vi-VN')}Ä‘
               </button>
             </div>
           </div>

@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
 
+// Auth token helper
+const getToken = () => localStorage.getItem('fastfood_token') || '';
+const authHeaders = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` });
+
 const RecommendationsPage = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
@@ -48,7 +52,7 @@ const RecommendationsPage = () => {
   const fetchRecommendations = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_PERSONALIZED(userId));
+      const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_PERSONALIZED(userId), { headers: authHeaders() });
       const data = await res.json();
       if (data.success) {
         setRecommendations(data.data);
@@ -62,7 +66,7 @@ const RecommendationsPage = () => {
   const fetchFavorites = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_USER(userId));
+      const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_USER(userId), { headers: authHeaders() });
       const data = await res.json();
       if (data.success) {
         setFavorites(data.data);
@@ -76,7 +80,7 @@ const RecommendationsPage = () => {
   const fetchHistory = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_ENDPOINTS.RECOMMENDATIONS_HISTORY(userId)}?limit=50`);
+      const res = await fetch(`${API_ENDPOINTS.RECOMMENDATIONS_HISTORY(userId)}?limit=50`, { headers: authHeaders() });
       const data = await res.json();
       if (data.success) {
         setHistory(data.data);
@@ -90,7 +94,7 @@ const RecommendationsPage = () => {
   const fetchPreferences = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_PREFERENCES(userId));
+      const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_PREFERENCES(userId), { headers: authHeaders() });
       const data = await res.json();
       if (data.success && data.data) {
         setPreferences(data.data);
@@ -135,7 +139,8 @@ const RecommendationsPage = () => {
     
     try {
       const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_FAVORITES_DELETE(userId, itemId), {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: authHeaders()
       });
       const data = await res.json();
       if (data.success) {
@@ -151,7 +156,7 @@ const RecommendationsPage = () => {
     try {
       const res = await fetch(API_ENDPOINTS.RECOMMENDATIONS_PREFERENCES(userId), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({
           spice_level: spiceLevel,
           dietary_tags: dietaryTags,

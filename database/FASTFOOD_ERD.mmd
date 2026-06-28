@@ -1,0 +1,336 @@
+erDiagram
+    BRANCHES {
+        int branch_id PK
+        varchar branch_name
+        varchar address
+        varchar phone
+        int manager_id FK
+        tinyint is_active
+        varchar email
+    }
+
+    USERS {
+        int user_id PK
+        int branch_id FK
+        varchar username UK
+        varchar password_hash
+        varchar email
+        varchar phone
+        varchar full_name
+        enum role
+        int points
+        tinyint is_active
+        datetime last_login
+    }
+
+    BRANCH_HOURS_SIMPLE {
+        int branch_id PK,FK
+        time open_time
+        time close_time
+        tinyint is_24h
+        varchar closed_days
+    }
+
+    TABLES {
+        int table_id PK
+        int branch_id FK
+        varchar table_number
+        int capacity
+        enum status
+    }
+
+    CATEGORIES {
+        int category_id PK
+        varchar category_name
+        text description
+        tinyint is_active
+        int display_order
+    }
+
+    SUPPLIERS {
+        int supplier_id PK
+        varchar supplier_name UK
+        varchar phone
+        varchar email
+        varchar address
+        tinyint is_active
+        timestamp created_at
+    }
+
+    MENU_ITEMS {
+        int item_id PK
+        int category_id FK
+        varchar item_name
+        text description
+        decimal price
+        varchar image_url
+        int preparation_time
+        tinyint is_available
+        tinyint is_featured
+        decimal average_rating
+    }
+
+    MENU_INVENTORY_MAPPING {
+        int mapping_id PK
+        int item_id FK
+        int inventory_id FK
+        decimal quantity_required
+        varchar unit
+        text note
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    INVENTORY_ITEMS {
+        int inventory_id PK
+        int branch_id FK
+        varchar item_name
+        decimal quantity
+        varchar unit
+        decimal min_threshold
+        decimal cost_price
+        int supplier_id FK
+        datetime last_import_date
+    }
+
+    ORDERS {
+        int order_id PK
+        int branch_id FK
+        int user_id FK
+        int staff_id FK
+        enum order_type
+        enum status
+        decimal discount_amount
+        decimal tax_amount
+        enum payment_method
+        enum payment_status
+        int table_id FK
+        varchar customer_name
+        varchar customer_phone
+        varchar customer_address
+        decimal subtotal
+        text notes
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ORDER_ITEMS {
+        int order_item_id PK
+        int order_id FK
+        int item_id FK
+        int quantity
+        decimal unit_price
+        varchar notes
+    }
+
+    PROMOTIONS {
+        int promotion_id PK
+        int branch_id FK
+        varchar promotion_code UK
+        varchar promotion_name
+        enum discount_type
+        decimal discount_value
+        decimal min_order_amount
+        int usage_limit
+        int usage_count
+        datetime start_date
+        datetime end_date
+        tinyint is_active
+    }
+
+    ORDER_PROMOTIONS {
+        int order_promotion_id PK
+        int order_id FK
+        int promotion_id FK
+        decimal discount_applied
+        timestamp created_at
+    }
+
+    PAYMENT_TRANSACTIONS {
+        int transaction_id PK
+        int order_id FK
+        enum payment_method
+        varchar external_transaction_id
+        decimal amount
+        enum status
+        json callback_payload
+        timestamp callback_time
+        tinyint reconciled
+        timestamp created_at
+    }
+
+    REVIEWS {
+        int review_id PK
+        int order_id FK
+        int user_id FK
+        int item_id FK
+        int rating
+        text comment
+        tinyint has_photo
+        varchar photo_url
+        tinyint is_approved
+        timestamp created_at
+    }
+
+    LOYALTY_REWARDS {
+        int reward_id PK
+        varchar reward_name
+        int points_required
+        enum reward_type
+        text description
+        tinyint is_active
+    }
+
+    USER_REWARDS {
+        int user_reward_id PK
+        int user_id FK
+        int reward_id FK
+        int points_spent
+        tinyint is_redeemed
+        datetime redeemed_at
+        datetime expires_at
+        tinyint is_used
+    }
+
+    VOUCHERS {
+        int voucher_id PK
+        int branch_id FK
+        varchar voucher_code UK
+        varchar voucher_name
+        enum voucher_type
+        decimal discount_value
+        enum discount_type
+        decimal min_order_amount
+        decimal max_discount_amount
+        int usage_limit
+        int usage_count
+        date valid_from
+        date valid_to
+        tinyint is_active
+        timestamp created_at
+    }
+
+    USER_PREFERENCES {
+        int preference_id PK
+        int user_id FK,UK
+        int favorite_category_id FK
+        decimal avg_order_value
+        varchar preferred_order_time
+        enum spice_level
+        json dietary_tags
+        json allergen_avoid
+        int total_orders
+        decimal total_spent
+        int most_ordered_item_id FK
+        timestamp last_order_at
+        timestamp updated_at
+    }
+
+    USER_FAVORITES {
+        int favorite_id PK
+        int user_id FK
+        int item_id FK
+        enum source
+        timestamp created_at
+    }
+
+    USER_BEHAVIOR_LOG {
+        int log_id PK
+        int user_id FK
+        enum action_type
+        int item_id FK
+        int category_id FK
+        varchar search_query
+        json metadata
+        varchar session_id
+        timestamp created_at
+    }
+
+    USER_ORDER_HISTORY {
+        int history_id PK
+        int user_id FK
+        int order_id FK
+        int item_id FK
+        varchar item_name
+        int quantity
+        decimal unit_price
+        int category_id
+        timestamp order_date
+        int rating
+    }
+
+    NOTIFICATIONS {
+        int notification_id PK
+        int user_id FK
+        int branch_id FK
+        enum notification_type
+        varchar title
+        text message
+        tinyint is_read
+        int related_order_id FK
+        timestamp created_at
+    }
+
+    EXPENSES {
+        int expense_id PK
+        int branch_id FK
+        decimal amount
+        date expense_date
+        text description
+        int recorded_by FK
+        timestamp created_at
+    }
+
+    %% RELATIONSHIPS
+    BRANCHES ||--o{ USERS : "chi_nhánh"
+    BRANCHES ||--o{ TABLES : "có_bàn"
+    BRANCHES ||--o{ ORDERS : "có_đơn"
+    BRANCHES ||--o{ EXPENSES : "có_chi"
+    BRANCHES ||--o{ PROMOTIONS : "có_km"
+    BRANCHES ||--o{ VOUCHERS : "có_voucher"
+    BRANCHES ||--o{ NOTIFICATIONS : "gửi_thông_báo"
+    BRANCHES ||--o{ INVENTORY_ITEMS : "có_kho"
+    BRANCHES ||--o{ BRANCH_HOURS_SIMPLE : "giờ_mở_cửa"
+    BRANCHES ||--o{ EXPENSES : "ghi_nhận"
+    BRANCHES ||--|| USERS : "quản_lý"
+
+    USERS ||--o{ ORDERS : "đặt_hàng"
+    USERS ||--o{ ORDERS : "phục_vụ"
+    USERS ||--o{ REVIEWS : "đánh_giá"
+    USERS ||--o{ NOTIFICATIONS : "nhận"
+    USERS ||--o{ USER_REWARDS : "tích_điểm"
+    USERS ||--o{ USER_FAVORITES : "yêu_thích"
+    USERS ||--o{ USER_BEHAVIOR_LOG : "hành_vi"
+    USERS ||--|| USER_PREFERENCES : "tuỳ_chỉnh"
+
+    CATEGORIES ||--o{ MENU_ITEMS : "phân_loại"
+    CATEGORIES ||--o{ USER_PREFERENCES : "yêu_thích"
+    CATEGORIES ||--o{ USER_BEHAVIOR_LOG : "xem"
+
+    SUPPLIERS ||--o{ INVENTORY_ITEMS : "cung_cấp"
+
+    MENU_ITEMS ||--o{ ORDER_ITEMS : "nằm_trong"
+    MENU_ITEMS ||--o{ REVIEWS : "được_đánh_giá"
+    MENU_ITEMS ||--o{ USER_FAVORITES : "được_yêu"
+    MENU_ITEMS ||--o{ USER_BEHAVIOR_LOG : "tương_tác"
+    MENU_ITEMS ||--o{ USER_PREFERENCES : "món_yêu"
+    MENU_ITEMS ||--o{ MENU_INVENTORY_MAPPING : "công_thức"
+
+    INVENTORY_ITEMS ||--o{ MENU_INVENTORY_MAPPING : "dùng_trong"
+
+    ORDERS ||--o{ ORDER_ITEMS : "chứa"
+    ORDERS ||--o{ ORDER_PROMOTIONS : "áp_km"
+    ORDERS ||--o{ PAYMENT_TRANSACTIONS : "thanh_toán"
+    ORDERS ||--o{ NOTIFICATIONS : "sinh_thông_báo"
+    ORDERS ||--o{ REVIEWS : "sinh_đánh_giá"
+    ORDERS ||--o{ USER_ORDER_HISTORY : "lưu_lịch_sử"
+    ORDERS ||--o| TABLES : "tại_bàn"
+
+    ORDER_PROMOTIONS ||--|| PROMOTIONS : "áp_dụng"
+
+    PAYMENT_TRANSACTIONS }o--|| ORDERS : "thuộc_đơn"
+
+    USER_REWARDS ||--|| LOYALTY_REWARDS : "đổi_thưởng"
+
+    USER_ORDER_HISTORY ||--o{ ORDERS : "thuộc_đơn"
+    USER_ORDER_HISTORY ||--o{ MENU_ITEMS : "món"

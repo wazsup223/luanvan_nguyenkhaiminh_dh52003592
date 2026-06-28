@@ -288,12 +288,12 @@ CREATE TABLE IF NOT EXISTS `payment_transactions` (
   `amount` DECIMAL(10,2) NOT NULL,
   `status` ENUM('pending','success','failed','refunded') DEFAULT 'pending',
   `callback_payload` JSON DEFAULT NULL,
-  `callback_time` TIMESTAMP NULL DEFAULT NULL,
+  `callback_time` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `reconciled` TINYINT(1) DEFAULT 0,
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`transaction_id`),
-  KEY `fk_payment_order` (`order_id`),
-  CONSTRAINT `fk_payment_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE SET NULL
+  KEY `idx_order_id` (`order_id`),
+  CONSTRAINT `fk_payment_orders` FOREIGN KEY (`order_id`) REFERENCES `orders`(`order_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Bảng: order_promotions (Áp dụng khuyến mãi)
@@ -397,7 +397,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 CREATE TABLE IF NOT EXISTS `user_behavior_log` (
   `log_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `aaction_type` ENUM('view_item','add_to_cart','place_order','search','add_favorite','remove_favorite','rate_item','view_category','click_recommendation') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type` ENUM('view_item','add_to_cart','place_order','search','add_favorite','remove_favorite','rate_item','view_category','click_recommendation') COLLATE utf8mb4_unicode_ci NOT NULL,
   `item_id` INT DEFAULT NULL,
   `category_id` INT DEFAULT NULL,
   `search_query` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -406,10 +406,11 @@ CREATE TABLE IF NOT EXISTS `user_behavior_log` (
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`log_id`),
   KEY `idx_ubl_user` (`user_id`),
-  KEY `idx_ubl_action` (`aaction_type`),
+  KEY `idx_ubl_action` (`action_type`),
+  KEY `idx_ubl_session` (`session_id`),
   KEY `idx_ubl_item` (`item_id`),
   KEY `idx_ubl_created` (`created_at`),
-  KEY `idx_ubl_user_action` (`user_id`, `aaction_type`),
+  KEY `idx_ubl_user_action` (`user_id`, `action_type`),
   KEY `idx_ubl_user_item` (`user_id`, `item_id`),
   CONSTRAINT `fk_ubl_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_ubl_item` FOREIGN KEY (`item_id`) REFERENCES `menu_items` (`item_id`) ON DELETE SET NULL,

@@ -5,7 +5,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { API_ENDPOINTS } from '../config/api';
+import { API_ENDPOINTS, API_BASE } from '../config/api';
 
 const FOOD_IMAGES = [
   'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop',
@@ -63,7 +63,7 @@ export default function FoodDetailPage() {
       setLoading(true);
       const [menuRes, reviewRes] = await Promise.all([
         fetch(API_ENDPOINTS.MENU),
-        fetch(`${API_ENDPOINTS.BASE}/api/reviews/item/${itemId}`).catch(()=>({ok:false,json:()=>({success:false})}))
+        fetch(`${API_BASE}/reviews/item/${itemId}`).catch(()=>({ok:false,json:()=>({success:false})}))
       ]);
       const menuData = await menuRes.json();
       if (!menuData.success) throw new Error('Không tải được thực đơn');
@@ -115,7 +115,7 @@ export default function FoodDetailPage() {
     setSubmitting(true);
     setReviewMsg({ type: '', text: '' });
     try {
-      const res = await fetch(`${API_ENDPOINTS.BASE}/api/reviews`, {
+      const res = await fetch(API_ENDPOINTS.REVIEWS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: itemId, user_id: user.user_id || user.userId, rating, comment: comment.trim() })
@@ -124,7 +124,7 @@ export default function FoodDetailPage() {
       if (data.success) {
         setReviewMsg({ type: 'success', text: 'Cảm ơn bạn đã đánh giá!' });
         setComment(''); setRating(5);
-        await fetch(`${API_ENDPOINTS.BASE}/api/reviews/item/${itemId}`)
+        await fetch(`${API_BASE}/reviews/item/${itemId}`)
           .then(r => r.json())
           .then(rd => { if (rd.success) setReviews(rd.data); });
         setTimeout(() => setReviewMsg({ type: '', text: '' }), 4000);

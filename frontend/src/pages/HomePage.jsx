@@ -68,7 +68,7 @@ const HomePage = () => {
         }
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u. Vui lÃ²ng thá»­ láº¡i sau. Lá»—i: ' + (err.message || 'Unknown'));
+        setError('Không thỒ tải dữ li�!u. Vui lòng thử lại sau. L�i: ' + (err.message || 'Unknown'));
       } finally {
         setLoading(false);
       }
@@ -86,7 +86,7 @@ const HomePage = () => {
           <div className="absolute inset-0 border-4 border-red-200 rounded-full"></div>
           <div className="absolute inset-0 border-4 border-t-red-600 rounded-full animate-spin"></div>
         </div>
-        <p className="text-lg font-medium text-gray-500">Äang chuáº©n bá»‹ mÃ³n ngon cho báº¡n...</p>
+        <p className="text-lg font-medium text-gray-500">Đang chuẩn b�9 món ngon cho bạn...</p>
       </div>
     );
   }
@@ -97,7 +97,7 @@ const HomePage = () => {
         <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
           <p className="text-red-600 font-medium">{error}</p>
           <button onClick={() => window.location.reload()} className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-            Thá»­ láº¡i
+            Thử lại
           </button>
         </div>
       </div>
@@ -120,14 +120,14 @@ const HomePage = () => {
             <div className="flex-1 max-w-2xl">
               <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full mb-6">
                 <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
-                Æ¯U ÄÃƒI HÃ”M NAY â€“ GIáº¢M 20%
+                ƯU ĐÒI H�M NAY � GIẢM 20%
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-gray-900 leading-tight mb-4">
-                MÃ³n Ngon<br />
-                <span className="text-red-600">Giao Táº­n Tay</span>
+                Món Ngon<br />
+                <span className="text-red-600">Giao Tận Tay</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-500 mb-8 leading-relaxed">
-                HÆ°Æ¡ng vá»‹ thÆ¡m ngon, giao hÃ ng <strong className="text-gray-800">trong 30 phÃºt</strong>. Thá»±c Ä‘Æ¡n Ä‘a dáº¡ng, giÃ¡ cáº£ há»£p lÃ½.
+                Hương v�9 thơm ngon, giao hàng <strong className="text-gray-800">trong 30 phút</strong>. Thực �ơn �a dạng, giá cả hợp lý.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link to="/menu" className="group inline-flex items-center gap-2 bg-red-600 text-white font-bold px-8 py-4 rounded-full hover:bg-red-700 hover:scale-105 transition-all duration-200 shadow-lg shadow-red-300 text-lg">
@@ -136,7 +136,7 @@ const HomePage = () => {
                 </Link>
                 <a href="#branches" className="inline-flex items-center gap-2 bg-white text-gray-800 font-bold px-8 py-4 rounded-full border-2 border-gray-200 hover:border-yellow-400 hover:scale-105 transition-all duration-200 text-lg">
                   <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  TÃ¬m chi nhÃ¡nh
+                  Tìm chi nhánh
                 </a>
               </div>
               {/* Trust badges */}
@@ -145,10 +145,10 @@ const HomePage = () => {
                   <span className="text-yellow-500">â˜…â˜…â˜…â˜…â˜…</span>
                   <span className="font-semibold text-gray-600">4.8/5</span>
                 </div>
-                <span>â€¢</span>
-                <span>10,000+ Ä‘Æ¡n má»—i thÃ¡ng</span>
-                <span>â€¢</span>
-                <span>Giao nhanh 30 phÃºt</span>
+                <span>⬢</span>
+                <span>10,000+ �ơn m�i tháng</span>
+                <span>⬢</span>
+                <span>Giao nhanh 30 phút</span>
               </div>
             </div>
 
@@ -158,7 +158,7 @@ const HomePage = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-yellow-100 rounded-full opacity-60 blur-2xl"></div>
                 <img
                   src={PLACEHOLDER_BANNER}
-                  alt="MÃ³n Äƒn háº¥p dáº«n"
+                  alt="Món Ēn hấp dẫn"
                   className="relative w-full h-full object-cover rounded-3xl shadow-2xl"
                   style={{ transform: `translateY(${scrollY * 0.08}px)` }}
                 />
@@ -199,13 +199,13 @@ const HomePage = () => {
           {/* Section header */}
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-2">â€” MÃ³n bÃ¡n cháº¡y</p>
+              <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-2">� Món bán chạy</p>
               <h2 className="text-3xl md:text-4xl font-black text-gray-900">
-                MÃ³n Ngon <span className="text-red-600">Ná»•i Báº­t</span>
+                Món Ngon <span className="text-red-600">N�"i Bật</span>
               </h2>
             </div>
             <Link to="/menu" className="hidden sm:inline-flex items-center gap-1 text-red-600 font-bold hover:gap-2 transition-all">
-              Xem táº¥t cáº£ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
+              Xem tất cả <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
             </Link>
           </div>
 
@@ -232,14 +232,14 @@ const HomePage = () => {
                       onClick={() => trackBehavior('view_item', item.item_id)}
                       className="w-full bg-white text-red-600 font-bold text-sm py-2 rounded-xl text-center hover:bg-red-600 hover:text-white transition-colors"
                     >
-                      Äáº·t mÃ³n
+                      Đặt món
                     </Link>
                   </div>
                 </div>
                 {/* Info */}
                 <div className="p-4">
                   <h3 className="font-bold text-gray-900 text-sm leading-tight mb-1 group-hover:text-red-600 transition-colors line-clamp-2">
-                    {item.item_name || item.name || `MÃ³n Äƒn #${i + 1}`}
+                    {item.item_name || item.name || `Món Ēn #${i + 1}`}
                   </h3>
                   {item.category_name && (
                     <p className="text-xs text-gray-400 mb-2">{item.category_name}</p>
@@ -251,7 +251,7 @@ const HomePage = () => {
                         <span className="text-xs font-normal text-gray-400 ml-0.5">Ä‘</span>
                       </span>
                       <span className="text-xs text-gray-400">
-                        {item.price >= 50000 ? 'ðŸ½ï¸ Combo' : 'ðŸ— MÃ³n'}
+                        {item.price >= 50000 ? '�x��️ Combo' : '�x� Món'}
                       </span>
                     </div>
                   )}
@@ -262,7 +262,7 @@ const HomePage = () => {
 
           <div className="text-center mt-8 sm:hidden">
             <Link to="/menu" className="inline-flex items-center gap-2 bg-red-600 text-white font-bold px-8 py-3 rounded-full hover:bg-red-700 transition">
-              Xem thá»±c Ä‘Æ¡n Ä‘áº§y Ä‘á»§
+              Xem thực �ơn �ầy �ủ
             </Link>
           </div>
         </div>
@@ -279,11 +279,11 @@ const HomePage = () => {
                 PROMO CODE
               </span>
               <h2 className="text-3xl md:text-4xl font-black mb-3 leading-tight">
-                Giáº£m <span className="text-yellow-400">20%</span><br />Cho ÄÆ¡n HÃ ng Äáº§u TiÃªn
+                Giảm <span className="text-yellow-400">20%</span><br />Cho Đơn Hàng Đầu Tiên
               </h2>
-              <p className="text-red-100 text-lg mb-6">Sá»­ dá»¥ng mÃ£ <strong className="text-white">WELCOME20</strong> khi thanh toÃ¡n</p>
+              <p className="text-red-100 text-lg mb-6">Sử dụng mã <strong className="text-white">WELCOME20</strong> khi thanh toán</p>
               <Link to="/register" className="inline-flex items-center gap-2 bg-white text-red-600 font-black px-8 py-3 rounded-full hover:bg-yellow-400 hover:text-gray-900 transition-all duration-200 shadow-lg">
-                ÄÄƒng kÃ½ ngay
+                ĐĒng ký ngay
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
               </Link>
             </div>
@@ -295,9 +295,9 @@ const HomePage = () => {
       <section id="branches" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-2">â€” Há»‡ thá»‘ng cá»­a hÃ ng</p>
+            <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-2">� H�! th�ng cửa hàng</p>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900">
-              Chi NhÃ¡nh <span className="text-red-600">Gáº§n Báº¡n</span>
+              Chi Nhánh <span className="text-red-600">Gần Bạn</span>
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -310,7 +310,7 @@ const HomePage = () => {
                   <div className="flex-1">
                     <h3 className="font-black text-gray-900 mb-1">{branch.branch_name}</h3>
                     <p className="text-sm text-gray-500 leading-relaxed">{branch.address}</p>
-                    {branch.phone && <p className="text-sm text-gray-400 mt-1">ðŸ“ž {branch.phone}</p>}
+                    {branch.phone && <p className="text-sm text-gray-400 mt-1">“ž {branch.phone}</p>}
                     <div className="mt-3 flex items-center gap-2">
                       <span className="inline-block w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
                       <span className="text-xs font-semibold text-yellow-600">Äang má»Ÿ cá»­a</span>
@@ -323,7 +323,7 @@ const HomePage = () => {
           {branches.length > 6 && (
             <div className="text-center mt-8">
               <Link to="/menu" className="inline-flex items-center gap-2 text-red-600 font-bold hover:gap-3 transition-all">
-                Xem táº¥t cáº£ {branches.length} chi nhÃ¡nh
+                Xem tất cả {branches.length} chi nhánh
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
               </Link>
             </div>
@@ -335,9 +335,9 @@ const HomePage = () => {
       <section className="py-16 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-2">â€” Táº¡i sao chá»n chÃºng tÃ´i</p>
+            <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-2">� Tại sao chọn chúng tôi</p>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900">
-              VÃ¬ Sao <span className="text-red-600">FastFood</span>?
+              Vì Sao <span className="text-red-600">FastFood</span>?
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -360,10 +360,10 @@ const HomePage = () => {
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 text-center lg:text-left">
               <h2 className="text-3xl md:text-4xl font-black mb-4">
-                Äáº·t mÃ³n dá»… dÃ ng<br />
-                <span className="text-yellow-400">Má»i lÃºc má»i nÆ¡i</span>
+                Đặt món d�& dàng<br />
+                <span className="text-yellow-400">Mọi lúc mọi nơi</span>
               </h2>
-              <p className="text-gray-400 text-lg mb-8">Táº£i app ngay Ä‘á»ƒ nháº­n thÃªm nhiá»u Æ°u Ä‘Ã£i háº¥p dáº«n</p>
+              <p className="text-gray-400 text-lg mb-8">Tải app ngay �Ồ nhận thêm nhiều ưu �ãi hấp dẫn</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <button className="flex items-center gap-3 bg-white text-gray-900 font-bold px-8 py-3 rounded-xl hover:bg-gray-100 transition">
                   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
@@ -382,7 +382,7 @@ const HomePage = () => {
                     <span className="text-white font-black text-3xl">F</span>
                   </div>
                   <p className="text-white font-bold text-lg">FastFood App</p>
-                  <p className="text-gray-400 text-sm mt-2">Äáº·t mÃ³n<br/>thÃ´ng minh</p>
+                  <p className="text-gray-400 text-sm mt-2">Đặt món<br/>thông minh</p>
                 </div>
               </div>
             </div>
@@ -396,29 +396,29 @@ const HomePage = () => {
 
 // â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CATEGORIES = [
-  { name: 'GÃ  RÃ¡n', slug: 'ga-ran', icon: 'ðŸ—', desc: 'GiÃ²n rá»¥m thÆ¡m lá»«ng' },
-  { name: 'Burger', slug: 'burger', icon: 'ðŸ”', desc: 'BÃ² háº£o háº¡ng' },
-  { name: 'Pizza', slug: 'pizza', icon: 'ðŸ•', desc: 'PhÃ´ mai ngáº­p trÃ n' },
-  { name: 'Thá»©c uá»‘ng', slug: 'thuc-uong', icon: 'ðŸ¥¤', desc: 'Giáº£i khÃ¡t mÃ¡t láº¡nh' },
+  { name: 'Gà Rán', slug: 'ga-ran', icon: '�x�', desc: 'Giòn rụm thơm lừng' },
+  { name: 'Burger', slug: 'burger', icon: '�x�', desc: 'Bò hảo hạng' },
+  { name: 'Pizza', slug: 'pizza', icon: '�x�"', desc: 'Phô mai ngập tràn' },
+  { name: 'Thức u�ng', slug: 'thuc-uong', icon: '�x��', desc: 'Giải khát mát lạnh' },
 ];
 
 const WHY_US = [
-  { icon: 'ðŸš€', title: 'Giao Nhanh', desc: '30 phÃºt hoáº·c hoÃ n tiá»n â€“ giao hÃ ng nhanh nháº¥t khu vá»±c' },
-  { icon: 'ðŸ½ï¸', title: 'Äá»“ Äƒn TÆ°Æ¡i', desc: 'NguyÃªn liá»‡u Ä‘Æ°á»£c chá»n lá»c, cháº¿ biáº¿n ngay khi báº¡n Ä‘áº·t' },
-  { icon: 'ðŸ’°', title: 'GiÃ¡ Cáº£ Há»£p LÃ½', desc: 'Nhiá»u combo tiáº¿t kiá»‡m, khuyáº¿n mÃ£i háº¥p dáº«n má»—i ngÃ y' },
-  { icon: 'â­', title: 'ÄÃ¡nh GiÃ¡ Tá»‘t', desc: '4.8/5 sao tá»« hÆ¡n 10,000+ khÃ¡ch hÃ ng tin tÆ°á»Ÿng' },
+  { icon: '�xa�', title: 'Giao Nhanh', desc: '30 phút hoặc hoàn tiền � giao hàng nhanh nhất khu vực' },
+  { icon: '�x��️', title: 'Đ� Ēn Tươi', desc: 'Nguyên li�!u �ược chọn lọc, chế biến ngay khi bạn �ặt' },
+  { icon: '�x�', title: 'Giá Cả Hợp Lý', desc: 'Nhiều combo tiết ki�!m, khuyến mãi hấp dẫn m�i ngày' },
+  { icon: '⭐', title: 'Đánh Giá T�t', desc: '4.8/5 sao từ hơn 10,000+ khách hàng tin tư�xng' },
 ];
 
 // Fallback data when API returns empty
 const MOCK_FOODS = [
-  { item_id: 1, item_name: 'GÃ  RÃ¡n GiÃ²n Cay', category_name: 'GÃ  RÃ¡n', price: 55000 },
-  { item_id: 2, item_name: 'Burger BÃ² PhÃ´ Mai', category_name: 'Burger', price: 69000 },
-  { item_id: 3, item_name: 'Pizza Háº£i Sáº£n', category_name: 'Pizza', price: 149000 },
+  { item_id: 1, item_name: 'Gà Rán Giòn Cay', category_name: 'Gà Rán', price: 55000 },
+  { item_id: 2, item_name: 'Burger Bò Phô Mai', category_name: 'Burger', price: 69000 },
+  { item_id: 3, item_name: 'Pizza Hải Sản', category_name: 'Pizza', price: 149000 },
   { item_id: 4, item_name: 'CÆ¡m GÃ  Teriyaki', category_name: 'CÆ¡m', price: 75000 },
-  { item_id: 5, item_name: 'Khoai TÃ¢y ChiÃªn Lá»›n', category_name: 'Snack', price: 35000 },
+  { item_id: 5, item_name: 'Khoai Tây Chiên L�:n', category_name: 'Snack', price: 35000 },
   { item_id: 6, item_name: 'Pepsi Lon', category_name: 'Thá»©c uá»‘ng', price: 15000 },
   { item_id: 7, item_name: 'Combo GÃ  + Khoai', category_name: 'Combo', price: 89000 },
-  { item_id: 8, item_name: 'BÃ¡nh Cookie', category_name: 'TrÃ¡ng miá»‡ng', price: 25000 },
+  { item_id: 8, item_name: 'Bánh Cookie', category_name: 'Tráng mi�!ng', price: 25000 },
 ];
 
 export default HomePage;

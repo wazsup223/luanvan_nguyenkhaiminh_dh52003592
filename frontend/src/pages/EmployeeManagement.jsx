@@ -22,12 +22,12 @@ const roleAvatarColors = {
 };
 
 const roleLabels = {
-  Admin: 'Quáº£n trá»‹',
-  BranchManager: 'QL Chi nhÃ¡nh',
-  Cashier: 'Thu ngÃ¢n',
-  Kitchen: 'Báº¿p',
+  Admin: 'Quản tr�9',
+  BranchManager: 'QL Chi nhánh',
+  Cashier: 'Thu ngân',
+  Kitchen: 'Bếp',
   Waiter: 'Phá»¥c vá»¥',
-  Customer: 'KhÃ¡ch hÃ ng',
+  Customer: 'Khách hàng',
 };
 
 const getAuthHeaders = () => {
@@ -75,7 +75,7 @@ const EmployeeManagement = () => {
       const data = await fetchJSON(`${API_BASE}/users`);
       if (data.success) {
         let list = data.data;
-        // Manager chá»‰ tháº¥y nhÃ¢n viÃªn chi nhÃ¡nh mÃ¬nh
+        // Manager ch�0 thấy nhân viên chi nhánh mình
         if (isManager && savedUser?.branch_id) {
           list = list.filter(u => u.branch_id === savedUser.branch_id || u.role === 'Admin');
         }
@@ -139,15 +139,15 @@ const EmployeeManagement = () => {
     };
 
     if (!body.full_name || !body.username) {
-      setFormError('Há» tÃªn vÃ  Username lÃ  báº¯t buá»™c.');
+      setFormError('Họ tên và Username là bắt bu�"c.');
       return;
     }
     if (!editingEmployee && !fd.get('password')) {
-      setFormError('Máº­t kháº©u lÃ  báº¯t buá»™c khi táº¡o nhÃ¢n viÃªn má»›i.');
+      setFormError('Mật khẩu là bắt bu�"c khi tạo nhân viên m�:i.');
       return;
     }
     if (body.role !== 'Admin' && !body.branch_id) {
-      setFormError('Vui lÃ²ng chá»n chi nhÃ¡nh cho nhÃ¢n viÃªn nÃ y.');
+      setFormError('Vui lòng chọn chi nhánh cho nhân viên này.');
       return;
     }
 
@@ -157,38 +157,38 @@ const EmployeeManagement = () => {
         const updateData = { ...body };
         const res = await api.put(`/api/users/${editingEmployee.user_id}`, updateData);
         if (res.success || res.message) {
-          showToast('âœ… Cáº­p nháº­t nhÃ¢n viÃªn thÃ nh cÃ´ng!', 'success');
+          showToast('�S& Cập nhật nhân viên thành công!', 'success');
           fetchEmployees();
           closeModal();
         } else {
-          setFormError(res.message || 'Cáº­p nháº­t tháº¥t báº¡i.');
+          setFormError(res.message || 'Cập nhật thất bại.');
         }
       } else {
         // Create
         body.password = fd.get('password');
         const res = await api.post('/api/users', body);
         if (res.success || res.user_id) {
-          showToast('âœ… Táº¡o nhÃ¢n viÃªn thÃ nh cÃ´ng!', 'success');
+          showToast('�S& Tạo nhân viên thành công!', 'success');
           fetchEmployees();
           closeModal();
         } else {
-          setFormError(res.message || 'Táº¡o nhÃ¢n viÃªn tháº¥t báº¡i.');
+          setFormError(res.message || 'Tạo nhân viên thất bại.');
         }
       }
     } catch (err) {
-      setFormError(err.message || 'Lá»—i káº¿t ná»‘i server.');
+      setFormError(err.message || 'L�i kết n�i server.');
     }
   };
 
   const toggleLock = async (emp) => {
-    const action = emp.is_active ? 'khÃ³a' : 'má»Ÿ khÃ³a';
-    if (!window.confirm(`Báº¡n cÃ³ cháº¯c muá»‘n ${action} ${emp.full_name}?`)) return;
+    const action = emp.is_active ? 'khóa' : 'm�x khóa';
+    if (!window.confirm(`Bạn có chắc mu�n ${action} ${emp.full_name}?`)) return;
     try {
       await api.put(`/api/users/${emp.user_id}`, { is_active: !emp.is_active });
-      showToast(`âœ… ÄÃ£ ${action} ${emp.full_name}`, 'success');
+      showToast(`�S& Đã ${action} ${emp.full_name}`, 'success');
       fetchEmployees();
     } catch (err) {
-      showToast('âŒ Lá»—i: ' + (err.message || 'KhÃ´ng thá»ƒ cáº­p nháº­t'), 'error');
+      showToast('�R L�i: ' + (err.message || 'Không thỒ cập nhật'), 'error');
     }
   };
 
@@ -208,9 +208,9 @@ const EmployeeManagement = () => {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
-          <div className="text-6xl mb-4">ðŸ”’</div>
-          <h2 className="text-xl font-bold text-red-600 mb-2">KhÃ´ng cÃ³ quyá»n truy cáº­p</h2>
-          <p className="text-gray-600 mb-4">Báº¡n cáº§n Ä‘Äƒng nháº­p vá»›i tÃ i khoáº£n Admin hoáº·c Manager Ä‘á»ƒ quáº£n lÃ½ nhÃ¢n viÃªn.</p>
+          <div className="text-6xl mb-4">”’</div>
+          <h2 className="text-xl font-bold text-red-600 mb-2">Không có quyền truy cập</h2>
+          <p className="text-gray-600 mb-4">Bạn cần �Ēng nhập v�:i tài khoản Admin hoặc Manager �Ồ quản lý nhân viên.</p>
           <button onClick={() => navigate('/')} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold">
             Vá» trang chá»§
           </button>
@@ -225,10 +225,10 @@ const EmployeeManagement = () => {
       <div className="bg-red-600 text-white shadow-lg">
         <div className="container mx-auto px-4 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <span className="text-3xl">ðŸ‘¥</span>
+            <span className="text-3xl">👤¥</span>
             <div>
-              <h1 className="text-2xl font-bold">Quáº£n lÃ½ NhÃ¢n viÃªn</h1>
-              <p className="text-sm text-red-200">FastFood - Há»‡ thá»‘ng quáº£n lÃ½ nhÃ¢n sá»±</p>
+              <h1 className="text-2xl font-bold">Quản lý Nhân viên</h1>
+              <p className="text-sm text-red-200">FastFood - H�! th�ng quản lý nhân sự</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -236,13 +236,13 @@ const EmployeeManagement = () => {
               onClick={() => navigate('/admin')}
               className="bg-white text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-50 transition"
             >
-              â† Quay láº¡i Dashboard
+              � � Quay lại Dashboard
             </button>
             <button
               onClick={openAddModal}
               className="bg-yellow-500 text-gray-900 px-5 py-2 rounded-lg font-bold hover:bg-yellow-400 transition shadow-md"
             >
-              âž• ThÃªm nhÃ¢n viÃªn
+              �~" Thêm nhân viên
             </button>
           </div>
         </div>
@@ -255,7 +255,7 @@ const EmployeeManagement = () => {
             <div className="flex-1 min-w-[200px]">
               <input
                 type="text"
-                placeholder="ðŸ” TÃ¬m theo tÃªn, username, email, SÄT..."
+                placeholder="�x� Tìm theo tên, username, email, SĐT..."
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -267,14 +267,14 @@ const EmployeeManagement = () => {
                 value={branchFilter}
                 onChange={e => setBranchFilter(e.target.value)}
               >
-                <option value="all">Táº¥t cáº£ chi nhÃ¡nh</option>
+                <option value="all">Tất cả chi nhánh</option>
                 {branches.map(b => (
                   <option key={b.branch_id} value={b.branch_id}>{b.branch_name}</option>
                 ))}
               </select>
             )}
             <div className="text-sm text-gray-500">
-              Tá»•ng: <span className="font-bold text-red-600">{filtered.length}</span> nhÃ¢n viÃªn
+              T�"ng: <span className="font-bold text-red-600">{filtered.length}</span> nhân viên
             </div>
           </div>
         </div>
@@ -293,11 +293,11 @@ const EmployeeManagement = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Avatar</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Há» tÃªn</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Username</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Sá»‘ Ä‘iá»‡n thoáº¡i</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">S� �i�!n thoại</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Vai trÃ²</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Chi nhÃ¡nh</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Tráº¡ng thÃ¡i</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Vai trò</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Chi nhánh</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Trạng thái</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">HÃ nh Ä‘á»™ng</th>
                   </tr>
                 </thead>
@@ -331,7 +331,7 @@ const EmployeeManagement = () => {
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                           emp.is_active ? 'bg-green-100 text-yellow-700' : 'bg-red-100 text-red-700'
                         }`}>
-                          {emp.is_active ? 'âœ… Äang hoáº¡t Ä‘á»™ng' : 'ðŸ”’ ÄÃ£ khÃ³a'}
+                          {emp.is_active ? '�S& Đang hoạt ��"ng' : '�x Đã khóa'}
                         </span>
                       </td>
                       {/* Actions */}
@@ -351,7 +351,7 @@ const EmployeeManagement = () => {
                                 : 'bg-green-100 text-yellow-700 hover:bg-yellow-200'
                             }`}
                           >
-                            {emp.is_active ? 'ðŸ”’ KhÃ³a' : 'ðŸ”“ Má»Ÿ'}
+                            {emp.is_active ? '�x Khóa' : '�x M�x'}
                           </button>
                         </div>
                       </td>
@@ -360,8 +360,8 @@ const EmployeeManagement = () => {
                   {filtered.length === 0 && (
                     <tr>
                       <td colSpan="9" className="px-4 py-12 text-center text-gray-400">
-                        <div className="text-4xl mb-2">ðŸ”</div>
-                        <p>KhÃ´ng tÃ¬m tháº¥y nhÃ¢n viÃªn nÃ o.</p>
+                        <div className="text-4xl mb-2">”</div>
+                        <p>Không tìm thấy nhân viên nào.</p>
                       </td>
                     </tr>
                   )}
@@ -379,7 +379,7 @@ const EmployeeManagement = () => {
             {/* Modal Header */}
             <div className="bg-red-600 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
               <h2 className="text-lg font-bold">
-                {editingEmployee ? 'âœï¸ Chá»‰nh sá»­a nhÃ¢n viÃªn' : 'âž• ThÃªm nhÃ¢n viÃªn má»›i'}
+                {editingEmployee ? '�S�️ Ch�0nh sửa nhân viên' : '�~" Thêm nhân viên m�:i'}
               </h2>
               <button onClick={closeModal} className="text-white hover:text-red-200 text-2xl font-bold">&times;</button>
             </div>
@@ -401,7 +401,7 @@ const EmployeeManagement = () => {
                   required
                   defaultValue={editingEmployee?.full_name || ''}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
-                  placeholder="Nháº­p há» tÃªn..."
+                  placeholder="Nhập họ tên..."
                 />
               </div>
 
@@ -414,20 +414,20 @@ const EmployeeManagement = () => {
                   required
                   defaultValue={editingEmployee?.username || ''}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
-                  placeholder="Nháº­p username..."
+                  placeholder="Nhập username..."
                 />
               </div>
 
               {/* Password - only for new */}
               {!editingEmployee && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Máº­t kháº©u <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Mật khẩu <span className="text-red-500">*</span></label>
                   <input
                     name="password"
                     type="password"
                     required
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
-                    placeholder="Nháº­p máº­t kháº©u..."
+                    placeholder="Nhập mật khẩu..."
                   />
                 </div>
               )}
@@ -446,7 +446,7 @@ const EmployeeManagement = () => {
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Sá»‘ Ä‘iá»‡n thoáº¡i</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">S� �i�!n thoại</label>
                 <input
                   name="phone"
                   type="tel"
@@ -458,37 +458,37 @@ const EmployeeManagement = () => {
 
               {/* Role */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Vai trÃ² <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Vai trò <span className="text-red-500">*</span></label>
                 <select
                   name="role"
                   required
                   defaultValue={editingEmployee?.role || 'Customer'}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 >
-                  <option value="Admin">Admin - Quáº£n trá»‹</option>
-                  <option value="BranchManager">BranchManager - QL Chi nhÃ¡nh</option>
-                  <option value="Cashier">Cashier - Thu ngÃ¢n</option>
-                  <option value="Kitchen">Kitchen - Báº¿p</option>
+                  <option value="Admin">Admin - Quản tr�9</option>
+                  <option value="BranchManager">BranchManager - QL Chi nhánh</option>
+                  <option value="Cashier">Cashier - Thu ngân</option>
+                  <option value="Kitchen">Kitchen - Bếp</option>
                   <option value="Waiter">Waiter - Phá»¥c vá»¥</option>
-                  <option value="Customer">Customer - KhÃ¡ch hÃ ng</option>
+                  <option value="Customer">Customer - Khách hàng</option>
                 </select>
               </div>
 
               {/* Branch */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Chi nhÃ¡nh {editingEmployee?.role === 'Admin' ? '' : '<span className="text-red-500">*</span>'}</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Chi nhánh {editingEmployee?.role === 'Admin' ? '' : '<span className="text-red-500">*</span>'}</label>
                 <select
                   name="branch_id"
                   defaultValue={editingEmployee?.branch_id || (isManager ? savedUser?.branch_id : '')}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 >
-                  <option value="">-- Chá»n chi nhÃ¡nh --</option>
+                  <option value="">-- Chọn chi nhánh --</option>
                   {branches.map(b => (
                     <option key={b.branch_id} value={b.branch_id}>{b.branch_name} ({b.address || ''})</option>
                   ))}
                 </select>
                 {isManager && (
-                  <p className="text-xs text-gray-400 mt-1">Báº¡n lÃ  Manager, máº·c Ä‘á»‹nh chi nhÃ¡nh cá»§a báº¡n</p>
+                  <p className="text-xs text-gray-400 mt-1">Bạn là Manager, mặc ��9nh chi nhánh của bạn</p>
                 )}
               </div>
 
@@ -505,7 +505,7 @@ const EmployeeManagement = () => {
                   type="submit"
                   className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition shadow-md"
                 >
-                  {editingEmployee ? 'âœ… Cáº­p nháº­t' : 'âž• Táº¡o nhÃ¢n viÃªn'}
+                  {editingEmployee ? '�S& Cập nhật' : '�~" Tạo nhân viên'}
                 </button>
               </div>
             </form>

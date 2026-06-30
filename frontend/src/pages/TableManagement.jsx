@@ -1,6 +1,6 @@
 ﻿/**
  * ============================================
- * TABLE MANAGEMENT PAGE - F06: Quáº£n lÃ½ bÃ n
+ * TABLE MANAGEMENT PAGE - F06: Quản lý bàn
  * ============================================
  */
 import React, { useState, useEffect } from 'react';
@@ -38,7 +38,7 @@ export default function TableManagement() {
         if (bRes.data.length > 0) setNewTable(prev => ({ ...prev, branch_id: bRes.data[0].branch_id }));
       }
     } catch (err) {
-      setError('KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u');
+      setError('Không thỒ tải dữ li�!u');
     } finally {
       setLoading(false);
     }
@@ -56,13 +56,13 @@ export default function TableManagement() {
       const data = await res.json();
       if (data.success) {
         setTables(prev => prev.map(t => t.table_id === tableId ? { ...t, status } : t));
-        setSuccess('Cáº­p nháº­t tráº¡ng thÃ¡i bÃ n thÃ nh cÃ´ng âœ…');
+        setSuccess('Cập nhật trạng thái bàn thành công �S&');
         setTimeout(() => setSuccess(''), 2000);
       } else {
-        setError(data.message || 'Lá»—i cáº­p nháº­t');
+        setError(data.message || 'L�i cập nhật');
       }
     } catch (err) {
-      setError('Lá»—i káº¿t ná»‘i server');
+      setError('L�i kết n�i server');
     } finally {
       setUpdating(null);
     }
@@ -70,7 +70,7 @@ export default function TableManagement() {
 
   const handleAddTable = async (e) => {
     e.preventDefault();
-    if (!newTable.table_number.trim()) { setError('Nháº­p sá»‘ bÃ n'); return; }
+    if (!newTable.table_number.trim()) { setError('Nhập s� bàn'); return; }
     try {
       setError('');
       const res = await fetch(`${API_BASE}/api/tables`, {
@@ -80,7 +80,7 @@ export default function TableManagement() {
       });
       const data = await res.json();
       if (data.success) {
-        setSuccess('ThÃªm bÃ n thÃ nh cÃ´ng âœ…');
+        setSuccess('Thêm bàn thành công �S&');
         setShowAddModal(false);
         setNewTable(prev => ({ ...prev, table_number: '' }));
         await fetchData();
@@ -89,30 +89,30 @@ export default function TableManagement() {
         setError(data.message || 'Lá»—i thÃªm bÃ n');
       }
     } catch (err) {
-      setError('Lá»—i káº¿t ná»‘i server');
+      setError('L�i kết n�i server');
     }
   };
 
   const handleDeleteTable = async (tableId) => {
-    if (!confirm('XÃ³a bÃ n nÃ y?')) return;
+    if (!confirm('Xóa bàn này?')) return;
     try {
       const res = await fetch(`${API_BASE}/api/tables/${tableId}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setTables(prev => prev.filter(t => t.table_id !== tableId));
-        setSuccess('ÄÃ£ xÃ³a bÃ n âœ…');
+        setSuccess('Đã xóa bàn �S&');
         setTimeout(() => setSuccess(''), 2000);
       }
     } catch (err) {
-      setError('Lá»—i xÃ³a bÃ n');
+      setError('L�i xóa bàn');
     }
   };
 
   const statusConfig = {
-    available: { label: 'Trá»‘ng', color: 'bg-green-100 text-yellow-700 border-green-200', icon: 'ðŸŸ¢', dot: 'bg-yellow-500' },
-    occupied: { label: 'Äang dÃ¹ng', color: 'bg-red-100 text-red-700 border-red-200', icon: 'ðŸ”´', dot: 'bg-red-500' },
-    reserved: { label: 'ÄÃ£ Ä‘áº·t', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: 'ðŸŸ¡', dot: 'bg-yellow-500' },
-    cleaning: { label: 'Dá»n bÃ n', color: 'bg-red-100 text-red-700 border-blue-200', icon: 'ðŸ”µ', dot: 'bg-red-500' },
+    available: { label: 'Trá»‘ng', color: 'bg-green-100 text-yellow-700 border-green-200', icon: 'Ÿ¢', dot: 'bg-yellow-500' },
+    occupied: { label: 'Đang dùng', color: 'bg-red-100 text-red-700 border-red-200', icon: '�x�', dot: 'bg-red-500' },
+    reserved: { label: 'Đã �ặt', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '�xx�', dot: 'bg-yellow-500' },
+    cleaning: { label: 'Dá»n bÃ n', color: 'bg-red-100 text-red-700 border-blue-200', icon: '”µ', dot: 'bg-red-500' },
   };
 
   const filtered = selectedBranch === 'all'
@@ -140,8 +140,8 @@ export default function TableManagement() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-black">ðŸª‘ Quáº£n lÃ½ bÃ n Äƒn</h1>
-              <p className="text-red-100 text-sm">Theo dÃµi tráº¡ng thÃ¡i bÃ n táº¡i nhÃ  hÃ ng</p>
+              <h1 className="text-2xl font-black">�x� Quản lý bàn Ēn</h1>
+              <p className="text-red-100 text-sm">Theo dõi trạng thái bàn tại nhà hàng</p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
@@ -160,10 +160,10 @@ export default function TableManagement() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         {[
-          { label: 'Tá»•ng bÃ n', value: stats.total, color: 'text-gray-900' },
+          { label: 'Tổng bÃ n', value: stats.total, color: 'text-gray-900' },
           { label: 'Trá»‘ng', value: stats.available, color: 'text-yellow-600' },
-          { label: 'Äang dÃ¹ng', value: stats.occupied, color: 'text-red-600' },
-          { label: 'ÄÃ£ Ä‘áº·t', value: stats.reserved, color: 'text-yellow-600' },
+          { label: 'Đang dùng', value: stats.occupied, color: 'text-red-600' },
+          { label: 'Đã �ặt', value: stats.reserved, color: 'text-yellow-600' },
           { label: 'Dá»n bÃ n', value: stats.cleaning, color: 'text-red-600' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
@@ -175,13 +175,13 @@ export default function TableManagement() {
 
       {/* Filter */}
       <div className="flex items-center gap-3 mb-6">
-        <label className="text-sm font-semibold text-gray-600">Chi nhÃ¡nh:</label>
+        <label className="text-sm font-semibold text-gray-600">Chi nhánh:</label>
         <select
           value={selectedBranch}
           onChange={e => setSelectedBranch(e.target.value)}
           className="border border-gray-200 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none"
         >
-          <option value="all">Táº¥t cáº£</option>
+          <option value="all">Tất cả</option>
           {branches.map(b => (
             <option key={b.branch_id} value={b.branch_id}>{b.branch_name}</option>
           ))}
@@ -221,7 +221,7 @@ export default function TableManagement() {
                     disabled={updating === table.table_id}
                     className="text-[10px] font-bold px-2 py-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition disabled:opacity-50"
                   >
-                    DÃ¹ng
+                    Dùng
                   </button>
                 )}
                 {table.status !== 'reserved' && (
@@ -264,7 +264,7 @@ export default function TableManagement() {
 
       {/* Legend */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
-        <h3 className="font-bold text-sm text-gray-700 mb-3">ChÃº thÃ­ch tráº¡ng thÃ¡i</h3>
+        <h3 className="font-bold text-sm text-gray-700 mb-3">Chú thích trạng thái</h3>
         <div className="flex flex-wrap gap-4">
           {Object.entries(statusConfig).map(([key, cfg]) => (
             <div key={key} className="flex items-center gap-2">
@@ -282,7 +282,7 @@ export default function TableManagement() {
             <h2 className="text-xl font-black text-gray-900 mb-4">âž• ThÃªm bÃ n má»›i</h2>
             <form onSubmit={handleAddTable}>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Chi nhÃ¡nh</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Chi nhánh</label>
                 <select
                   value={newTable.branch_id}
                   onChange={e => setNewTable(prev => ({ ...prev, branch_id: parseInt(e.target.value) }))}
@@ -329,7 +329,7 @@ export default function TableManagement() {
       )}
 
       <button onClick={() => navigate('/admin')} className="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 transition">
-        â† Quay láº¡i Quáº£n trá»‹
+        � � Quay lại Quản tr�9
       </button>
       </div>
     </div>

@@ -50,7 +50,7 @@ function MenuPage({ menuItems }) {
       setCart([]);
     }
     const cats = [...new Set(menuItems.map(i => i.category_name).filter(Boolean))];
-    setCategories(['Táº¥t cáº£', ...cats]);
+    setCategories(['Tất cả', ...cats]);
   }, [menuItems]);
 
   const addToCart = (item) => {
@@ -98,7 +98,7 @@ function MenuPage({ menuItems }) {
 
   const toggleFavorite = async (itemId) => {
     const uid = localStorage.getItem('fastfood_userId');
-    if (!uid) { alert('Vui lÃ²ng Ä‘Äƒng nháº­p!'); return; }
+    if (!uid) { alert('Vui lòng �Ēng nhập!'); return; }
     setFavLoading(prev => ({ ...prev, [itemId]: true }));
     try {
       if (favItems.has(itemId)) {
@@ -128,9 +128,9 @@ function MenuPage({ menuItems }) {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-black text-gray-900 mb-2">
-          ðŸ” Thá»±c Ä‘Æ¡n <span className="text-red-600">FastFood</span>
+          ” Thá»±c Ä‘Æ¡n <span className="text-red-600">FastFood</span>
         </h1>
-        <p className="text-gray-500">{menuItems.length} mÃ³n Äƒn ngon Ä‘ang chá» báº¡n</p>
+        <p className="text-gray-500">{menuItems.length} món Ēn ngon �ang chờ bạn</p>
       </div>
 
       {/* Category tabs */}
@@ -138,9 +138,9 @@ function MenuPage({ menuItems }) {
         {categories.map(c => (
           <button
             key={c}
-            onClick={() => setCat(c === 'Táº¥t cáº£' ? 'all' : c)}
+            onClick={() => setCat(c === 'Tất cả' ? 'all' : c)}
             className={`px-4 py-2 rounded-full text-sm font-bold transition ${
-              (c === 'Táº¥t cáº£' ? cat === 'all' : cat === c)
+              (c === 'Tất cả' ? cat === 'all' : cat === c)
                 ? 'bg-red-600 text-white shadow-md shadow-red-200'
                 : 'bg-white text-gray-600 border border-gray-200 hover:border-red-300 hover:text-red-600'
             }`}
@@ -153,8 +153,8 @@ function MenuPage({ menuItems }) {
       {/* Grid */}
       {filtered.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-5xl mb-4">ðŸ½ï¸</p>
-          <p className="text-gray-500">KhÃ´ng cÃ³ mÃ³n nÃ o trong danh má»¥c nÃ y</p>
+          <p className="text-5xl mb-4">½ï¸</p>
+          <p className="text-gray-500">Không có món nào trong danh mục này</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -184,7 +184,7 @@ function MenuPage({ menuItems }) {
                       trackBehavior('view_item', item.item_id);
                     }}
                   >{item.item_name}</h3>
-                  <p className="text-xs text-gray-400 mb-2">{item.category_name || 'MÃ³n Äƒn'}</p>
+                  <p className="text-xs text-gray-400 mb-2">{item.category_name || 'Món Ēn'}</p>
                   {qty > 0 ? (
                     <div className="flex items-center justify-between">
                       <button onClick={() => changeQty(item.item_id, -1)} className="w-8 h-8 bg-red-100 text-red-600 rounded-full font-bold hover:bg-red-200 transition flex items-center justify-center">âˆ’</button>
@@ -200,7 +200,7 @@ function MenuPage({ menuItems }) {
                           : 'bg-red-600 text-white hover:bg-red-700'
                       }`}
                     >
-                      {added[item.item_id] ? 'âœ… ÄÃ£ thÃªm!' : 'ðŸ›’ ThÃªm vÃ o giá»'}
+                      {added[item.item_id] ? '�S& Đã thêm!' : '�x: Thêm vào giỏ'}
                     </button>
                   )}
                 </div>
@@ -231,18 +231,18 @@ function MenuPage({ menuItems }) {
                 className={`absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition ${favItems.has(selectedItem.item_id) ? 'bg-red-600 text-white' : 'bg-white text-gray-400 hover:text-red-500'}`}
                 disabled={favLoading[selectedItem.item_id]}
               >
-                {favLoading[selectedItem.item_id] ? 'â³' : favItems.has(selectedItem.item_id) ? 'â¤ï¸' : 'ðŸ¤'}
+                {favLoading[selectedItem.item_id] ? 'â³' : favItems.has(selectedItem.item_id) ? 'â¤ï¸' : '¤'}
               </button>
             </div>
             <div className="p-6">
               <h2 className="text-2xl font-bold mb-2">{selectedItem.item_name}</h2>
-              <p className="text-gray-600 mb-4">{selectedItem.description || 'MÃ³n Äƒn ngon tá»« FastFood'}</p>
+              <p className="text-gray-600 mb-4">{selectedItem.description || 'Món Ēn ngon từ FastFood'}</p>
               <div className="flex items-center justify-between mb-6">
                 <span className="text-3xl font-black text-red-600">
                   {selectedItem.price?.toLocaleString('vi-VN')}Ä‘
                 </span>
                 <span className="text-sm text-gray-500">
-                  â±ï¸ {selectedItem.preparation_time || 15} phÃºt
+                  ⏱️ {selectedItem.preparation_time || 15} phút
                 </span>
               </div>
               <button
@@ -252,7 +252,7 @@ function MenuPage({ menuItems }) {
                 }}
                 className="w-full py-3 bg-red-600 text-white rounded-xl font-bold text-lg hover:bg-red-700 transition"
               >
-                ðŸ›’ ThÃªm vÃ o giá» - {selectedItem.price?.toLocaleString('vi-VN')}Ä‘
+                ›’ ThÃªm vÃ o giá» - {selectedItem.price?.toLocaleString('vi-VN')}Ä‘
               </button>
             </div>
           </div>

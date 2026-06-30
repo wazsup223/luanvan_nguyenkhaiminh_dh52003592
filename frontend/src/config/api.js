@@ -71,6 +71,8 @@ const API_ENDPOINTS = {
   PAYMENT_METHODS: `${API_BASE}/payment/methods`,
   PAYMENT_MOMO_CREATE: `${API_BASE}/payment/momo/create`,
   PAYMENT_ZALOPAY_CREATE: `${API_BASE}/payment/zalopay/create`,
+  PAYMENT_POLL: (token) => `${API_BASE}/payment/poll/${token}`,
+  PAYMENT_CONFIRM: `${API_BASE}/payment/confirm-simulation`,
 
   // Helper for dynamic URLs
   url,

@@ -68,7 +68,7 @@ const AdminDashboard = ({ user }) => {
       if (activeTab === 'orders' || activeTab === 'dashboard') {
         loadAllData();
       }
-      showToast(`ðŸ†• ÄÆ¡n má»›i #${data.data?.order_id || data.orderId} vá»«a Ä‘Æ°á»£c táº¡o!`, 'info');
+      showToast(`†• ÄÆ¡n má»›i #${data.data?.order_id || data.orderId} vá»«a Ä‘Æ°á»£c táº¡o!`, 'info');
     });
 
     // Real-time payment notifications
@@ -76,7 +76,7 @@ const AdminDashboard = ({ user }) => {
       if (activeTab === 'orders' || activeTab === 'payments') {
         loadAllData();
       }
-      showToast(`ðŸ’° Thanh toÃ¡n Ä‘Æ¡n #${data.data?.orderId} thÃ nh cÃ´ng!`, 'success');
+      showToast(`’° Thanh toÃ¡n Ä‘Æ¡n #${data.data?.orderId} thÃ nh cÃ´ng!`, 'success');
     });
 
     // Real-time low stock alerts
@@ -277,7 +277,7 @@ const AdminDashboard = ({ user }) => {
 
   const getRoleText = (role) => {
     const texts = {
-      Admin: 'Quáº£n trá»‹', BranchManager: 'QL chi nhÃ¡nh', Cashier: 'Thu ngÃ¢n',
+      Admin: 'Quản trá»‹', BranchManager: 'QL chi nhÃ¡nh', Cashier: 'Thu ngÃ¢n',
       Kitchen: 'Báº¿p', Waiter: 'Phá»¥c vá»¥', Customer: 'KhÃ¡ch hÃ ng',
     };
     return texts[role] || role;
@@ -321,16 +321,16 @@ const AdminDashboard = ({ user }) => {
       <div className="bg-kfc-red text-white shadow-lg">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <span className="text-3xl">ðŸ”</span>
+            <span className="text-3xl">”</span>
             <div>
               <h1 className="text-2xl font-bold">FastFood Admin</h1>
-              <p className="text-sm text-red-200">Há»‡ thá»‘ng quáº£n lÃ½ Ä‘a chi nhÃ¡nh</p>
+              <p className="text-sm text-red-200">Há»‡ thá»‘ng quản lý Ä‘a chi nhÃ¡nh</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="/" target="_blank" className="hover:text-kfc-yellow text-sm">ðŸŒ Xem Website</a>
+            <a href="/" target="_blank" className="hover:text-kfc-yellow text-sm">Œ Xem Website</a>
             <button onClick={loadAllData} className="bg-white text-kfc-red px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-100">
-              ðŸ”„ LÃ m má»›i
+              ”„ LÃ m má»›i
             </button>
             {user && (
               <div className="flex items-center gap-3 border-l border-red-400 pl-4">
@@ -351,7 +351,7 @@ const AdminDashboard = ({ user }) => {
                   }}
                   className="text-sm bg-red-700 hover:bg-red-800 text-white px-3 py-2 rounded-lg font-semibold transition"
                 >
-                  ðŸšª ÄÄƒng xuáº¥t
+                  šª ÄÄƒng xuáº¥t
                 </button>
               </div>
             )}
@@ -364,14 +364,14 @@ const AdminDashboard = ({ user }) => {
         <div className="container mx-auto px-4">
           <div className="flex space-x-1 overflow-x-auto">
             {[
-              { id: 'dashboard', label: 'ðŸ“Š Dashboard', icon: 'ðŸ“Š' },
-              { id: 'orders', label: 'ðŸ“‹ ÄÆ¡n hÃ ng', icon: 'ðŸ“‹' },
-              { id: 'inventory', label: 'ðŸ“¦ Kho', icon: 'ðŸ“¦' },
-              { id: 'users', label: 'ðŸ‘¥ NhÃ¢n viÃªn', icon: 'ðŸ‘¥' },
-              { id: 'promotions', label: 'ðŸŽ Khuyáº¿n mÃ£i', icon: 'ðŸŽ' },
+              { id: 'dashboard', label: '“Š Dashboard', icon: '“Š' },
+              { id: 'orders', label: '“‹ ÄÆ¡n hÃ ng', icon: '“‹' },
+              { id: 'inventory', label: '“¦ Kho', icon: '“¦' },
+              { id: 'users', label: '👤¥ NhÃ¢n viÃªn', icon: '👤¥' },
+              { id: 'promotions', label: ' Khuyáº¿n mãi', icon: '' },
               { id: 'reviews', label: 'â­ ÄÃ¡nh giÃ¡', icon: 'â­' },
-              { id: 'finance', label: 'ðŸ’° TÃ i chÃ­nh', icon: 'ðŸ’°' },
-              { id: 'reports', label: 'ðŸ“ˆ BÃ¡o cÃ¡o', icon: 'ðŸ“ˆ' },
+              { id: 'finance', label: '’° TÃ i chÃ­nh', icon: '’°' },
+              { id: 'reports', label: '“ˆ BÃ¡o cÃ¡o', icon: '“ˆ' },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -402,18 +402,18 @@ const AdminDashboard = ({ user }) => {
         {/* ============================================ */}
         {activeTab === 'dashboard' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">ðŸ“Š Tá»•ng quan Dashboard</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">“Š Tổng quan Dashboard</h2>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Tá»•ng doanh thu</p>
+                    <p className="text-sm text-gray-500 mb-1">Tổng doanh thu</p>
                     <p className="text-2xl font-bold text-yellow-600">{totalRevenue.toLocaleString('vi-VN')}Ä‘</p>
                     <p className="text-xs text-gray-400 mt-1">{orders.filter(o => o.payment_status === 'paid').length} Ä‘Æ¡n Ä‘Ã£ TT</p>
                   </div>
-                  <div className="bg-yellow-100 p-3 rounded-lg">ðŸ’°</div>
+                  <div className="bg-yellow-100 p-3 rounded-lg">’°</div>
                 </div>
               </div>
 
@@ -422,20 +422,20 @@ const AdminDashboard = ({ user }) => {
                   <div>
                     <p className="text-sm text-gray-500 mb-1">ÄÆ¡n hÃ ng hÃ´m nay</p>
                     <p className="text-2xl font-bold text-red-600">{todayOrders.length}</p>
-                    <p className="text-xs text-gray-400 mt-1">{pendingOrders} chá» xá»­ lÃ½</p>
+                    <p className="text-xs text-gray-400 mt-1">{pendingOrders} chá» xá»­ lý</p>
                   </div>
-                  <div className="bg-red-100 p-3 rounded-lg">ðŸ“¦</div>
+                  <div className="bg-red-100 p-3 rounded-lg">“¦</div>
                 </div>
               </div>
 
               <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Tá»•ng Ä‘Æ¡n hÃ ng</p>
+                    <p className="text-sm text-gray-500 mb-1">Tổng Ä‘Æ¡n hÃ ng</p>
                     <p className="text-2xl font-bold text-red-600">{orders.length}</p>
                     <p className="text-xs text-gray-400 mt-1">Táº¥t cáº£ Ä‘Æ¡n</p>
                   </div>
-                  <div className="bg-red-100 p-3 rounded-lg">ðŸ›’</div>
+                  <div className="bg-red-100 p-3 rounded-lg">›’</div>
                 </div>
               </div>
 
@@ -444,7 +444,7 @@ const AdminDashboard = ({ user }) => {
                   <div>
                     <p className="text-sm text-gray-500 mb-1">NguyÃªn liá»‡u sáº¯p háº¿t</p>
                     <p className="text-2xl font-bold text-orange-600">{lowStockItems.length}</p>
-                    <p className="text-xs text-gray-400 mt-1">{inventory.length} tá»•ng items</p>
+                    <p className="text-xs text-gray-400 mt-1">{inventory.length} tổng items</p>
                   </div>
                   <div className="bg-orange-100 p-3 rounded-lg">âš ï¸</div>
                 </div>
@@ -455,7 +455,7 @@ const AdminDashboard = ({ user }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Revenue Chart */}
               <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">ðŸ“ˆ Doanh thu theo ngÃ y</h3>
+                <h3 className="text-lg font-semibold mb-4">“ˆ Doanh thu theo ngÃ y</h3>
                 {revenue.length > 0 ? (
                   <Bar
                     data={revenueChartData}
@@ -474,7 +474,7 @@ const AdminDashboard = ({ user }) => {
 
               {/* Orders by Status */}
               <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">ðŸ“Š ÄÆ¡n hÃ ng theo tráº¡ng thÃ¡i</h3>
+                <h3 className="text-lg font-semibold mb-4">“Š ÄÆ¡n hÃ ng theo tráº¡ng thÃ¡i</h3>
                 {orders.length > 0 ? (
                   <div className="flex justify-center">
                     <Doughnut
@@ -495,7 +495,7 @@ const AdminDashboard = ({ user }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Top Selling Items */}
               <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">ðŸ† Top mÃ³n bÃ¡n cháº¡y</h3>
+                <h3 className="text-lg font-semibold mb-4">† Top mÃ³n bÃ¡n cháº¡y</h3>
                 {getTopItems().length > 0 ? (
                   <Bar
                     data={topItemsData}
@@ -512,7 +512,7 @@ const AdminDashboard = ({ user }) => {
 
               {/* Payment Methods */}
               <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">ðŸ’³ PhÆ°Æ¡ng thá»©c thanh toÃ¡n</h3>
+                <h3 className="text-lg font-semibold mb-4">’³ PhÆ°Æ¡ng thá»©c thanh toÃ¡n</h3>
                 {orders.length > 0 ? (
                   <div className="flex justify-center">
                     <Doughnut
@@ -554,7 +554,7 @@ const AdminDashboard = ({ user }) => {
 
             {/* Recent Orders */}
             <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <h3 className="text-lg font-semibold mb-4">ðŸ• ÄÆ¡n hÃ ng gáº§n Ä‘Ã¢y</h3>
+              <h3 className="text-lg font-semibold mb-4">• ÄÆ¡n hÃ ng gáº§n Ä‘Ã¢y</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -562,7 +562,7 @@ const AdminDashboard = ({ user }) => {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">MÃ£ Ä‘Æ¡n</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">KhÃ¡ch hÃ ng</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Chi nhÃ¡nh</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Tá»•ng tiá»n</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Tổng tiá»n</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">TT</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">Tráº¡ng thÃ¡i</th>
                     </tr>
@@ -604,8 +604,8 @@ const AdminDashboard = ({ user }) => {
         {activeTab === 'orders' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">ðŸ“‹ Quáº£n lÃ½ Ä‘Æ¡n hÃ ng</h2>
-              <div className="text-sm text-gray-500">Tá»•ng: {orders.length} Ä‘Æ¡n</div>
+              <h2 className="text-2xl font-bold text-gray-800">“‹ Quản lý Ä‘Æ¡n hÃ ng</h2>
+              <div className="text-sm text-gray-500">Tổng: {orders.length} Ä‘Æ¡n</div>
             </div>
 
             {/* Filters */}
@@ -638,7 +638,7 @@ const AdminDashboard = ({ user }) => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">KhÃ¡ch hÃ ng</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Chi nhÃ¡nh</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Loáº¡i</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Tá»•ng tiá»n</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Tổng tiá»n</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">TT Thanh toÃ¡n</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Tráº¡ng thÃ¡i</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">HÃ nh Ä‘á»™ng</th>
@@ -655,9 +655,9 @@ const AdminDashboard = ({ user }) => {
                         <td className="px-6 py-4">{order.branch?.branch_name || '-'}</td>
                         <td className="px-6 py-4">
                           <span className="text-sm">
-                            {order.order_type === 'takeaway' ? 'ðŸ“¦ Mang Ä‘i' :
-                             order.order_type === 'delivery' ? 'ðŸšš Giao hÃ ng' :
-                             order.order_type === 'dine_in' ? 'ðŸ½ï¸ Táº¡i bÃ n' : order.order_type}
+                            {order.order_type === 'takeaway' ? '“¦ Mang Ä‘i' :
+                             order.order_type === 'delivery' ? 'šš Giao hÃ ng' :
+                             order.order_type === 'dine_in' ? '½ï¸ Táº¡i bÃ n' : order.order_type}
                           </span>
                         </td>
                         <td className="px-6 py-4 font-semibold text-kfc-red">
@@ -722,9 +722,9 @@ const AdminDashboard = ({ user }) => {
         {activeTab === 'inventory' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">ðŸ“¦ Quáº£n lÃ½ kho nguyÃªn liá»‡u</h2>
+              <h2 className="text-2xl font-bold text-gray-800">“¦ Quản lý kho nguyÃªn liá»‡u</h2>
               <div className="flex space-x-4">
-                <span className="text-sm text-gray-500">Tá»•ng: {inventory.length} items</span>
+                <span className="text-sm text-gray-500">Tổng: {inventory.length} items</span>
                 <span className="text-sm text-orange-600">âš ï¸ {lowStockItems.length} sáº¯p háº¿t</span>
               </div>
             </div>
@@ -740,7 +740,7 @@ const AdminDashboard = ({ user }) => {
                 <p className="text-2xl font-bold text-orange-800">{lowStockItems.length}</p>
               </div>
               <div className="bg-red-100 rounded-lg p-4">
-                <p className="text-sm text-red-700">ðŸ’° GiÃ¡ trá»‹ tá»“n kho</p>
+                <p className="text-sm text-red-700">’° GiÃ¡ trá»‹ tá»“n kho</p>
                 <p className="text-2xl font-bold text-red-800">
                   {inventory.reduce((sum, i) => sum + (i.quantity * i.cost_price || 0), 0).toLocaleString('vi-VN')}Ä‘
                 </p>
@@ -774,7 +774,7 @@ const AdminDashboard = ({ user }) => {
                   </div>
                   {item.supplier_name && (
                     <div className="mt-3 pt-3 border-t text-xs text-gray-500">
-                      <p>ðŸ“ž {item.supplier_name} {item.supplier_phone || ''}</p>
+                      <p>“ž {item.supplier_name} {item.supplier_phone || ''}</p>
                     </div>
                   )}
                 </div>
@@ -792,8 +792,8 @@ const AdminDashboard = ({ user }) => {
         {activeTab === 'users' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">ðŸ‘¥ Quáº£n lÃ½ nhÃ¢n viÃªn & khÃ¡ch hÃ ng</h2>
-              <div className="text-sm text-gray-500">Tá»•ng: {users.length} ngÆ°á»i dÃ¹ng</div>
+              <h2 className="text-2xl font-bold text-gray-800">👤¥ Quản lý nhÃ¢n viÃªn & khÃ¡ch hÃ ng</h2>
+              <div className="text-sm text-gray-500">Tổng: {users.length} ngÆ°á»i dÃ¹ng</div>
             </div>
 
             {/* Stats */}
@@ -867,11 +867,11 @@ const AdminDashboard = ({ user }) => {
         )}
 
         {/* ============================================ */}
-        {/* FINANCE TAB - ðŸ’° TÃ i chÃ­nh */}
+        {/* FINANCE TAB - ’° TÃ i chÃ­nh */}
         {/* ============================================ */}
         {activeTab === 'finance' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">ðŸ’° TÃ i chÃ­nh</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">’° TÃ i chÃ­nh</h2>
 
             {/* COGS Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -903,7 +903,7 @@ const AdminDashboard = ({ user }) => {
 
             {/* Revenue Bar Chart (div/CSS) */}
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">ðŸ“ˆ Doanh thu theo ngÃ y</h3>
+              <h3 className="text-lg font-semibold mb-4">“ˆ Doanh thu theo ngÃ y</h3>
               {revenue.length > 0 ? (
                 <div className="flex items-end gap-2 h-64">
                   {revenue.slice(0, 14).map((r, idx) => {
@@ -937,7 +937,7 @@ const AdminDashboard = ({ user }) => {
 
             {/* Expense Summary */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4">ðŸ’¼ Chi phÃ­ & Lá»£i nhuáº­n</h3>
+              <h3 className="text-lg font-semibold mb-4">’¼ Chi phÃ­ & Lá»£i nhuáº­n</h3>
               {expenseData ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-red-50 rounded-lg p-4 text-center">
@@ -974,8 +974,8 @@ const AdminDashboard = ({ user }) => {
         {activeTab === 'reviews' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">â­ Quáº£n lÃ½ ÄÃ¡nh giÃ¡</h2>
-              <div className="text-sm text-gray-500">Tá»•ng: {reviews.length} Ä‘Ã¡nh giÃ¡</div>
+              <h2 className="text-2xl font-bold text-gray-800">â­ Quản lý ÄÃ¡nh giÃ¡</h2>
+              <div className="text-sm text-gray-500">Tổng: {reviews.length} Ä‘Ã¡nh giÃ¡</div>
             </div>
 
             {/* Stats */}
@@ -999,7 +999,7 @@ const AdminDashboard = ({ user }) => {
             {/* Pending reviews */}
             {reviews.filter(r => !r.is_approved).length > 0 && (
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-yellow-700 mb-3">ðŸ”” Chá» duyá»‡t</h3>
+                <h3 className="text-lg font-semibold text-yellow-700 mb-3">”” Chá» duyá»‡t</h3>
                 <div className="space-y-3">
                   {reviews.filter(r => !r.is_approved).map(review => (
                     <div key={review.review_id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start justify-between gap-4">
@@ -1026,7 +1026,7 @@ const AdminDashboard = ({ user }) => {
                             loadAllData();
                           }}
                           className="px-4 py-2 bg-red-500 text-white text-sm font-bold rounded-lg hover:bg-red-600 transition"
-                        >ðŸ—‘ï¸ XÃ³a</button>
+                        >—‘ï¸ XÃ³a</button>
                       </div>
                     </div>
                   ))}
@@ -1087,8 +1087,8 @@ const AdminDashboard = ({ user }) => {
         {activeTab === 'promotions' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">ðŸŽ Quáº£n lÃ½ khuyáº¿n mÃ£i & Loyalty</h2>
-              <div className="text-sm text-gray-500">Tá»•ng: {promotions.length} khuyáº¿n mÃ£i</div>
+              <h2 className="text-2xl font-bold text-gray-800"> Quản lý khuyến mãi & Loyalty</h2>
+              <div className="text-sm text-gray-500">Tổng: {promotions.length} khuyến mãi</div>
             </div>
 
             {/* Active Promotions */}
@@ -1121,7 +1121,7 @@ const AdminDashboard = ({ user }) => {
                 </div>
               ))}
               {promotions.length === 0 && (
-                <p className="col-span-3 text-center text-gray-400 py-8">ChÆ°a cÃ³ khuyáº¿n mÃ£i nÃ o</p>
+                <p className="col-span-3 text-center text-gray-400 py-8">ChÆ°a cÃ³ khuyến mãi nÃ o</p>
               )}
             </div>
           </div>
@@ -1132,15 +1132,15 @@ const AdminDashboard = ({ user }) => {
         {/* ============================================ */}
         {activeTab === 'reports' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">ðŸ“ˆ BÃ¡o cÃ¡o & PhÃ¢n tÃ­ch</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">“ˆ BÃ¡o cÃ¡o & PhÃ¢n tÃ­ch</h2>
 
             {/* COGS Report */}
             {cogsData && (
               <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">ðŸ’° BÃ¡o cÃ¡o COGS (GiÃ¡ vá»‘n)</h3>
+                <h3 className="text-lg font-semibold mb-4">’° BÃ¡o cÃ¡o COGS (GiÃ¡ vá»‘n)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                   <div className="bg-red-100 rounded-lg p-4 text-center">
-                    <p className="text-sm text-red-600">Tá»•ng doanh thu</p>
+                    <p className="text-sm text-red-600">Tổng doanh thu</p>
                     <p className="text-xl font-bold text-red-800">{parseInt(cogsData.total_revenue).toLocaleString('vi-VN')}Ä‘</p>
                   </div>
                   <div className="bg-red-100 rounded-lg p-4 text-center">
@@ -1191,7 +1191,7 @@ const AdminDashboard = ({ user }) => {
 
             {/* Revenue Chart */}
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">ðŸ“ˆ Biá»ƒu Ä‘á»“ doanh thu</h3>
+              <h3 className="text-lg font-semibold mb-4">“ˆ Biá»ƒu Ä‘á»“ doanh thu</h3>
               {revenue.length > 0 ? (
                 <Line
                   data={revenueChartData}
@@ -1210,7 +1210,7 @@ const AdminDashboard = ({ user }) => {
 
             {/* Top Selling Chart */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4">ðŸ† Top mÃ³n bÃ¡n cháº¡y</h3>
+              <h3 className="text-lg font-semibold mb-4">† Top mÃ³n bÃ¡n cháº¡y</h3>
               {getTopItems().length > 0 ? (
                 <Bar
                   data={topItemsData}

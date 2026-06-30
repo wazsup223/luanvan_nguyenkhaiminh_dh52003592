@@ -1,8 +1,8 @@
 ﻿/**
  * ============================================
  * KITCHEN DISPLAY - F05 Real-time Kitchen View
- * Hiá»ƒn thá»‹ Ä‘Æ¡n hÃ ng cho báº¿p vá»›i Socket.io
- * Brand: KFC Style - Äá»/VÃ ng/Tráº¯ng
+ * HiỒn th�9 �ơn hàng cho bếp v�:i Socket.io
+ * Brand: KFC Style - Đỏ/Vàng/Trắng
  * ============================================
  */
 
@@ -37,7 +37,7 @@ const KitchenDisplay = () => {
   const getTimeElapsed = (createdAt) => {
     const minutes = Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000);
     if (minutes < 1) return 'Vá»«a xong';
-    if (minutes < 60) return `${minutes} phÃºt`;
+    if (minutes < 60) return `${minutes} phút`;
     return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
   };
 
@@ -108,15 +108,15 @@ const KitchenDisplay = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">ðŸ³</span>
+              <span className="text-3xl">³</span>
               <div>
-                <h1 className="text-2xl font-black">MÃ n hÃ¬nh Báº¿p</h1>
-                <p className="text-red-100 text-sm">Theo dÃµi Ä‘Æ¡n hÃ ng real-time</p>
+                <h1 className="text-2xl font-black">Màn hình Bếp</h1>
+                <p className="text-red-100 text-sm">Theo dõi �ơn hàng real-time</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="bg-white/20 rounded-lg px-4 py-2 text-sm">
-                ðŸ“¡ <span className="font-bold">Socket.io</span>
+                “¡ <span className="font-bold">Socket.io</span>
               </div>
               <button
                 onClick={() => setSoundEnabled(!soundEnabled)}
@@ -124,7 +124,7 @@ const KitchenDisplay = () => {
                   soundEnabled ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white'
                 }`}
               >
-                ðŸ”Š {soundEnabled ? 'Báº­t' : 'Táº¯t'} Ã¢m
+                �x` {soundEnabled ? 'Bật' : 'Tắt'} âm
               </button>
             </div>
           </div>
@@ -136,9 +136,9 @@ const KitchenDisplay = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-2 py-3">
             {[
-              { key: 'all', label: 'Táº¥t cáº£', count: pendingCount + preparingCount + readyCount, icon: 'ðŸ“‹' },
-              { key: 'preparing', label: 'Äang cháº¿ biáº¿n', count: preparingCount, icon: 'ðŸ”¥' },
-              { key: 'ready', label: 'Sáºµn sÃ ng phá»¥c vá»¥', count: readyCount, icon: 'âœ…' }
+              { key: 'all', label: 'Tất cả', count: pendingCount + preparingCount + readyCount, icon: '�x9' },
+              { key: 'preparing', label: 'Đang chế biến', count: preparingCount, icon: '�x�' },
+              { key: 'ready', label: 'Sẵn sàng phục vụ', count: readyCount, icon: '�S&' }
             ].map(tab => (
               <button
                 key={tab.key}
@@ -161,13 +161,13 @@ const KitchenDisplay = () => {
         {loading ? (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">â³</div>
-            <p className="text-gray-500">Äang táº£i Ä‘Æ¡n hÃ ng...</p>
+            <p className="text-gray-500">Đang tải �ơn hàng...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl shadow">
             <div className="text-6xl mb-4">âœ…</div>
-            <p className="text-xl text-gray-600 font-bold">KhÃ´ng cÃ³ Ä‘Æ¡n nÃ o</p>
-            <p className="text-gray-400 mt-2">Táº¥t cáº£ Ä‘Æ¡n Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½!</p>
+            <p className="text-xl text-gray-600 font-bold">Không có �ơn nào</p>
+            <p className="text-gray-400 mt-2">Tất cả �ơn �ã �ược xử lý!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -187,7 +187,7 @@ const KitchenDisplay = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-black">#{order.order_id}</span>
                       <span className={`px-2 py-0.5 rounded text-xs font-bold ${urgencyBadge[urgency]}`}>
-                        {order.status === 'ready' ? 'Sáº´N SÃ€NG' : order.status === 'preparing' ? 'ÄANG LÃ€M' : 'CHá»œ Xá»¬ LÃ'}
+                        {order.status === 'ready' ? 'SẴN SìNG' : order.status === 'preparing' ? 'ĐANG LìM' : 'CH�S XỬ LÝ'}
                       </span>
                     </div>
                     <span className="text-yellow-400 font-bold">â± {elapsed}</span>
@@ -196,7 +196,7 @@ const KitchenDisplay = () => {
                   {/* Order Info */}
                   <div className="p-4">
                     <div className="text-sm text-gray-500 mb-3">
-                      ðŸ“ {order.branch?.branch_name || 'Chi nhÃ¡nh'} â€¢ {order.order_type === 'dine-in' ? 'ðŸ½ Táº¡i chá»—' : order.order_type === 'delivery' ? 'ðŸ›µ Giao hÃ ng' : 'ðŸ“¦ Mang Ä‘i'}
+                      �x� {order.branch?.branch_name || 'Chi nhánh'} ⬢ {order.order_type === 'dine-in' ? '�x�� Tại ch�' : order.order_type === 'delivery' ? '�x:� Giao hàng' : '�x� Mang �i'}
                     </div>
 
                     {/* Items */}
@@ -207,13 +207,13 @@ const KitchenDisplay = () => {
                             <span className="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
                               {item.quantity}
                             </span>
-                            <span className="font-medium text-gray-800">{item.menu_item?.item_name || `MÃ³n #${item.item_id}`}</span>
+                            <span className="font-medium text-gray-800">{item.menu_item?.item_name || `Món #${item.item_id}`}</span>
                           </div>
                         </div>
                       ))}
                       {order.order_items?.length > 4 && (
                         <div className="text-center text-sm text-gray-400">
-                          +{order.order_items.length - 4} mÃ³n khÃ¡c
+                          +{order.order_items.length - 4} món khác
                         </div>
                       )}
                     </div>
@@ -221,7 +221,7 @@ const KitchenDisplay = () => {
                     {/* Notes */}
                     {order.notes && (
                       <div className="bg-yellow-50 border-l-4 border-yellow-500 p-2 rounded text-sm text-yellow-800 mb-4">
-                        ðŸ“ {order.notes}
+                        “ {order.notes}
                       </div>
                     )}
 
@@ -232,7 +232,7 @@ const KitchenDisplay = () => {
                           onClick={() => updateStatus(order.order_id, 'preparing')}
                           className="flex-1 bg-red-600 text-white py-2.5 rounded-lg font-bold hover:bg-red-700 transition flex items-center justify-center gap-2"
                         >
-                          ðŸ”¥ Báº¯t Ä‘áº§u lÃ m
+                          �x� Bắt �ầu làm
                         </button>
                       )}
                       {order.status === 'preparing' && (
@@ -245,7 +245,7 @@ const KitchenDisplay = () => {
                       )}
                       {order.status === 'ready' && (
                         <div className="flex-1 bg-yellow-500 text-white py-2.5 rounded-lg font-bold text-center">
-                          ðŸ½ï¸ Chá» phá»¥c vá»¥
+                          ½ï¸ Chá» phá»¥c vá»¥
                         </div>
                       )}
                     </div>

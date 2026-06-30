@@ -38,7 +38,7 @@ export default function TableManagement() {
         if (bRes.data.length > 0) setNewTable(prev => ({ ...prev, branch_id: bRes.data[0].branch_id }));
       }
     } catch (err) {
-      setError('Không thỒ tải dữ li�!u');
+      setError('Không thể tải dữ liệu');
     } finally {
       setLoading(false);
     }
@@ -56,13 +56,13 @@ export default function TableManagement() {
       const data = await res.json();
       if (data.success) {
         setTables(prev => prev.map(t => t.table_id === tableId ? { ...t, status } : t));
-        setSuccess('Cập nhật trạng thái bàn thành công �S&');
+        setSuccess('Cập nhật trạng thái bàn thành công');
         setTimeout(() => setSuccess(''), 2000);
       } else {
-        setError(data.message || 'L�i cập nhật');
+        setError(data.message || 'Lỗi cập nhật');
       }
     } catch (err) {
-      setError('L�i kết n�i server');
+      setError('Lỗi kết nối server');
     } finally {
       setUpdating(null);
     }
@@ -70,7 +70,7 @@ export default function TableManagement() {
 
   const handleAddTable = async (e) => {
     e.preventDefault();
-    if (!newTable.table_number.trim()) { setError('Nhập s� bàn'); return; }
+    if (!newTable.table_number.trim()) { setError('Nhập số bàn'); return; }
     try {
       setError('');
       const res = await fetch(`${API_BASE}/api/tables`, {
@@ -80,16 +80,16 @@ export default function TableManagement() {
       });
       const data = await res.json();
       if (data.success) {
-        setSuccess('Thêm bàn thành công �S&');
+        setSuccess('Thêm bàn thành công');
         setShowAddModal(false);
         setNewTable(prev => ({ ...prev, table_number: '' }));
         await fetchData();
         setTimeout(() => setSuccess(''), 2000);
       } else {
-        setError(data.message || 'Lá»—i thÃªm bÃ n');
+        setError(data.message || 'Lỗi thêm bàn');
       }
     } catch (err) {
-      setError('L�i kết n�i server');
+      setError('Lỗi kết nối server');
     }
   };
 
@@ -100,19 +100,19 @@ export default function TableManagement() {
       const data = await res.json();
       if (data.success) {
         setTables(prev => prev.filter(t => t.table_id !== tableId));
-        setSuccess('Đã xóa bàn �S&');
+        setSuccess('Đã xóa bàn ');
         setTimeout(() => setSuccess(''), 2000);
       }
     } catch (err) {
-      setError('L�i xóa bàn');
+      setError('Lỗi xóa bàn');
     }
   };
 
   const statusConfig = {
-    available: { label: 'Trá»‘ng', color: 'bg-green-100 text-yellow-700 border-green-200', icon: 'Ÿ¢', dot: 'bg-yellow-500' },
-    occupied: { label: 'Đang dùng', color: 'bg-red-100 text-red-700 border-red-200', icon: '�x�', dot: 'bg-red-500' },
-    reserved: { label: 'Đã �ặt', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '�xx�', dot: 'bg-yellow-500' },
-    cleaning: { label: 'Dá»n bÃ n', color: 'bg-red-100 text-red-700 border-blue-200', icon: '”µ', dot: 'bg-red-500' },
+    available: { label: 'Trống', color: 'bg-green-100 text-yellow-700 border-green-200', icon: '🪑', dot: 'bg-yellow-500' },
+    occupied: { label: 'Đang dùng', color: 'bg-red-100 text-red-700 border-red-200', icon: '🍽️', dot: 'bg-red-500' },
+    reserved: { label: 'Đã đặt', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '📅️', dot: 'bg-yellow-500' },
+    cleaning: { label: 'Dọn bàn', color: 'bg-red-100 text-red-700 border-blue-200', icon: '🧹', dot: 'bg-red-500' },
   };
 
   const filtered = selectedBranch === 'all'
@@ -140,14 +140,14 @@ export default function TableManagement() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-black">�x� Quản lý bàn Ēn</h1>
+              <h1 className="text-2xl font-black">Quản lý bàn</h1>
               <p className="text-red-100 text-sm">Theo dõi trạng thái bàn tại nhà hàng</p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
               className="px-5 py-2.5 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition"
             >
-              âž• ThÃªm bÃ n
+              ➕ Thêm bàn
             </button>
           </div>
         </div>
@@ -160,11 +160,11 @@ export default function TableManagement() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         {[
-          { label: 'Tổng bÃ n', value: stats.total, color: 'text-gray-900' },
-          { label: 'Trá»‘ng', value: stats.available, color: 'text-yellow-600' },
+          { label: 'Tổng bàn', value: stats.total, color: 'text-gray-900' },
+          { label: 'Trống', value: stats.available, color: 'text-yellow-600' },
           { label: 'Đang dùng', value: stats.occupied, color: 'text-red-600' },
-          { label: 'Đã �ặt', value: stats.reserved, color: 'text-yellow-600' },
-          { label: 'Dá»n bÃ n', value: stats.cleaning, color: 'text-red-600' },
+          { label: 'Đã đặt', value: stats.reserved, color: 'text-yellow-600' },
+          { label: 'Dọn bàn', value: stats.cleaning, color: 'text-red-600' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
             <p className="text-xs text-gray-400 mb-1">{s.label}</p>
@@ -201,7 +201,7 @@ export default function TableManagement() {
                 <p className="text-3xl mb-1">{cfg.icon}</p>
                 <p className="font-black text-lg">{table.table_number}</p>
                 <p className="text-xs font-semibold mt-1">{cfg.label}</p>
-                <p className="text-xs opacity-70 mt-0.5">{table.capacity} chá»—</p>
+                <p className="text-xs opacity-70 mt-0.5">{table.capacity} chứa</p>
               </div>
 
               {/* Quick actions */}
@@ -212,7 +212,7 @@ export default function TableManagement() {
                     disabled={updating === table.table_id}
                     className="text-[10px] font-bold px-2 py-1 bg-yellow-500 text-white rounded-full hover:bg-red-700 transition disabled:opacity-50"
                   >
-                    Trá»‘ng
+                    Trống
                   </button>
                 )}
                 {table.status !== 'occupied' && (
@@ -230,7 +230,7 @@ export default function TableManagement() {
                     disabled={updating === table.table_id}
                     className="text-[10px] font-bold px-2 py-1 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition disabled:opacity-50"
                   >
-                    Äáº·t
+                    đặt
                   </button>
                 )}
                 {table.status !== 'cleaning' && (
@@ -239,7 +239,7 @@ export default function TableManagement() {
                     disabled={updating === table.table_id}
                     className="text-[10px] font-bold px-2 py-1 bg-red-500 text-white rounded-full hover:bg-blue-600 transition disabled:opacity-50"
                   >
-                    Dá»n
+                    Dọn
                   </button>
                 )}
               </div>
@@ -249,7 +249,7 @@ export default function TableManagement() {
                 onClick={(e) => { e.stopPropagation(); handleDeleteTable(table.table_id); }}
                 className="absolute top-1 right-1 w-6 h-6 bg-white/80 text-gray-400 rounded-full text-xs hover:text-red-500 hover:bg-white transition flex items-center justify-center"
               >
-                âœ•
+                🗑️
               </button>
 
               {updating === table.table_id && (
@@ -279,7 +279,7 @@ export default function TableManagement() {
       {showAddModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
-            <h2 className="text-xl font-black text-gray-900 mb-4">âž• ThÃªm bÃ n má»›i</h2>
+              <h2 className="text-xl font-black text-gray-900 mb-4">🔴 Thêm bàn mới</h2>
             <form onSubmit={handleAddTable}>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Chi nhánh</label>
@@ -294,7 +294,7 @@ export default function TableManagement() {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Sá»‘ bÃ n</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Số bàn</label>
                 <input
                   type="text"
                   value={newTable.table_number}
@@ -305,7 +305,7 @@ export default function TableManagement() {
                 />
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Sá»©c chá»©a</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Sức chứa</label>
                 <input
                   type="number"
                   value={newTable.capacity}
@@ -317,10 +317,10 @@ export default function TableManagement() {
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-2.5 border border-gray-200 rounded-full font-semibold text-gray-600 hover:bg-gray-50 transition">
-                  Há»§y
+                  Hủy
                 </button>
                 <button type="submit" className="flex-1 py-2.5 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition">
-                  ThÃªm bÃ n
+                  Thêm bàn
                 </button>
               </div>
             </form>
@@ -329,7 +329,7 @@ export default function TableManagement() {
       )}
 
       <button onClick={() => navigate('/admin')} className="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 transition">
-        � � Quay lại Quản tr�9
+        🔙 Quay lại Quản trị
       </button>
       </div>
     </div>

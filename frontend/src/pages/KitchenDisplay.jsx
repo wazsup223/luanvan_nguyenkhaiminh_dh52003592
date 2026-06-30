@@ -111,7 +111,7 @@ const KitchenDisplay = () => {
               <span className="text-3xl">³</span>
               <div>
                 <h1 className="text-2xl font-black">Màn hình Bếp</h1>
-                <p className="text-red-100 text-sm">Theo dõi �ơn hàng real-time</p>
+                  <p className="text-red-100 text-sm">Theo dõi đơn hàng real-time</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -124,7 +124,7 @@ const KitchenDisplay = () => {
                   soundEnabled ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white'
                 }`}
               >
-                �x` {soundEnabled ? 'Bật' : 'Tắt'} âm
+                🔊 {soundEnabled ? 'Bật' : 'Tắt'} âm thanh
               </button>
             </div>
           </div>
@@ -136,9 +136,9 @@ const KitchenDisplay = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-2 py-3">
             {[
-              { key: 'all', label: 'Tất cả', count: pendingCount + preparingCount + readyCount, icon: '�x9' },
-              { key: 'preparing', label: 'Đang chế biến', count: preparingCount, icon: '�x�' },
-              { key: 'ready', label: 'Sẵn sàng phục vụ', count: readyCount, icon: '�S&' }
+              { key: 'all', label: 'Tất cả', count: pendingCount + preparingCount + readyCount, icon: '🍔' },
+              { key: 'preparing', label: 'Đang chế biến', count: preparingCount, icon: '👨‍🍳' },
+              { key: 'ready', label: 'Sẵn sàng phục vụ', count: readyCount, icon: '✅' }
             ].map(tab => (
               <button
                 key={tab.key}
@@ -160,14 +160,14 @@ const KitchenDisplay = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {loading ? (
           <div className="text-center py-20">
-            <div className="text-5xl mb-4">â³</div>
-            <p className="text-gray-500">Đang tải �ơn hàng...</p>
+            <div className="text-5xl mb-4">⏳</div>
+            <p className="text-gray-500">Đang tải đơn hàng...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl shadow">
-            <div className="text-6xl mb-4">âœ…</div>
-            <p className="text-xl text-gray-600 font-bold">Không có �ơn nào</p>
-            <p className="text-gray-400 mt-2">Tất cả �ơn �ã �ược xử lý!</p>
+            <div className="text-6xl mb-4">✅</div>
+            <p className="text-xl text-gray-600 font-bold">Không có đơn nào</p>
+            <p className="text-gray-400 mt-2">Tất cả đơn đã được xử lý!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -187,16 +187,16 @@ const KitchenDisplay = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-black">#{order.order_id}</span>
                       <span className={`px-2 py-0.5 rounded text-xs font-bold ${urgencyBadge[urgency]}`}>
-                        {order.status === 'ready' ? 'SẴN SìNG' : order.status === 'preparing' ? 'ĐANG LìM' : 'CH�S XỬ LÝ'}
+                        {order.status === 'ready' ? 'SẴN SÀNG' : order.status === 'preparing' ? 'ĐANG CHẾ BIẾN' : 'CHỜ XỬ LÝ'}
                       </span>
                     </div>
-                    <span className="text-yellow-400 font-bold">â± {elapsed}</span>
+                    <span className="text-yellow-400 font-bold">⏳ {elapsed}</span>
                   </div>
 
                   {/* Order Info */}
                   <div className="p-4">
                     <div className="text-sm text-gray-500 mb-3">
-                      �x� {order.branch?.branch_name || 'Chi nhánh'} ⬢ {order.order_type === 'dine-in' ? '�x�� Tại ch�' : order.order_type === 'delivery' ? '�x:� Giao hàng' : '�x� Mang �i'}
+                      {order.branch?.branch_name || 'Chi nhánh'} ⬢ {order.order_type === 'dine-in' ? '🍽️ Tại chỗ' : order.order_type === 'delivery' ? '🚚 Giao hàng' : '📦 Mang đi'}
                     </div>
 
                     {/* Items */}
@@ -232,7 +232,7 @@ const KitchenDisplay = () => {
                           onClick={() => updateStatus(order.order_id, 'preparing')}
                           className="flex-1 bg-red-600 text-white py-2.5 rounded-lg font-bold hover:bg-red-700 transition flex items-center justify-center gap-2"
                         >
-                          �x� Bắt �ầu làm
+                          🍳 Bắt đầu làm
                         </button>
                       )}
                       {order.status === 'preparing' && (
@@ -240,12 +240,12 @@ const KitchenDisplay = () => {
                           onClick={() => updateStatus(order.order_id, 'ready')}
                           className="flex-1 bg-green-600 text-white py-2.5 rounded-lg font-bold hover:bg-red-700 transition flex items-center justify-center gap-2"
                         >
-                          âœ… HoÃ n thÃ nh
+                          ✅ Hoàn thành
                         </button>
                       )}
                       {order.status === 'ready' && (
                         <div className="flex-1 bg-yellow-500 text-white py-2.5 rounded-lg font-bold text-center">
-                          ½ï¸ Chá» phá»¥c vá»¥
+                          ⏳ Chờ phục vụ
                         </div>
                       )}
                     </div>

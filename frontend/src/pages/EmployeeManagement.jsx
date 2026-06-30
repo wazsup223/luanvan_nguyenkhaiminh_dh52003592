@@ -22,11 +22,11 @@ const roleAvatarColors = {
 };
 
 const roleLabels = {
-  Admin: 'Quản tr�9',
+  Admin: 'Quản trị',
   BranchManager: 'QL Chi nhánh',
   Cashier: 'Thu ngân',
   Kitchen: 'Bếp',
-  Waiter: 'Phá»¥c vá»¥',
+  Waiter: 'Phục vụ',
   Customer: 'Khách hàng',
 };
 
@@ -75,7 +75,7 @@ const EmployeeManagement = () => {
       const data = await fetchJSON(`${API_BASE}/users`);
       if (data.success) {
         let list = data.data;
-        // Manager ch�0 thấy nhân viên chi nhánh mình
+        // Manager chỉ thấy nhân viên chi nhánh mình
         if (isManager && savedUser?.branch_id) {
           list = list.filter(u => u.branch_id === savedUser.branch_id || u.role === 'Admin');
         }
@@ -139,11 +139,11 @@ const EmployeeManagement = () => {
     };
 
     if (!body.full_name || !body.username) {
-      setFormError('Họ tên và Username là bắt bu�"c.');
+      setFormError('Họ tên và Username là bắt buộc.');
       return;
     }
     if (!editingEmployee && !fd.get('password')) {
-      setFormError('Mật khẩu là bắt bu�"c khi tạo nhân viên m�:i.');
+      setFormError('Mật khẩu là bắt buộc khi tạo nhân viên mới.');
       return;
     }
     if (body.role !== 'Admin' && !body.branch_id) {
@@ -157,7 +157,7 @@ const EmployeeManagement = () => {
         const updateData = { ...body };
         const res = await api.put(`/api/users/${editingEmployee.user_id}`, updateData);
         if (res.success || res.message) {
-          showToast('�S& Cập nhật nhân viên thành công!', 'success');
+          showToast('đã Cập nhật nhân viên thành công!', 'success');
           fetchEmployees();
           closeModal();
         } else {
@@ -168,7 +168,7 @@ const EmployeeManagement = () => {
         body.password = fd.get('password');
         const res = await api.post('/api/users', body);
         if (res.success || res.user_id) {
-          showToast('�S& Tạo nhân viên thành công!', 'success');
+          showToast('đã Tạo nhân viên thành công!', 'success');
           fetchEmployees();
           closeModal();
         } else {
@@ -176,19 +176,19 @@ const EmployeeManagement = () => {
         }
       }
     } catch (err) {
-      setFormError(err.message || 'L�i kết n�i server.');
+      setFormError(err.message || 'Lỗi kết nối server.');
     }
   };
 
   const toggleLock = async (emp) => {
-    const action = emp.is_active ? 'khóa' : 'm�x khóa';
-    if (!window.confirm(`Bạn có chắc mu�n ${action} ${emp.full_name}?`)) return;
+    const action = emp.is_active ? 'khóa' : 'mở khóa';
+    if (!window.confirm(`Bạn có chắc muốn ${action} ${emp.full_name}?`)) return;
     try {
       await api.put(`/api/users/${emp.user_id}`, { is_active: !emp.is_active });
-      showToast(`�S& Đã ${action} ${emp.full_name}`, 'success');
+      showToast(`Đã ${action} ${emp.full_name}`, 'success');
       fetchEmployees();
     } catch (err) {
-      showToast('�R L�i: ' + (err.message || 'Không thỒ cập nhật'), 'error');
+      showToast('Đã Lỗi: ' + (err.message || 'Không thể cập nhật'), 'error');
     }
   };
 
@@ -210,9 +210,9 @@ const EmployeeManagement = () => {
         <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
           <div className="text-6xl mb-4">”’</div>
           <h2 className="text-xl font-bold text-red-600 mb-2">Không có quyền truy cập</h2>
-          <p className="text-gray-600 mb-4">Bạn cần �Ēng nhập v�:i tài khoản Admin hoặc Manager �Ồ quản lý nhân viên.</p>
+          <p className="text-gray-600 mb-4">Bạn cần đăng nhập với tài khoản Admin hoặc Manager để quản lý nhân viên.</p>
           <button onClick={() => navigate('/')} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold">
-            Vá» trang chá»§
+            Về trang chụ
           </button>
         </div>
       </div>
@@ -225,10 +225,10 @@ const EmployeeManagement = () => {
       <div className="bg-red-600 text-white shadow-lg">
         <div className="container mx-auto px-4 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <span className="text-3xl">👤¥</span>
+            <span className="text-3xl">👤 Đ</span>
             <div>
               <h1 className="text-2xl font-bold">Quản lý Nhân viên</h1>
-              <p className="text-sm text-red-200">FastFood - H�! th�ng quản lý nhân sự</p>
+              <p className="text-sm text-red-200">FastFood - Hệ thống quản lý nhân sự</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -236,13 +236,13 @@ const EmployeeManagement = () => {
               onClick={() => navigate('/admin')}
               className="bg-white text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-50 transition"
             >
-              � � Quay lại Dashboard
+              ‐ Quay lại Dashboard
             </button>
             <button
               onClick={openAddModal}
               className="bg-yellow-500 text-gray-900 px-5 py-2 rounded-lg font-bold hover:bg-yellow-400 transition shadow-md"
             >
-              �~" Thêm nhân viên
+              ➕ Thêm nhân viên
             </button>
           </div>
         </div>
@@ -255,7 +255,7 @@ const EmployeeManagement = () => {
             <div className="flex-1 min-w-[200px]">
               <input
                 type="text"
-                placeholder="�x� Tìm theo tên, username, email, SĐT..."
+                placeholder="Tìm theo tên, username, email, SĐT..."
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -274,7 +274,7 @@ const EmployeeManagement = () => {
               </select>
             )}
             <div className="text-sm text-gray-500">
-              T�"ng: <span className="font-bold text-red-600">{filtered.length}</span> nhân viên
+              Tổng: <span className="font-bold text-red-600">{filtered.length}</span> nhân viên
             </div>
           </div>
         </div>
@@ -291,14 +291,14 @@ const EmployeeManagement = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Avatar</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Há» tÃªn</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Họ tên</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Username</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">S� �i�!n thoại</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Số điộn thoại</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Vai trò</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Chi nhánh</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Trạng thái</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">HÃ nh Ä‘á»™ng</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Hành động</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -331,7 +331,7 @@ const EmployeeManagement = () => {
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                           emp.is_active ? 'bg-green-100 text-yellow-700' : 'bg-red-100 text-red-700'
                         }`}>
-                          {emp.is_active ? '�S& Đang hoạt ��"ng' : '�x Đã khóa'}
+                          {emp.is_active ? 'Đang hoạt động' : 'đã khóa'}
                         </span>
                       </td>
                       {/* Actions */}
@@ -341,7 +341,7 @@ const EmployeeManagement = () => {
                             onClick={() => openEditModal(emp)}
                             className="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition"
                           >
-                            âœï¸ Sá»­a
+                            ✏ Sửa
                           </button>
                           <button
                             onClick={() => toggleLock(emp)}
@@ -351,7 +351,7 @@ const EmployeeManagement = () => {
                                 : 'bg-green-100 text-yellow-700 hover:bg-yellow-200'
                             }`}
                           >
-                            {emp.is_active ? '�x Khóa' : '�x M�x'}
+                            {emp.is_active ? 'đã Khóa' : 'đã Mở'}
                           </button>
                         </div>
                       </td>
@@ -360,7 +360,7 @@ const EmployeeManagement = () => {
                   {filtered.length === 0 && (
                     <tr>
                       <td colSpan="9" className="px-4 py-12 text-center text-gray-400">
-                        <div className="text-4xl mb-2">”</div>
+                        <div className="text-4xl mb-2">✓</div>
                         <p>Không tìm thấy nhân viên nào.</p>
                       </td>
                     </tr>
@@ -379,7 +379,7 @@ const EmployeeManagement = () => {
             {/* Modal Header */}
             <div className="bg-red-600 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
               <h2 className="text-lg font-bold">
-                {editingEmployee ? '�S�️ Ch�0nh sửa nhân viên' : '�~" Thêm nhân viên m�:i'}
+                {editingEmployee ? 'Chỉnh sửa nhân viên' : '➕ Thêm nhân viên mới'}
               </h2>
               <button onClick={closeModal} className="text-white hover:text-red-200 text-2xl font-bold">&times;</button>
             </div>
@@ -388,13 +388,13 @@ const EmployeeManagement = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {formError && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                  âš ï¸ {formError}
+                  ⚙️ {formError}
                 </div>
               )}
 
               {/* Full Name */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Há» tÃªn <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Họ tên <span className="text-red-500">*</span></label>
                 <input
                   name="full_name"
                   type="text"
@@ -446,7 +446,7 @@ const EmployeeManagement = () => {
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">S� �i�!n thoại</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Số điộn thoại</label>
                 <input
                   name="phone"
                   type="tel"
@@ -465,11 +465,11 @@ const EmployeeManagement = () => {
                   defaultValue={editingEmployee?.role || 'Customer'}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 >
-                  <option value="Admin">Admin - Quản tr�9</option>
+                  <option value="Admin">Admin - Quản trị</option>
                   <option value="BranchManager">BranchManager - QL Chi nhánh</option>
                   <option value="Cashier">Cashier - Thu ngân</option>
                   <option value="Kitchen">Kitchen - Bếp</option>
-                  <option value="Waiter">Waiter - Phá»¥c vá»¥</option>
+                  <option value="Waiter">Waiter - Phục vụ</option>
                   <option value="Customer">Customer - Khách hàng</option>
                 </select>
               </div>
@@ -488,7 +488,7 @@ const EmployeeManagement = () => {
                   ))}
                 </select>
                 {isManager && (
-                  <p className="text-xs text-gray-400 mt-1">Bạn là Manager, mặc ��9nh chi nhánh của bạn</p>
+                  <p className="text-xs text-gray-400 mt-1">Bạn là Manager, mặc định chi nhánh của bạn</p>
                 )}
               </div>
 
@@ -499,13 +499,13 @@ const EmployeeManagement = () => {
                   onClick={closeModal}
                   className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition"
                 >
-                  Há»§y
+                  Hủy
                 </button>
                 <button
                   type="submit"
                   className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition shadow-md"
                 >
-                  {editingEmployee ? '�S& Cập nhật' : '�~" Tạo nhân viên'}
+                  {editingEmployee ? 'đã Cập nhật' : 'Tạo nhân viên'}
                 </button>
               </div>
             </form>

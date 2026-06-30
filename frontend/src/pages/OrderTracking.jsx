@@ -1,7 +1,7 @@
 ﻿/**
  * ============================================
  * ORDER TRACKING - F05 Real-time Order Tracking
- * Theo dõi �ơn hàng real-time cho khách hàng
+ * Theo dõi ảơn hàng real-time cho khách hàng
  * Brand: KFC Style - Đỏ/Vàng/Trắng
  * ============================================
  */
@@ -31,7 +31,7 @@ const OrderTracking = () => {
       }
     } catch (error) {
       console.error('Error loading order:', error);
-      setError('Không thỒ tải thông tin �ơn hàng');
+      setError('Không thể tải thông tin đơn hàng');
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ const OrderTracking = () => {
 
     socketService.onOrderCancelled((data) => {
       if (data.data.orderId === parseInt(orderId)) {
-        alert('Đơn hàng của bạn �ã b�9 hủy!');
+        alert('Đơn hàng của bạn đã bị hủy!');
         loadOrder();
       }
     });
@@ -74,21 +74,21 @@ const OrderTracking = () => {
         rating,
         comment
       });
-      alert('Cảm ơn bạn �ã �ánh giá!');
+      alert('Cảm ơn bạn đã đánh giá!');
       setShowRating(false);
     } catch (error) {
-      alert('L�i gửi �ánh giá');
+      alert('Lỗi gửi đánh giá');
     }
   };
 
   const getStatusInfo = (status) => {
     const statuses = {
       pending:    { label: 'Đang chờ xác nhận', color: 'bg-yellow-500', icon: '⏳', textColor: 'text-yellow-700' },
-      confirmed:  { label: 'Đã xác nhận', color: 'bg-red-500', icon: '�S&', textColor: 'text-red-700' },
-      preparing:  { label: 'Đang chế biến', color: 'bg-orange-500', icon: '�x�⬍�x��', textColor: 'text-orange-700' },
-      ready:      { label: 'Sẵn sàng phục vụ', color: 'bg-yellow-500', icon: '�S�', textColor: 'text-yellow-700' },
-      delivered:  { label: 'Đã giao', color: 'bg-green-600', icon: '�x}0', textColor: 'text-yellow-700' },
-      cancelled:  { label: 'Đã hủy', color: 'bg-red-600', icon: '�R', textColor: 'text-red-700' }
+      confirmed:  { label: 'Đã xác nhận', color: 'bg-red-500', icon: '📋', textColor: 'text-red-700' },
+      preparing:  { label: 'Đang chế biến', color: 'bg-orange-500', icon: '🍳', textColor: 'text-orange-700' },
+      ready:      { label: 'Sẵn sàng phục vụ', color: 'bg-yellow-500', icon: '✅', textColor: 'text-yellow-700' },
+      delivered:  { label: 'Đã giao', color: 'bg-green-600', icon: '📦', textColor: 'text-yellow-700' },
+      cancelled:  { label: 'Đã hủy', color: 'bg-red-600', icon: '❌', textColor: 'text-red-700' }
     };
     return statuses[status] || statuses.pending;
   };
@@ -102,8 +102,8 @@ const OrderTracking = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-5xl mb-4">â³</div>
-          <p className="text-gray-500">Đang tải �ơn hàng...</p>
+          <div className="text-5xl mb-4">⏳</div>
+          <p className="text-gray-500">Đang tải đơn hàng...</p>
         </div>
       </div>
     );
@@ -113,10 +113,10 @@ const OrderTracking = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-5xl mb-4">âŒ</div>
-          <p className="text-red-600 font-bold mb-4">{error || 'Không tìm thấy �ơn hàng'}</p>
+          <div className="text-5xl mb-4">❌</div>
+          <p className="text-red-600 font-bold mb-4">{error || 'Không tìm thấy đơn hàng'}</p>
           <button onClick={() => navigate('/')} className="px-6 py-2 bg-red-600 text-white rounded-lg font-bold">
-            Vá» trang chá»§
+            Về trang chủ
           </button>
         </div>
       </div>
@@ -135,7 +135,7 @@ const OrderTracking = () => {
             <div className="flex items-center gap-3">
               <span className="text-3xl">“¦</span>
               <div>
-                <h1 className="text-xl font-black">ÄÆ¡n hÃ ng #{orderId}</h1>
+                <h1 className="text-xl font-black">Đơn hàng #{orderId}</h1>
                 <p className="text-red-100 text-sm">Theo dõi real-time</p>
               </div>
             </div>
@@ -190,7 +190,7 @@ const OrderTracking = () => {
         {/* Order Items */}
         <div className="bg-white rounded-2xl p-5 shadow">
           <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            �x9 Chi tiết �ơn hàng
+            📦 Chi tiết đơn hàng
           </h3>
           
           <div className="space-y-3">
@@ -231,9 +231,9 @@ const OrderTracking = () => {
               </div>
             )}
             <div className="flex justify-between text-xl font-black text-gray-900 pt-2 border-t">
-              <span>Tổng cá»™ng</span>
+              <span>Tổng cộng</span>
               <span className="text-red-600">
-                {(order.subtotal - order.discount_amount + order.tax_amount).toLocaleString('vi-VN')}Ä‘
+                {(order.subtotal - order.discount_amount + order.tax_amount).toLocaleString('vi-VN')}đ
               </span>
             </div>
           </div>
@@ -244,16 +244,16 @@ const OrderTracking = () => {
           order.payment_status === 'paid' ? 'bg-yellow-50 border-2 border-yellow-500' : 'bg-yellow-50 border-2 border-yellow-500'
         }`}>
           <div className="text-4xl mb-2">
-            {order.payment_status === 'paid' ? 'âœ…' : 'â³'}
+            {order.payment_status === 'paid' ? '✅' : '⏳'}
           </div>
           <div className="font-bold text-lg">
             {order.payment_status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
           </div>
           <div className="text-gray-600 mt-1">
-            {order.payment_method === 'cash' ? '’µ Tiá»n máº·t' :
-             order.payment_method === 'momo' ? '’š MoMo' :
-             order.payment_method === 'zalopay' ? '’™ ZaloPay' :
-             order.payment_method === 'vnpay' ? '’œ VNPay' : 'ChÆ°a chá»n'}
+            {order.payment_method === 'cash' ? '💵 Tiền mặt' :
+             order.payment_method === 'momo' ? '📱 MoMo' :
+             order.payment_method === 'zalopay' ? '📱 ZaloPay' :
+             order.payment_method === 'vnpay' ? '📱 VNPay' : 'Chưa chọn'}
           </div>
         </div>
 
@@ -272,14 +272,14 @@ const OrderTracking = () => {
             onClick={() => navigate(`/print-bill/${orderId}`)}
             className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition"
           >
-            �x�️ In hóa �ơn
+            🖨️ In hóa đơn
           </button>
 
           <Link
             to="/"
             className="flex-1 py-3 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-900 transition text-center"
           >
-            â† Äáº·t thÃªm
+            ⬅️ Đặt thêm
           </Link>
         </div>
 
@@ -287,8 +287,8 @@ const OrderTracking = () => {
         {showRating && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-              <h3 className="text-xl font-bold mb-4 text-center">⭐ Đánh giá �ơn hàng</h3>
-              
+              <h3 className="text-xl font-bold mb-4 text-center">⭐ Đánh giá đơn hàng</h3>
+
               <div className="flex justify-center gap-2 mb-4">
                 {[1, 2, 3, 4, 5].map(star => (
                   <button
@@ -296,7 +296,7 @@ const OrderTracking = () => {
                     onClick={() => setRating(star)}
                     className={`text-3xl transition ${star <= rating ? 'text-yellow-500' : 'text-gray-300'}`}
                   >
-                    â­
+                    ⭐
                   </button>
                 ))}
               </div>
@@ -314,13 +314,13 @@ const OrderTracking = () => {
                   onClick={() => setShowRating(false)}
                   className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-xl font-medium"
                 >
-                  Há»§y
+                  Hủy
                 </button>
                 <button
                   onClick={submitRating}
                   className="flex-1 py-2 bg-red-600 text-white rounded-xl font-bold"
                 >
-                  Gửi �ánh giá
+                  Gửi đánh giá
                 </button>
               </div>
             </div>

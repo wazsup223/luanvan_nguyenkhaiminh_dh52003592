@@ -13,6 +13,7 @@ import ReconciliationPage from './pages/ReconciliationPage';
 import TableManagement from './pages/TableManagement';
 import MenuPage from './pages/MenuPage';
 import RecommendationsPage from './pages/RecommendationsPage';
+import FoodDetailPage from './pages/FoodDetailPage';
 import NotFound from './pages/NotFound';
 import './index.css';
 
@@ -272,7 +273,8 @@ function App() {
           <Routes>
             {/* Public routes */}
             <Route path="/"             element={<HomePage />} />
-            <Route path="/menu"         element={<MenuPage menuItems={menuItems} />} />
+            <Route path="/menu"          element={<MenuPage menuItems={menuItems} />} />
+            <Route path="/menu/:id"   element={<FoodDetailPage />} />
 
             <Route path="/checkout"     element={<CheckoutPage />} />
             <Route path="/track/:id"    element={<OrderTracking />} />

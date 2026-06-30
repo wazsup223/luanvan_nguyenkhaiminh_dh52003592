@@ -235,7 +235,7 @@ export default function ReviewPage() {
                           onMouseLeave={() => setHoverRating(0)}
                           className="text-3xl transition-transform hover:scale-125"
                         >
-                          {star <= (hoverRating || rating) ? 'â­' : 'â˜†'}
+                          {star <= (hoverRating || rating) ? '⭐' : '☆'}
                         </button>
                       ))}
                       <span className="ml-2 text-sm font-bold text-gray-500 self-center">{rating}/5</span>
@@ -267,7 +267,7 @@ export default function ReviewPage() {
                 <h3 className="font-bold text-gray-900">Đánh giá ({reviews.length})</h3>
                 {reviews.length === 0 ? (
                   <div className="text-center py-10 bg-white rounded-2xl border border-gray-100">
-                    <p className="text-4xl mb-2">’¬</p>
+                    <p className="text-4xl mb-2">👎</p>
                     <p className="text-gray-400">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
                   </div>
                 ) : (
@@ -289,13 +289,13 @@ export default function ReviewPage() {
                         </div>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map(s => (
-                            <span key={s} className="text-sm">{s <= review.rating ? 'â­' : 'â˜†'}</span>
+                            <span key={s} className="text-sm">{s <= review.rating ? '⭐' : '☆'}</span>
                           ))}
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
                       {review.status === 'pending' && (
-                        <span className="inline-block mt-2 text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full font-semibold">Chá» duyá»‡t</span>
+                        <span className="inline-block mt-2 text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full font-semibold">Chờ duyệt</span>
                       )}
                     </div>
                   ))

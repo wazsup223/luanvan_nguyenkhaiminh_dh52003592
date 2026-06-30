@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
 
 // Auth token helper for tracking
@@ -162,28 +163,24 @@ function MenuPage({ menuItems }) {
             const qty = getQty(item.item_id);
             return (
               <div key={item.item_id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
-                <div className="relative h-40 bg-gray-50 overflow-hidden cursor-pointer" onClick={() => {
-                  setSelectedItem(item);
-                  trackBehavior('view_item', item.item_id);
-                }}>
+                <Link to={`/menu/${item.item_id}`} className="block relative h-40 bg-gray-50 overflow-hidden">
                   <img
                     src={item.image_url || FOOD_IMAGES[i % FOOD_IMAGES.length]}
                     alt={item.item_name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={e => { e.target.src = FOOD_IMAGES[i % FOOD_IMAGES.length]; }}
                   />
                   <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
                     {item.price?.toLocaleString('vi-VN')}đ
                   </div>
-                </div>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                    <span className="bg-white/90 text-gray-900 font-bold text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">Xem chi tiết</span>
+                  </div>
+                </Link>
                 <div className="p-3">
-                  <h3 
-                    className="font-bold text-sm text-gray-900 line-clamp-2 mb-1 cursor-pointer hover:text-red-600 transition"
-                    onClick={() => {
-                      setSelectedItem(item);
-                      trackBehavior('view_item', item.item_id);
-                    }}
-                  >{item.item_name}</h3>
+                  <Link to={`/menu/${item.item_id}`} className="block">
+                    <h3 className="font-bold text-sm text-gray-900 line-clamp-2 mb-1 hover:text-red-600 transition">{item.item_name}</h3>
+                  </Link>
                   <p className="text-xs text-gray-400 mb-2">{item.category_name || 'Món ăn'}</p>
                   {qty > 0 ? (
                     <div className="flex items-center justify-between">

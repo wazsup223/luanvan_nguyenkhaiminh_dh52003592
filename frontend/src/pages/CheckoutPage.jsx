@@ -199,7 +199,7 @@ export default function CheckoutPage() {
   if (!cart.length) {
     return (
       <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <div className="text-6xl mb-6">›’</div>
+        <div className="text-6xl mb-6">—🗑️</div>
         <h2 className="text-2xl font-black text-gray-900 mb-3">Giỏ hàng trống</h2>
         <p className="text-gray-500 mb-6">Bạn chưa chọn món ăn nào.</p>
         <Link to="/menu" className="inline-block px-8 py-3 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition shadow-lg shadow-red-200">
